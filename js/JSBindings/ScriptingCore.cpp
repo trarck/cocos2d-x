@@ -199,6 +199,7 @@ void ScriptingCore::runScript(const char *path)
 		if (JSVAL_IS_NULL(rval) || rval == JSVAL_FALSE) {
 			CCLog("error evaluating script:\n%s", content);
 		}
+		free(content);
 	}
 }
 

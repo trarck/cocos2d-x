@@ -29,14 +29,19 @@ namespace   cocos2d {
 
 CCPoint::CCPoint(void)
 {
-	x = 0;
-	y = 0;
+	this->initWith(0.0f, 0.0f);
 }
 
 CCPoint::CCPoint(float x, float y)
 {
+	this->initWith(x, y);
+}
+
+bool CCPoint::initWith(float x, float y)
+{
 	this->x = x;
 	this->y = y;
+	return true;
 }
 
 bool CCPoint::CCPointEqualToPoint(const CCPoint& point1, const CCPoint& point2)
@@ -48,11 +53,15 @@ bool CCPoint::CCPointEqualToPoint(const CCPoint& point1, const CCPoint& point2)
 
 CCSize::CCSize(void)
 {
-	width = 0;
-	height = 0;
+	this->initWith(0.0f, 0.0f);
 }
 
 CCSize::CCSize(float width, float height)
+{
+	this->initWith(width, height);
+}
+
+bool CCSize::initWith(float width, float height)
 {
 	this->width = width;
 	this->height = height;
@@ -67,18 +76,18 @@ bool CCSize::CCSizeEqualToSize(const CCSize& size1, const CCSize& size2)
 
 CCRect::CCRect(void)
 {
-	origin.x = 0;
-	origin.y = 0;
-
-	size.width = 0;
-	size.height = 0;
+	this->initWith(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 CCRect::CCRect(float x, float y, float width, float height)
 {
 	// Only support that, the width and height > 0
 	CC_ASSERT(width >= 0 && height >= 0);
+	this->initWith(x, y, width, height);
+}
 
+bool CCRect::initWith(float x, float y, float width, float height)
+{
 	origin.x = x;
 	origin.y = y;
 

@@ -41,6 +41,8 @@ public:
 
 	CCPoint();
 	CCPoint(float x, float y);
+	// support for easier bindings
+	bool initWith(float x, float y);
 
 public:
 	static bool CCPointEqualToPoint(const CCPoint& point1, const CCPoint& point2);
@@ -55,6 +57,7 @@ public:
 public:
 	CCSize();
 	CCSize(float width, float height);
+	bool initWith(float width, float height);
 
 public:
 	static bool CCSizeEqualToSize(const CCSize& size1, const CCSize& size2);
@@ -69,6 +72,7 @@ public:
 public:
 	CCRect();	
 	CCRect(float x, float y, float width, float height);
+	bool initWith(float x, float y, float width, float height);
 
 public:
 	//! return the leftmost x-value of 'rect'

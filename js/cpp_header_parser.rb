@@ -10,13 +10,19 @@ very simple c++ header parser, used mainly for generating bindings for JavaScrip
 require 'rubygems'
 require 'ruby-debug'
 
+class String
+  def zcapitalize
+    self[0].upcase + self[1,length-1]
+  end
+end
 
-# line 48 "cpp_header_parser.rl"
+
+# line 55 "cpp_header_parser.rl"
 
 # % - fix fynxtax highlight
 
 
-# line 20 "cpp_header_parser.rb"
+# line 26 "cpp_header_parser.rb"
 class << self
 	attr_accessor :_cpp_header_parser_actions
 	private :_cpp_header_parser_actions, :_cpp_header_parser_actions=
@@ -28,9 +34,9 @@ self._cpp_header_parser_actions = [
 	15, 1, 16, 1, 17, 1, 18, 1, 
 	19, 1, 20, 1, 21, 1, 22, 1, 
 	23, 1, 24, 1, 25, 1, 26, 1, 
-	27, 1, 28, 2, 5, 6, 2, 5, 
-	7, 2, 5, 8, 2, 5, 9, 3, 
-	5, 2, 9
+	27, 1, 28, 1, 29, 2, 5, 6, 
+	2, 5, 7, 2, 5, 8, 2, 5, 
+	9, 3, 5, 2, 9
 ]
 
 class << self
@@ -38,12 +44,12 @@ class << self
 	private :_cpp_header_parser_key_offsets, :_cpp_header_parser_key_offsets=
 end
 self._cpp_header_parser_key_offsets = [
-	0, 0, 2, 3, 6, 7, 9, 38, 
-	40, 42, 43, 50, 58, 66, 74, 82, 
-	90, 98, 106, 115, 124, 132, 140, 148, 
-	156, 166, 174, 182, 190, 198, 206, 214, 
-	222, 230, 238, 246, 254, 262, 270, 278, 
-	286, 287
+	0, 0, 2, 3, 6, 7, 9, 39, 
+	41, 43, 44, 51, 59, 67, 75, 83, 
+	91, 99, 107, 116, 125, 133, 141, 149, 
+	157, 167, 175, 183, 191, 199, 207, 215, 
+	223, 231, 239, 247, 255, 263, 271, 279, 
+	287, 288
 ]
 
 class << self
@@ -52,41 +58,42 @@ class << self
 end
 self._cpp_header_parser_trans_keys = [
 	42, 47, 10, 9, 32, 58, 42, 42, 
-	47, 40, 41, 42, 44, 47, 58, 59, 
-	61, 95, 99, 101, 112, 115, 123, 125, 
-	33, 46, 48, 57, 60, 64, 65, 90, 
-	91, 96, 97, 122, 124, 126, 33, 126, 
-	48, 57, 58, 95, 48, 57, 65, 90, 
-	97, 122, 95, 108, 48, 57, 65, 90, 
-	97, 122, 95, 97, 48, 57, 65, 90, 
-	98, 122, 95, 115, 48, 57, 65, 90, 
-	97, 122, 95, 115, 48, 57, 65, 90, 
-	97, 122, 95, 110, 48, 57, 65, 90, 
-	97, 122, 95, 117, 48, 57, 65, 90, 
-	97, 122, 95, 109, 48, 57, 65, 90, 
-	97, 122, 95, 114, 117, 48, 57, 65, 
-	90, 97, 122, 95, 105, 111, 48, 57, 
-	65, 90, 97, 122, 95, 118, 48, 57, 
-	65, 90, 97, 122, 95, 97, 48, 57, 
-	65, 90, 98, 122, 95, 116, 48, 57, 
-	65, 90, 97, 122, 95, 101, 48, 57, 
-	65, 90, 97, 122, 9, 32, 58, 95, 
-	48, 57, 65, 90, 97, 122, 95, 116, 
-	48, 57, 65, 90, 97, 122, 95, 101, 
-	48, 57, 65, 90, 97, 122, 95, 99, 
-	48, 57, 65, 90, 97, 122, 95, 116, 
-	48, 57, 65, 90, 97, 122, 95, 101, 
-	48, 57, 65, 90, 97, 122, 95, 100, 
-	48, 57, 65, 90, 97, 122, 95, 98, 
-	48, 57, 65, 90, 97, 122, 95, 108, 
-	48, 57, 65, 90, 97, 122, 95, 105, 
-	48, 57, 65, 90, 97, 122, 95, 99, 
-	48, 57, 65, 90, 97, 122, 95, 116, 
-	48, 57, 65, 90, 97, 122, 95, 97, 
-	48, 57, 65, 90, 98, 122, 95, 116, 
-	48, 57, 65, 90, 97, 122, 95, 105, 
-	48, 57, 65, 90, 97, 122, 95, 99, 
-	48, 57, 65, 90, 97, 122, 59, 0
+	47, 38, 40, 41, 42, 44, 47, 58, 
+	59, 61, 95, 99, 101, 112, 115, 123, 
+	125, 33, 46, 48, 57, 60, 64, 65, 
+	90, 91, 96, 97, 122, 124, 126, 33, 
+	126, 48, 57, 58, 95, 48, 57, 65, 
+	90, 97, 122, 95, 108, 48, 57, 65, 
+	90, 97, 122, 95, 97, 48, 57, 65, 
+	90, 98, 122, 95, 115, 48, 57, 65, 
+	90, 97, 122, 95, 115, 48, 57, 65, 
+	90, 97, 122, 95, 110, 48, 57, 65, 
+	90, 97, 122, 95, 117, 48, 57, 65, 
+	90, 97, 122, 95, 109, 48, 57, 65, 
+	90, 97, 122, 95, 114, 117, 48, 57, 
+	65, 90, 97, 122, 95, 105, 111, 48, 
+	57, 65, 90, 97, 122, 95, 118, 48, 
+	57, 65, 90, 97, 122, 95, 97, 48, 
+	57, 65, 90, 98, 122, 95, 116, 48, 
+	57, 65, 90, 97, 122, 95, 101, 48, 
+	57, 65, 90, 97, 122, 9, 32, 58, 
+	95, 48, 57, 65, 90, 97, 122, 95, 
+	116, 48, 57, 65, 90, 97, 122, 95, 
+	101, 48, 57, 65, 90, 97, 122, 95, 
+	99, 48, 57, 65, 90, 97, 122, 95, 
+	116, 48, 57, 65, 90, 97, 122, 95, 
+	101, 48, 57, 65, 90, 97, 122, 95, 
+	100, 48, 57, 65, 90, 97, 122, 95, 
+	98, 48, 57, 65, 90, 97, 122, 95, 
+	108, 48, 57, 65, 90, 97, 122, 95, 
+	105, 48, 57, 65, 90, 97, 122, 95, 
+	99, 48, 57, 65, 90, 97, 122, 95, 
+	116, 48, 57, 65, 90, 97, 122, 95, 
+	97, 48, 57, 65, 90, 98, 122, 95, 
+	116, 48, 57, 65, 90, 97, 122, 95, 
+	105, 48, 57, 65, 90, 97, 122, 95, 
+	99, 48, 57, 65, 90, 97, 122, 59, 
+	0
 ]
 
 class << self
@@ -94,7 +101,7 @@ class << self
 	private :_cpp_header_parser_single_lengths, :_cpp_header_parser_single_lengths=
 end
 self._cpp_header_parser_single_lengths = [
-	0, 2, 1, 3, 1, 2, 15, 0, 
+	0, 2, 1, 3, 1, 2, 16, 0, 
 	0, 1, 1, 2, 2, 2, 2, 2, 
 	2, 2, 3, 3, 2, 2, 2, 2, 
 	4, 2, 2, 2, 2, 2, 2, 2, 
@@ -120,12 +127,12 @@ class << self
 	private :_cpp_header_parser_index_offsets, :_cpp_header_parser_index_offsets=
 end
 self._cpp_header_parser_index_offsets = [
-	0, 0, 3, 5, 9, 11, 14, 37, 
-	39, 41, 43, 48, 54, 60, 66, 72, 
-	78, 84, 90, 97, 104, 110, 116, 122, 
-	128, 136, 142, 148, 154, 160, 166, 172, 
-	178, 184, 190, 196, 202, 208, 214, 220, 
-	226, 228
+	0, 0, 3, 5, 9, 11, 14, 38, 
+	40, 42, 44, 49, 55, 61, 67, 73, 
+	79, 85, 91, 98, 105, 111, 117, 123, 
+	129, 137, 143, 149, 155, 161, 167, 173, 
+	179, 185, 191, 197, 203, 209, 215, 221, 
+	227, 229
 ]
 
 class << self
@@ -135,33 +142,33 @@ end
 self._cpp_header_parser_indicies = [
 	0, 2, 1, 3, 2, 5, 5, 6, 
 	4, 8, 7, 8, 9, 7, 11, 12, 
-	13, 14, 15, 17, 18, 19, 20, 21, 
-	22, 23, 24, 25, 26, 1, 16, 1, 
-	20, 1, 20, 1, 10, 27, 10, 29, 
-	28, 31, 30, 33, 33, 33, 33, 32, 
-	33, 35, 33, 33, 33, 34, 33, 36, 
-	33, 33, 33, 34, 33, 37, 33, 33, 
-	33, 34, 33, 38, 33, 33, 33, 34, 
-	33, 39, 33, 33, 33, 34, 33, 40, 
-	33, 33, 33, 34, 33, 41, 33, 33, 
-	33, 34, 33, 42, 43, 33, 33, 33, 
-	34, 33, 44, 45, 33, 33, 33, 34, 
-	33, 46, 33, 33, 33, 34, 33, 47, 
-	33, 33, 33, 34, 33, 48, 33, 33, 
-	33, 34, 33, 49, 33, 33, 33, 34, 
-	5, 5, 6, 33, 33, 33, 33, 34, 
-	33, 50, 33, 33, 33, 34, 33, 51, 
-	33, 33, 33, 34, 33, 52, 33, 33, 
-	33, 34, 33, 53, 33, 33, 33, 34, 
-	33, 54, 33, 33, 33, 34, 33, 49, 
-	33, 33, 33, 34, 33, 55, 33, 33, 
-	33, 34, 33, 56, 33, 33, 33, 34, 
-	33, 57, 33, 33, 33, 34, 33, 49, 
-	33, 33, 33, 34, 33, 58, 33, 33, 
-	33, 34, 33, 59, 33, 33, 33, 34, 
-	33, 60, 33, 33, 33, 34, 33, 61, 
-	33, 33, 33, 34, 33, 62, 33, 33, 
-	33, 34, 64, 63, 1, 0
+	13, 14, 15, 16, 18, 19, 20, 21, 
+	22, 23, 24, 25, 26, 27, 1, 17, 
+	1, 21, 1, 21, 1, 10, 28, 10, 
+	30, 29, 32, 31, 34, 34, 34, 34, 
+	33, 34, 36, 34, 34, 34, 35, 34, 
+	37, 34, 34, 34, 35, 34, 38, 34, 
+	34, 34, 35, 34, 39, 34, 34, 34, 
+	35, 34, 40, 34, 34, 34, 35, 34, 
+	41, 34, 34, 34, 35, 34, 42, 34, 
+	34, 34, 35, 34, 43, 44, 34, 34, 
+	34, 35, 34, 45, 46, 34, 34, 34, 
+	35, 34, 47, 34, 34, 34, 35, 34, 
+	48, 34, 34, 34, 35, 34, 49, 34, 
+	34, 34, 35, 34, 50, 34, 34, 34, 
+	35, 5, 5, 6, 34, 34, 34, 34, 
+	35, 34, 51, 34, 34, 34, 35, 34, 
+	52, 34, 34, 34, 35, 34, 53, 34, 
+	34, 34, 35, 34, 54, 34, 34, 34, 
+	35, 34, 55, 34, 34, 34, 35, 34, 
+	50, 34, 34, 34, 35, 34, 56, 34, 
+	34, 34, 35, 34, 57, 34, 34, 34, 
+	35, 34, 58, 34, 34, 34, 35, 34, 
+	50, 34, 34, 34, 35, 34, 59, 34, 
+	34, 34, 35, 34, 60, 34, 34, 34, 
+	35, 34, 61, 34, 34, 34, 35, 34, 
+	62, 34, 34, 34, 35, 34, 63, 34, 
+	34, 34, 35, 65, 64, 1, 0
 ]
 
 class << self
@@ -170,14 +177,14 @@ class << self
 end
 self._cpp_header_parser_trans_targs = [
 	6, 0, 2, 6, 6, 3, 6, 4, 
-	5, 41, 7, 6, 6, 6, 6, 1, 
-	8, 9, 6, 6, 10, 11, 15, 18, 
-	35, 6, 40, 6, 6, 8, 6, 6, 
-	6, 10, 6, 12, 13, 14, 10, 16, 
-	17, 10, 19, 31, 20, 25, 21, 22, 
-	23, 24, 26, 27, 28, 29, 30, 32, 
-	33, 34, 36, 37, 38, 39, 10, 6, 
-	6
+	5, 41, 7, 6, 6, 6, 6, 6, 
+	1, 8, 9, 6, 6, 10, 11, 15, 
+	18, 35, 6, 40, 6, 6, 8, 6, 
+	6, 6, 10, 6, 12, 13, 14, 10, 
+	16, 17, 10, 19, 31, 20, 25, 21, 
+	22, 23, 24, 26, 27, 28, 29, 30, 
+	32, 33, 34, 36, 37, 38, 39, 10, 
+	6, 6
 ]
 
 class << self
@@ -185,15 +192,15 @@ class << self
 	private :_cpp_header_parser_trans_actions, :_cpp_header_parser_trans_actions=
 end
 self._cpp_header_parser_trans_actions = [
-	33, 0, 0, 35, 47, 0, 13, 0, 
-	0, 1, 0, 25, 27, 15, 17, 0, 
-	3, 0, 19, 29, 63, 5, 5, 5, 
-	5, 21, 0, 45, 41, 0, 37, 31, 
-	49, 60, 43, 0, 0, 0, 51, 0, 
-	0, 54, 0, 0, 0, 0, 0, 0, 
-	0, 11, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 57, 39, 
-	23
+	35, 0, 0, 37, 49, 0, 13, 0, 
+	0, 1, 0, 29, 25, 27, 15, 17, 
+	0, 3, 0, 19, 31, 65, 5, 5, 
+	5, 5, 21, 0, 47, 43, 0, 39, 
+	33, 51, 62, 45, 0, 0, 0, 53, 
+	0, 0, 56, 0, 0, 0, 0, 0, 
+	0, 0, 11, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 59, 
+	41, 23
 ]
 
 class << self
@@ -227,12 +234,12 @@ class << self
 	private :_cpp_header_parser_eof_trans, :_cpp_header_parser_eof_trans=
 end
 self._cpp_header_parser_eof_trans = [
-	0, 0, 0, 5, 0, 0, 0, 28, 
-	29, 31, 33, 35, 35, 35, 35, 35, 
-	35, 35, 35, 35, 35, 35, 35, 35, 
-	35, 35, 35, 35, 35, 35, 35, 35, 
-	35, 35, 35, 35, 35, 35, 35, 35, 
-	64, 0
+	0, 0, 0, 5, 0, 0, 0, 29, 
+	30, 32, 34, 36, 36, 36, 36, 36, 
+	36, 36, 36, 36, 36, 36, 36, 36, 
+	36, 36, 36, 36, 36, 36, 36, 36, 
+	36, 36, 36, 36, 36, 36, 36, 36, 
+	65, 0
 ]
 
 class << self
@@ -258,7 +265,7 @@ end
 self.cpp_header_parser_en_main = 6;
 
 
-# line 52 "cpp_header_parser.rl"
+# line 59 "cpp_header_parser.rl"
 # % fix syntax highlight
 
 class CppEnum
@@ -358,10 +365,11 @@ class CppEnum
 end
 
 class CppMethod
-  NATIVE_TYPES = %w(int long char float bool short)
-  NUMBER_TYPES = %w(int long float long\ long unsigned\ int signed\ int short)
-  CC_TYPES     = %w(CCPoint CCSize)
-  attr_reader :static, :name, :arguments
+  NATIVE_TYPES = %w(int long char float bool short CGFloat)
+  FLOAT_TYPES = %w(float double)
+  INT_TYPES = %w(int short)
+  NUMBER_TYPES = %w(int long float long\ long unsigned\ int signed\ int short CGFloat)
+  attr_reader :static, :name, :arguments, :type, :return_type
   attr_accessor :min_arg_count
 
   def initialize(parser, static = false)
@@ -371,71 +379,68 @@ class CppMethod
     @name = nil
     @return_type = []
     @arguments = []
-    @min_arg_count = 0
+    @min_arg_count = 1000 # arbitrary big number
     @current_argument = []
+    @type = :invalid
   end
 
   # this generates a static method that returns a JSValueRef
   # encapsulating the original method. The method then needs to be
   # registered for the class
-  def generate_binding_code(klass, indent_level = 1, conent_only = false)
+  def generate_binding_code(klass, indent_level = 1, content_only = false)
     indent = "\t" * indent_level
     str = ""
-    str << "JS_STATIC_FUNC_IMP(#{klass.js_name}, js_#{@name})\n{\n" unless conent_only
+    str << "#{indent}static JSBool js#{@name}(JSContext *cx, uint32_t argc, jsval *vp)\n{\n" unless content_only
     # need to cast arguments from JS to native
     if @arguments.size == @min_arg_count
-      str << "#{indent}if (argumentCount == #{@arguments.size}) {\n"
-    else
-      str << "#{indent}if (argumentCount >= #{@min_arg_count}) {\n"
+      str << "#{indent}\tif (argc == #{@arguments.size}) {\n"
+      indent += "\t"
+    elsif @min_arg_count > 0
+      str << "#{indent}\tif (argc >= #{@min_arg_count}) {\n"
+      indent += "\t"
     end
-    unless @static || @name == klass.name
-      str << "#{indent}\t#{klass.name}* self = (#{klass.name} *)JSObjectGetPrivate(thisObject);\n"
+    unless @static || @name == klass.name || content_only
+      str << "#{indent}\t#{klass.name}* cobj = (#{klass.name} *)JS_GetPrivate(obj);\n"
     end
 
+    # the idea is to create the format string with the required arguments and then
+    # the optional arguments. Something like:
+    # format_str = "o/ii"
+    # for addChild(node, tag, zOrder)
+    # where node is required, but tag and zOrder are optional
+    format_str = ""
     @arguments.each_with_index do |arg, i|
-      optional_arg = false
-      if NUMBER_TYPES.include?(arg[:type])
-        str << "#{indent}\t#{arg[:type]} arg#{i} = JSValueToNumber(ctx, arguments[#{i}], NULL);\n"
-      elsif arg[:type].downcase == "bool"
-        str << "#{indent}\tbool arg#{i} = JSValueToBoolean(ctx, arguments[#{i}]);\n"
-      elsif arg[:type] == "std::string"
-        str << "#{indent}\tJSStringRef __tmp_#{i} = JSValueToStringCopy(ctx, arguments[#{i}], NULL);\n"
-        str << "#{indent}\tsize_t len_#{i} = JSStringGetLength(__tmp_#{i})+1;\n"
-        str << "#{indent}\tchar *buff_#{i} = (char *)calloc(len_#{i}, 1);\n"
-        str << "#{indent}\tJSStringGetUTF8CString(__tmp_#{i}, buff_#{i}, len_#{i});\n"
-        str << "#{indent}\tstd::string arg#{i}(buff_#{i});\n"
-        str << "#{indent}\tJSStringRelease(__tmp_#{i});\n"
-        str << "#{indent}\tfree(buff_#{i});\n"
+      if i == @min_arg_count && @arguments.size != @min_arg_count
+        format_str << "/"
+      end
+      if FLOAT_TYPES.include?(arg[:type])
+        format_str << "d"
+        str << "#{indent}\tdouble arg#{i} = 0.0f;\n"
+      elsif INT_TYPES.include?(arg[:type])
+        format_str << "i"
+        str << "#{indent}\t#{arg[:type]} arg#{i} = 0;\n"
       else
-        # treat cc types as pointers
-        arg[:type] << "*" if CC_TYPES.include?(arg[:type])
-        str << "#{indent}\t#{arg[:type]} arg#{i} = (#{arg[:type]})JSObjectGetPrivate((JSObjectRef)arguments[#{i}]);\n"
+        # it's a pointer or something else, so assume JSObject
+        format_str << "o"
+        str << "#{indent}\tJSObject *jsarg#{i} = NULL;\n"
+        str << "#{indent}\t#{arg[:type]} arg#{i} = (#{arg[:type]})JS_GetPrivate(jsarg#{i});\n"
       end
     end
-    # do the call
-    arg_len = @arguments.length
-    arg_list = (["arg"] * arg_len).zip( (0...arg_len).to_a ).map { |a| a.join }.join(", ")
-    if @name == klass.name
-      str << "#{indent}\t#{klass.name}::#{@name}(#{arg_list});\n"
+    # convert the arguments
+    if @arguments.size > 0
+      arg_list_ptrs = (0...@arguments.size).map { |i| "&arg#{i}" }.join(", ")
+      arg_list      = (0...@arguments.size).map { |i| "arg#{i}" }.join(", ")
+      str << "#{indent}\tif (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), \"#{format_str}\", #{arg_list_ptrs}) == JS_TRUE) {\n"
+      # do the call
+      str << "#{indent}\t\tthis->#{@name}(#{arg_list});\n"
+      str << "#{indent}\t\treturn true;\n"
+      str << "#{indent}\t}\n"
+      str << "#{indent}\treturn false;\n"
     else
-      str << "#{indent}\t#{@return_type} ret = #{klass.name}::#{@name}(#{arg_list});\n"
-      if NUMBER_TYPES.include?(@return_type)
-        str << "#{indent}\treturn JSValueMakeNumber(ctx, ret);\n"
-      elsif CC_TYPES.include?(@return_type)
-        str << "#{@return_type}* retObj = new #{@return_type}();\n"
-        str << "#{@return_type}_COPY(ret, retObj);"
-      elsif @return_type.downcase == "bool"
-        str << "#{indent}\treturn JSValueMakeBoolean(ctx, ret);\n"
-      elsif @return_type == "std::string"
-        str << "#{indent}\tJSStringRef retStr = JSStringCreateWithUTF8CString(ret.c_str());\n"
-        str << "#{indent}\tJSValueRef retVal = JSValueMakeString(ctx, retStr);\n"
-        str << "#{indent}\tJSStringRelease(retStr);\n"
-        str << "#{indent}\treturn retVal;\n"
-      end
+      str << "#{indent}\t// do the call here\n"
+      str << "#{indent}\treturn true;\n"
     end
-    str << "#{indent}}\n"
-    str << "#{indent}return JSValueMakeUndefined(ctx);\n"
-    str << "}\n" unless conent_only
+    str << "#{indent}};\n" unless content_only
     str
   end
 
@@ -481,6 +486,7 @@ class CppMethod
       @name = @return_type[-1]
       @return_type = @return_type[0, @return_type.length - 1].join(" ")
       @waiting_for = :argument
+      @type = :function
     when :comma
       append_current_argument
       @waiting_for = :argument
@@ -488,6 +494,11 @@ class CppMethod
       append_current_argument if @current_argument.size > 0
       @waiting_for = :semicolon
     when :semicolon
+      if @type == :invalid
+        @name = @return_type[-1]
+        @return_type = @return_type[0, @return_type.length - 1].join(" ")
+        @type = :attribute
+      end
       @parser.method_ended(self)
     end
   end
@@ -519,91 +530,179 @@ class CppClass
     @all_static
   end
 
-  def generate_header_code
-    check_all_static
-    str = ""
-    str << 
-    str << "extern JSClassRef __js_#{@name};\n"
-    str << <<-EOS
-class #{js_name}
-{
-public:
-\tstatic JSObjectRef jsConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception);
-\tstatic bool jsHasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
-\tstatic JSValueRef jsGetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef* exception);
-\tstatic JSStaticFunction *jsStaticFunctions();
-    EOS
-    unless @all_static
-      str << <<-EOS
-// constructor
-#{js_name}(JSContextRef ctx, JSObjectRef obj, size_t argumentCount, const JSValueRef arguments[]);
-      EOS
-    end
-    str << "\n"
-    @public_methods.each do |method|
-      str << "\tJS_STATIC_FUNC_DEF(js_#{method.name});\n"
-    end
-    str << "};\n\n"
-    str
-  end
-
   def generate_binding_code
     check_all_static
     str = ""
-    str << "JSClassRef __js_#{@name};\n"
+    str << 
     str << <<-EOS
-JSObjectRef #{js_name}::jsConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+class #{js_name} : public #{@name}
 {
-    EOS
-    unless @all_static
-      str << <<-EOS
-\tJSObjectRef obj = JSObjectMake(ctx, js_#{js_name}_class, NULL);
-\t#{js_name} *cobj = new #{js_name}();
-\tif (cobj && cobj->initWithContext(ctx, obj, argumentCount, arguments)) {
-\t\tJSObjectSetPrivate(obj, cobj);
-\t\treturn obj;
-\t}
-      EOS
-    end
-    str << <<-EOS
-\treturn NULL;
-}
-bool #{js_name}::jsHasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName)
-{
-\treturn false;
-}
-JSValueRef #{js_name}::jsGetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef* exception)
-{
-\treturn JSValueMakeUndefined(ctx);
-}
-    EOS
+\tJSObject *m_obj;
+\tstatic JSClass*  jsClassDef;
+\tstatic JSObject* jsClassObj;
+public:
+#{generate_properties_enum}
 
-    unless @all_static
-    str << <<-EOS
-#{js_name}::#{js_name}(JSContextRef ctx, JSObjectRef obj, size_t argumentCount, const JSValueRef arguments[])
-{
-#{@constructor.generate_binding_code(self, 1, true) unless @constructor.nil?}
-}
-      EOS
-    end
-    str << "JSStaticFunction *#{self.js_name}::jsStaticFunctions()\n"
-    str << "{\n"
-    str << "\tstatic JSStaticFunction funcs[] = {\n"
-    @public_methods.each do |method|
-      if method.static
-        str << "\t\t{\"#{method.name}\", #{self.js_name}::js_#{method.name}, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete},\n"
-      end
-    end
-    str << "\t\t{0, 0, 0}\n"
-    str << "\t};\n"
-    str << "\treturn funcs;\n"
-    str << "}\n\n"
+\tbool initWithContext(JSContext *cx, JSObject *obj, uint32_t argc, jsval *vp)
+\t{
+#{generate_constructor_code}
+\t};
+\tstatic JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+\t{
+#{generate_getter_code}
+\t\treturn JS_FALSE;
+\t};
 
-    @public_methods.each do |method|
-      str << method.generate_binding_code(self)
+\tstatic JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+\t{
+#{generate_setter_code}
+\t};
+
+\tstatic void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+\t{
+\t\tjsClassDef = (JSClass *)calloc(1, sizeof(JSClass));
+\t\tjsClassDef->name = name;
+\t\tjsClassDef->addProperty = JS_PropertyStub;
+\t\tjsClassDef->delProperty = JS_PropertyStub;
+\t\tjsClassDef->getProperty = JS_PropertyStub;
+\t\tjsClassDef->setProperty = JS_StrictPropertyStub;
+\t\tjsClassDef->enumerate = JS_EnumerateStub;
+\t\tjsClassDef->resolve = JS_ResolveStub;
+\t\tjsClassDef->convert = JS_ConvertStub;
+\t\tjsClassDef->finalize = jsFinalize;
+\t\tjsClassDef->flags = JSCLASS_HAS_PRIVATE;
+
+#{generate_properties_array}
+
+\t\tjsClassObj = JS_InitClass(cx,globalObj,NULL,jsClassDef,#{js_name}::jsConstructor,0,properties,NULL,NULL,NULL);
+\t};
+
+\tstatic void jsFinalize(JSContext *cx, JSObject *obj)
+\t{
+\t\tCCLog("js finalize object: %p", obj);
+\t};
+
+\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+\t{
+\t\tJSObject *obj = JS_NewObject(cx, #{js_name}::jsClassDef, #{js_name}::jsClassObj, NULL);
+\t\t#{js_name} *cobj = new #{js_name}();
+\t\tif (cobj->initWithContext(cx, obj, argc, vp)) {
+\t\t\tJS_SetPrivate(obj, cobj);
+\t\t\tJS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+\t\t\treturn JS_TRUE;
+\t\t}
+\t\tdelete cobj;
+\t\treturn JS_FALSE;
+\t};
+
+    EOS
+    @public_methods.each do |m|
+      m.generate_binding_code if m.type == :function && !m.static
     end
-    str << "\n"
+    str << <<-EOS
+};
+JSClass*  #{js_name}::jsClassDef = NULL;
+JSObject* #{js_name}::jsClassObj = NULL;
+
+    EOS
     str
+  end
+
+  def public_attributes
+    @public_methods.select { |m| m.type == :attribute }
+  end
+
+  def generate_getter_code
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = ""
+    str << <<-EOS
+\t\tint32_t propId = JSID_TO_INT(_id);
+\t\t#{js_name} *cobj = (#{js_name} *)JS_GetPrivate(obj);
+\t\tif (!cobj) return JS_FALSE;
+
+\t\tswitch(propId) {
+    EOS
+
+    attrs.each do |m|
+      str << "\t\tcase k#{m.name.zcapitalize}:\n"
+      if CppMethod::INT_TYPES.include?(m.return_type) || CppMethod::FLOAT_TYPES.include?(m.return_type)
+        str << "\t\t\tJS_NewNumberValue(cx, cobj->#{m.name}, val);\n"
+      end
+      str << "\t\t\treturn JS_TRUE;\n"
+      str << "\t\t\tbreak;\n"
+    end
+    str << "\t\tdefault:\n"
+    str << "\t\t\tbreak;\n"
+    str << "\t\t}\n"
+    str
+  end
+
+  def generate_setter_code
+    attrs = public_attributes
+    return "return JS_FALSE;" if attrs.empty?
+
+    str = ""
+    str << <<-EOS
+\t\tint32_t propId = JSID_TO_INT(_id);
+\t\t#{js_name} *cobj = (#{js_name} *)JS_GetPrivate(obj);
+\t\tif (!cobj) return JS_FALSE;
+
+\t\tdouble tmpDbl;
+\t\tJSBool ret = JS_FALSE;
+\t\tswitch(propId) {
+    EOS
+
+    attrs.each do |m|
+      str << "\t\tcase k#{m.name.zcapitalize}:\n"
+      if CppMethod::INT_TYPES.include?(m.return_type) || CppMethod::FLOAT_TYPES.include?(m.return_type)
+        str << "\t\t\tJS_ValueToNumber(cx, *val, &tmpDbl);\n"
+        str << "\t\t\tcobj->#{m.name} = tmpDbl;\n"
+      end
+      str << "\t\t\tret = JS_TRUE;\n"
+      str << "\t\t\tbreak;\n"
+    end
+
+    str << "\t\tdefault:\n"
+    str << "\t\t\tbreak;\n"
+    str << "\t\t}\n"
+    str << "\t\treturn ret;\n"
+    str
+  end
+
+  def generate_properties_enum
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = "\tenum {\n"
+    array = []
+    attrs.each_with_index do |m, i|
+      array << "\t\tk#{m.name.zcapitalize}" + (i == 0 ? " = 1" : "")
+    end
+    str << array.join(",\n") << "\n"
+    str << "\t};\n"
+  end
+
+  def generate_properties_array
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = "\t\tstatic JSPropertySpec properties[] = {\n"
+    array = []
+    attrs.each do |m|
+      array << "\t\t\t{\"#{m.name}\", k#{m.name.zcapitalize}, JSPROP_PERMANENT | JSPROP_SHARED, #{js_name}::jsPropertyGet, #{js_name}::jsPropertySet}"
+    end
+    str << array.join(",\n") << "\n"
+    str << "\t\t};\n"
+    str
+  end
+
+  def generate_constructor_code
+    if @constructor
+      # output just the body for the constructor
+      @constructor.generate_binding_code(self, 1, true)
+    end
   end
 end
 
@@ -631,10 +730,12 @@ class CppHeaderParser
   end
 
   def method_ended(method)
-    # puts "found method: #{@current_method}"
     if @current_method.name =~ /^init/ || @current_method.name == @current_class.name
       if @current_class.constructor
-        @current_method.min_arg_count = [@current_method.arguments.size, @current_class.constructor.arguments.size].min
+        @current_method.min_arg_count = [@current_method.arguments.size, @current_class.constructor.min_arg_count].min
+        # puts "found method: #{@current_method} - #{@current_method.arguments.size},#{@current_class.constructor.min_arg_count},#{@current_method.min_arg_count}"
+      else
+        @current_method.min_arg_count = @current_method.arguments.size
       end
       @current_class.constructor = @current_method
     else
@@ -693,33 +794,23 @@ class CppHeaderParser
   def generate_binding_code(header_file)
     outname = File.basename(header_file, ".h")
     out = File.open("#{outname}_generated.cpp", "w+")
-    header = File.open("#{outname}_generated.h", "w+")
     # output constants used across code
-    out.puts "#include <JavaScriptCore/JavaScriptCore.h>"
     out.puts "#include \"cocos2d.h\""
-    out.puts "#include \"ScriptingCore.h\""
-    out.puts "#include \"#{header_file}\"\n\n"
-    out.puts "static JSGlobalContextRef GLOBAL_CTX = ScriptingCore::getInstance().getGlobalContext();"
-    out.puts "static JSObjectRef GLOBAL_OBJ = ScriptingCore::getInstance().getGlobalObject();\n\n"
-    out.puts "#define CCPoint_COPY(val, ptr) do {ptr->x = val.x; ptr->y = val.y} while(0)"
-    out.puts "#define CCSize_COPY(val, ptr) do {ptr->width = val.width; ptr->height = val.height} while(0)\n\n"
+    out.puts "#include \"ScriptingCore.h\"\n\n"
+    out.puts "using namespace cocos2d;\n\n"
 
     # first, output the enums
     @enums.each do |enum|
-      header.puts enum.generate_header_code
       out.puts enum.generate_binding_code
     end
 
-    header.puts "\n"
     out.puts "\n"
 
     # now the classes
     @classes.each do |klass|
       out.puts klass.generate_binding_code
-      header.puts klass.generate_header_code
     end
     out.close
-    header.close
   end
 
   def process_id(pos)
@@ -747,7 +838,7 @@ def run_machine(parser, fname)
 
   begin
     
-# line 751 "cpp_header_parser.rb"
+# line 842 "cpp_header_parser.rb"
 begin
 	p ||= 0
 	pe ||= data.length
@@ -757,9 +848,9 @@ begin
 	act = 0
 end
 
-# line 540 "cpp_header_parser.rl"
+# line 631 "cpp_header_parser.rl"
     
-# line 763 "cpp_header_parser.rb"
+# line 854 "cpp_header_parser.rb"
 begin
 	_klen, _trans, _keys, _acts, _nacts = nil
 	_goto_level = 0
@@ -793,7 +884,7 @@ begin
 		begin
 ts = p
 		end
-# line 797 "cpp_header_parser.rb"
+# line 888 "cpp_header_parser.rb"
 		end # from state action switch
 	end
 	if _trigger_goto
@@ -861,7 +952,7 @@ ts = p
 			_acts += 1
 			case _cpp_header_parser_actions[_acts - 1]
 when 0 then
-# line 19 "cpp_header_parser.rl"
+# line 25 "cpp_header_parser.rl"
 		begin
  	begin
 		cs = 6
@@ -871,11 +962,11 @@ when 0 then
 	end
  		end
 when 1 then
-# line 39 "cpp_header_parser.rl"
+# line 46 "cpp_header_parser.rl"
 		begin
  parser.token_begin(:number, p) 		end
 when 2 then
-# line 40 "cpp_header_parser.rl"
+# line 47 "cpp_header_parser.rl"
 		begin
  parser.token_begin(:id, p) 		end
 when 5 then
@@ -884,83 +975,89 @@ when 5 then
 te = p+1
 		end
 when 6 then
-# line 22 "cpp_header_parser.rl"
+# line 28 "cpp_header_parser.rl"
 		begin
 act = 1;		end
 when 7 then
-# line 23 "cpp_header_parser.rl"
+# line 29 "cpp_header_parser.rl"
 		begin
 act = 2;		end
 when 8 then
-# line 24 "cpp_header_parser.rl"
+# line 30 "cpp_header_parser.rl"
 		begin
 act = 3;		end
 when 9 then
-# line 40 "cpp_header_parser.rl"
+# line 47 "cpp_header_parser.rl"
 		begin
-act = 17;		end
+act = 18;		end
 when 10 then
-# line 25 "cpp_header_parser.rl"
+# line 31 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:public, p)  end
 		end
 when 11 then
-# line 26 "cpp_header_parser.rl"
+# line 32 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:star, p)  end
 		end
 when 12 then
-# line 28 "cpp_header_parser.rl"
+# line 34 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:comma, p)  end
 		end
 when 13 then
-# line 29 "cpp_header_parser.rl"
+# line 35 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:semicolon, p)  end
 		end
 when 14 then
-# line 30 "cpp_header_parser.rl"
+# line 36 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:open_bracket, p)  end
 		end
 when 15 then
-# line 32 "cpp_header_parser.rl"
+# line 38 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:close_class, p)  end
 		end
 when 16 then
-# line 33 "cpp_header_parser.rl"
+# line 39 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:open_parenthesis, p)  end
 		end
 when 17 then
-# line 34 "cpp_header_parser.rl"
+# line 40 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:close_parenthesis, p)  end
 		end
 when 18 then
-# line 35 "cpp_header_parser.rl"
+# line 41 "cpp_header_parser.rl"
+		begin
+te = p+1
+ begin  parser.found_token(:ampersand, p)  end
+		end
+when 19 then
+# line 42 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:equals, p)  end
 		end
-when 19 then
-# line 36 "cpp_header_parser.rl"
+when 20 then
+# line 43 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  parser.found_token(:ns_sep, p)  end
 		end
-when 20 then
-# line 43 "cpp_header_parser.rl"
+when 21 then
+# line 50 "cpp_header_parser.rl"
 		begin
 te = p+1
  begin  	begin
@@ -971,47 +1068,47 @@ te = p+1
 	end
   end
 		end
-when 21 then
-# line 44 "cpp_header_parser.rl"
+when 22 then
+# line 51 "cpp_header_parser.rl"
 		begin
 te = p+1
 		end
-when 22 then
-# line 27 "cpp_header_parser.rl"
+when 23 then
+# line 33 "cpp_header_parser.rl"
 		begin
 te = p
 p = p - 1; begin  parser.found_token(:colon, p)  end
 		end
-when 23 then
-# line 31 "cpp_header_parser.rl"
+when 24 then
+# line 37 "cpp_header_parser.rl"
 		begin
 te = p
 p = p - 1; begin  parser.found_token(:close_bracket, p)  end
 		end
-when 24 then
-# line 39 "cpp_header_parser.rl"
+when 25 then
+# line 46 "cpp_header_parser.rl"
 		begin
 te = p
 p = p - 1; begin  parser.found_token(:number, p)  end
 		end
-when 25 then
-# line 40 "cpp_header_parser.rl"
+when 26 then
+# line 47 "cpp_header_parser.rl"
 		begin
 te = p
 p = p - 1; begin  parser.found_token(:id, p)  end
 		end
-when 26 then
-# line 45 "cpp_header_parser.rl"
+when 27 then
+# line 52 "cpp_header_parser.rl"
 		begin
 te = p
 p = p - 1;		end
-when 27 then
-# line 40 "cpp_header_parser.rl"
+when 28 then
+# line 47 "cpp_header_parser.rl"
 		begin
  begin p = ((te))-1; end
  begin  parser.found_token(:id, p)  end
 		end
-when 28 then
+when 29 then
 # line 1 "NONE"
 		begin
 	case act
@@ -1024,12 +1121,12 @@ when 28 then
 	when 3 then
 	begin begin p = ((te))-1; end
  parser.found_token(:static, p) end
-	when 17 then
+	when 18 then
 	begin begin p = ((te))-1; end
  parser.found_token(:id, p) end
 end 
 			end
-# line 1033 "cpp_header_parser.rb"
+# line 1130 "cpp_header_parser.rb"
 			end # action switch
 		end
 	end
@@ -1049,7 +1146,7 @@ when 3 then
 # line 1 "NONE"
 		begin
 ts = nil;		end
-# line 1053 "cpp_header_parser.rb"
+# line 1150 "cpp_header_parser.rb"
 		end # to state action switch
 	end
 	if _trigger_goto
@@ -1080,7 +1177,7 @@ end
 	end
 	end
 
-# line 541 "cpp_header_parser.rl"
+# line 632 "cpp_header_parser.rl"
   rescue => err
     puts "Parser error at line #{line_no}"
     puts err
@@ -1090,7 +1187,7 @@ end
     parser.generate_binding_code(fname)
   else
     $stderr.puts "error parsing at line #{line_no}"
-    $stderr.puts ">> p: #{p} pe: #{pe}; p[p-5,5]: '#{data[p-5,5]}'"
+    $stderr.puts ">> p: #{p} pe: #{pe}; p[p-10,10]: '#{data[p-10,10]}'"
     exit(1)
   end
 end

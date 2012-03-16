@@ -8,6 +8,12 @@ very simple c++ header parser, used mainly for generating bindings for JavaScrip
 require 'rubygems'
 require 'ruby-debug'
 
+class String
+  def zcapitalize
+    self[0].upcase + self[1,length-1]
+  end
+end
+
 %%{
   # % - fix syntax highlight
 
@@ -32,6 +38,7 @@ require 'ruby-debug'
     '};'             { parser.found_token(:close_class, p) };
     '('              { parser.found_token(:open_parenthesis, p) };
     ')'              { parser.found_token(:close_parenthesis, p) };
+    '&'              { parser.found_token(:ampersand, p) };
     '='              { parser.found_token(:equals, p) };
     '::'             { parser.found_token(:ns_sep, p) };
 
@@ -148,10 +155,11 @@ class CppEnum
 end
 
 class CppMethod
-  NATIVE_TYPES = %w(int long char float bool short)
-  NUMBER_TYPES = %w(int long float long\ long unsigned\ int signed\ int short)
-  CC_TYPES     = %w(CCPoint CCSize)
-  attr_reader :static, :name, :arguments
+  NATIVE_TYPES = %w(int long char float bool short CGFloat)
+  FLOAT_TYPES = %w(float double)
+  INT_TYPES = %w(int short)
+  NUMBER_TYPES = %w(int long float long\ long unsigned\ int signed\ int short CGFloat)
+  attr_reader :static, :name, :arguments, :type, :return_type
   attr_accessor :min_arg_count
 
   def initialize(parser, static = false)
@@ -161,71 +169,68 @@ class CppMethod
     @name = nil
     @return_type = []
     @arguments = []
-    @min_arg_count = 0
+    @min_arg_count = 1000 # arbitrary big number
     @current_argument = []
+    @type = :invalid
   end
 
   # this generates a static method that returns a JSValueRef
   # encapsulating the original method. The method then needs to be
   # registered for the class
-  def generate_binding_code(klass, indent_level = 1, conent_only = false)
+  def generate_binding_code(klass, indent_level = 1, content_only = false)
     indent = "\t" * indent_level
     str = ""
-    str << "JS_STATIC_FUNC_IMP(#{klass.js_name}, js_#{@name})\n{\n" unless conent_only
+    str << "#{indent}static JSBool js#{@name}(JSContext *cx, uint32_t argc, jsval *vp)\n{\n" unless content_only
     # need to cast arguments from JS to native
     if @arguments.size == @min_arg_count
-      str << "#{indent}if (argumentCount == #{@arguments.size}) {\n"
-    else
-      str << "#{indent}if (argumentCount >= #{@min_arg_count}) {\n"
+      str << "#{indent}\tif (argc == #{@arguments.size}) {\n"
+      indent += "\t"
+    elsif @min_arg_count > 0
+      str << "#{indent}\tif (argc >= #{@min_arg_count}) {\n"
+      indent += "\t"
     end
-    unless @static || @name == klass.name
-      str << "#{indent}\t#{klass.name}* self = (#{klass.name} *)JSObjectGetPrivate(thisObject);\n"
+    unless @static || @name == klass.name || content_only
+      str << "#{indent}\t#{klass.name}* cobj = (#{klass.name} *)JS_GetPrivate(obj);\n"
     end
 
+    # the idea is to create the format string with the required arguments and then
+    # the optional arguments. Something like:
+    # format_str = "o/ii"
+    # for addChild(node, tag, zOrder)
+    # where node is required, but tag and zOrder are optional
+    format_str = ""
     @arguments.each_with_index do |arg, i|
-      optional_arg = false
-      if NUMBER_TYPES.include?(arg[:type])
-        str << "#{indent}\t#{arg[:type]} arg#{i} = JSValueToNumber(ctx, arguments[#{i}], NULL);\n"
-      elsif arg[:type].downcase == "bool"
-        str << "#{indent}\tbool arg#{i} = JSValueToBoolean(ctx, arguments[#{i}]);\n"
-      elsif arg[:type] == "std::string"
-        str << "#{indent}\tJSStringRef __tmp_#{i} = JSValueToStringCopy(ctx, arguments[#{i}], NULL);\n"
-        str << "#{indent}\tsize_t len_#{i} = JSStringGetLength(__tmp_#{i})+1;\n"
-        str << "#{indent}\tchar *buff_#{i} = (char *)calloc(len_#{i}, 1);\n"
-        str << "#{indent}\tJSStringGetUTF8CString(__tmp_#{i}, buff_#{i}, len_#{i});\n"
-        str << "#{indent}\tstd::string arg#{i}(buff_#{i});\n"
-        str << "#{indent}\tJSStringRelease(__tmp_#{i});\n"
-        str << "#{indent}\tfree(buff_#{i});\n"
+      if i == @min_arg_count && @arguments.size != @min_arg_count
+        format_str << "/"
+      end
+      if FLOAT_TYPES.include?(arg[:type])
+        format_str << "d"
+        str << "#{indent}\tdouble arg#{i} = 0.0f;\n"
+      elsif INT_TYPES.include?(arg[:type])
+        format_str << "i"
+        str << "#{indent}\t#{arg[:type]} arg#{i} = 0;\n"
       else
-        # treat cc types as pointers
-        arg[:type] << "*" if CC_TYPES.include?(arg[:type])
-        str << "#{indent}\t#{arg[:type]} arg#{i} = (#{arg[:type]})JSObjectGetPrivate((JSObjectRef)arguments[#{i}]);\n"
+        # it's a pointer or something else, so assume JSObject
+        format_str << "o"
+        str << "#{indent}\tJSObject *jsarg#{i} = NULL;\n"
+        str << "#{indent}\t#{arg[:type]} arg#{i} = (#{arg[:type]})JS_GetPrivate(jsarg#{i});\n"
       end
     end
-    # do the call
-    arg_len = @arguments.length
-    arg_list = (["arg"] * arg_len).zip( (0...arg_len).to_a ).map { |a| a.join }.join(", ")
-    if @name == klass.name
-      str << "#{indent}\t#{klass.name}::#{@name}(#{arg_list});\n"
+    # convert the arguments
+    if @arguments.size > 0
+      arg_list_ptrs = (0...@arguments.size).map { |i| "&arg#{i}" }.join(", ")
+      arg_list      = (0...@arguments.size).map { |i| "arg#{i}" }.join(", ")
+      str << "#{indent}\tif (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), \"#{format_str}\", #{arg_list_ptrs}) == JS_TRUE) {\n"
+      # do the call
+      str << "#{indent}\t\tthis->#{@name}(#{arg_list});\n"
+      str << "#{indent}\t\treturn true;\n"
+      str << "#{indent}\t}\n"
+      str << "#{indent}\treturn false;\n"
     else
-      str << "#{indent}\t#{@return_type} ret = #{klass.name}::#{@name}(#{arg_list});\n"
-      if NUMBER_TYPES.include?(@return_type)
-        str << "#{indent}\treturn JSValueMakeNumber(ctx, ret);\n"
-      elsif CC_TYPES.include?(@return_type)
-        str << "#{@return_type}* retObj = new #{@return_type}();\n"
-        str << "#{@return_type}_COPY(ret, retObj);"
-      elsif @return_type.downcase == "bool"
-        str << "#{indent}\treturn JSValueMakeBoolean(ctx, ret);\n"
-      elsif @return_type == "std::string"
-        str << "#{indent}\tJSStringRef retStr = JSStringCreateWithUTF8CString(ret.c_str());\n"
-        str << "#{indent}\tJSValueRef retVal = JSValueMakeString(ctx, retStr);\n"
-        str << "#{indent}\tJSStringRelease(retStr);\n"
-        str << "#{indent}\treturn retVal;\n"
-      end
+      str << "#{indent}\t// do the call here\n"
+      str << "#{indent}\treturn true;\n"
     end
-    str << "#{indent}}\n"
-    str << "#{indent}return JSValueMakeUndefined(ctx);\n"
-    str << "}\n" unless conent_only
+    str << "#{indent}};\n" unless content_only
     str
   end
 
@@ -271,6 +276,7 @@ class CppMethod
       @name = @return_type[-1]
       @return_type = @return_type[0, @return_type.length - 1].join(" ")
       @waiting_for = :argument
+      @type = :function
     when :comma
       append_current_argument
       @waiting_for = :argument
@@ -278,6 +284,11 @@ class CppMethod
       append_current_argument if @current_argument.size > 0
       @waiting_for = :semicolon
     when :semicolon
+      if @type == :invalid
+        @name = @return_type[-1]
+        @return_type = @return_type[0, @return_type.length - 1].join(" ")
+        @type = :attribute
+      end
       @parser.method_ended(self)
     end
   end
@@ -309,91 +320,179 @@ class CppClass
     @all_static
   end
 
-  def generate_header_code
-    check_all_static
-    str = ""
-    str << 
-    str << "extern JSClassRef __js_#{@name};\n"
-    str << <<-EOS
-class #{js_name}
-{
-public:
-\tstatic JSObjectRef jsConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception);
-\tstatic bool jsHasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
-\tstatic JSValueRef jsGetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef* exception);
-\tstatic JSStaticFunction *jsStaticFunctions();
-    EOS
-    unless @all_static
-      str << <<-EOS
-// constructor
-#{js_name}(JSContextRef ctx, JSObjectRef obj, size_t argumentCount, const JSValueRef arguments[]);
-      EOS
-    end
-    str << "\n"
-    @public_methods.each do |method|
-      str << "\tJS_STATIC_FUNC_DEF(js_#{method.name});\n"
-    end
-    str << "};\n\n"
-    str
-  end
-
   def generate_binding_code
     check_all_static
     str = ""
-    str << "JSClassRef __js_#{@name};\n"
+    str << 
     str << <<-EOS
-JSObjectRef #{js_name}::jsConstructor(JSContextRef ctx, JSObjectRef constructor, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
+class #{js_name} : public #{@name}
 {
-    EOS
-    unless @all_static
-      str << <<-EOS
-\tJSObjectRef obj = JSObjectMake(ctx, js_#{js_name}_class, NULL);
-\t#{js_name} *cobj = new #{js_name}();
-\tif (cobj && cobj->initWithContext(ctx, obj, argumentCount, arguments)) {
-\t\tJSObjectSetPrivate(obj, cobj);
-\t\treturn obj;
-\t}
-      EOS
-    end
-    str << <<-EOS
-\treturn NULL;
-}
-bool #{js_name}::jsHasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName)
-{
-\treturn false;
-}
-JSValueRef #{js_name}::jsGetProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef* exception)
-{
-\treturn JSValueMakeUndefined(ctx);
-}
-    EOS
+\tJSObject *m_obj;
+\tstatic JSClass*  jsClassDef;
+\tstatic JSObject* jsClassObj;
+public:
+#{generate_properties_enum}
 
-    unless @all_static
-    str << <<-EOS
-#{js_name}::#{js_name}(JSContextRef ctx, JSObjectRef obj, size_t argumentCount, const JSValueRef arguments[])
-{
-#{@constructor.generate_binding_code(self, 1, true) unless @constructor.nil?}
-}
-      EOS
-    end
-    str << "JSStaticFunction *#{self.js_name}::jsStaticFunctions()\n"
-    str << "{\n"
-    str << "\tstatic JSStaticFunction funcs[] = {\n"
-    @public_methods.each do |method|
-      if method.static
-        str << "\t\t{\"#{method.name}\", #{self.js_name}::js_#{method.name}, kJSPropertyAttributeReadOnly | kJSPropertyAttributeDontDelete},\n"
-      end
-    end
-    str << "\t\t{0, 0, 0}\n"
-    str << "\t};\n"
-    str << "\treturn funcs;\n"
-    str << "}\n\n"
+\tbool initWithContext(JSContext *cx, JSObject *obj, uint32_t argc, jsval *vp)
+\t{
+#{generate_constructor_code}
+\t};
+\tstatic JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+\t{
+#{generate_getter_code}
+\t\treturn JS_FALSE;
+\t};
 
-    @public_methods.each do |method|
-      str << method.generate_binding_code(self)
+\tstatic JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+\t{
+#{generate_setter_code}
+\t};
+
+\tstatic void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+\t{
+\t\tjsClassDef = (JSClass *)calloc(1, sizeof(JSClass));
+\t\tjsClassDef->name = name;
+\t\tjsClassDef->addProperty = JS_PropertyStub;
+\t\tjsClassDef->delProperty = JS_PropertyStub;
+\t\tjsClassDef->getProperty = JS_PropertyStub;
+\t\tjsClassDef->setProperty = JS_StrictPropertyStub;
+\t\tjsClassDef->enumerate = JS_EnumerateStub;
+\t\tjsClassDef->resolve = JS_ResolveStub;
+\t\tjsClassDef->convert = JS_ConvertStub;
+\t\tjsClassDef->finalize = jsFinalize;
+\t\tjsClassDef->flags = JSCLASS_HAS_PRIVATE;
+
+#{generate_properties_array}
+
+\t\tjsClassObj = JS_InitClass(cx,globalObj,NULL,jsClassDef,#{js_name}::jsConstructor,0,properties,NULL,NULL,NULL);
+\t};
+
+\tstatic void jsFinalize(JSContext *cx, JSObject *obj)
+\t{
+\t\tCCLog("js finalize object: %p", obj);
+\t};
+
+\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+\t{
+\t\tJSObject *obj = JS_NewObject(cx, #{js_name}::jsClassDef, #{js_name}::jsClassObj, NULL);
+\t\t#{js_name} *cobj = new #{js_name}();
+\t\tif (cobj->initWithContext(cx, obj, argc, vp)) {
+\t\t\tJS_SetPrivate(obj, cobj);
+\t\t\tJS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+\t\t\treturn JS_TRUE;
+\t\t}
+\t\tdelete cobj;
+\t\treturn JS_FALSE;
+\t};
+
+    EOS
+    @public_methods.each do |m|
+      m.generate_binding_code if m.type == :function && !m.static
     end
-    str << "\n"
+    str << <<-EOS
+};
+JSClass*  #{js_name}::jsClassDef = NULL;
+JSObject* #{js_name}::jsClassObj = NULL;
+
+    EOS
     str
+  end
+
+  def public_attributes
+    @public_methods.select { |m| m.type == :attribute }
+  end
+
+  def generate_getter_code
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = ""
+    str << <<-EOS
+\t\tint32_t propId = JSID_TO_INT(_id);
+\t\t#{js_name} *cobj = (#{js_name} *)JS_GetPrivate(obj);
+\t\tif (!cobj) return JS_FALSE;
+
+\t\tswitch(propId) {
+    EOS
+
+    attrs.each do |m|
+      str << "\t\tcase k#{m.name.zcapitalize}:\n"
+      if CppMethod::INT_TYPES.include?(m.return_type) || CppMethod::FLOAT_TYPES.include?(m.return_type)
+        str << "\t\t\tJS_NewNumberValue(cx, cobj->#{m.name}, val);\n"
+      end
+      str << "\t\t\treturn JS_TRUE;\n"
+      str << "\t\t\tbreak;\n"
+    end
+    str << "\t\tdefault:\n"
+    str << "\t\t\tbreak;\n"
+    str << "\t\t}\n"
+    str
+  end
+
+  def generate_setter_code
+    attrs = public_attributes
+    return "return JS_FALSE;" if attrs.empty?
+
+    str = ""
+    str << <<-EOS
+\t\tint32_t propId = JSID_TO_INT(_id);
+\t\t#{js_name} *cobj = (#{js_name} *)JS_GetPrivate(obj);
+\t\tif (!cobj) return JS_FALSE;
+
+\t\tdouble tmpDbl;
+\t\tJSBool ret = JS_FALSE;
+\t\tswitch(propId) {
+    EOS
+
+    attrs.each do |m|
+      str << "\t\tcase k#{m.name.zcapitalize}:\n"
+      if CppMethod::INT_TYPES.include?(m.return_type) || CppMethod::FLOAT_TYPES.include?(m.return_type)
+        str << "\t\t\tJS_ValueToNumber(cx, *val, &tmpDbl);\n"
+        str << "\t\t\tcobj->#{m.name} = tmpDbl;\n"
+      end
+      str << "\t\t\tret = JS_TRUE;\n"
+      str << "\t\t\tbreak;\n"
+    end
+
+    str << "\t\tdefault:\n"
+    str << "\t\t\tbreak;\n"
+    str << "\t\t}\n"
+    str << "\t\treturn ret;\n"
+    str
+  end
+
+  def generate_properties_enum
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = "\tenum {\n"
+    array = []
+    attrs.each_with_index do |m, i|
+      array << "\t\tk#{m.name.zcapitalize}" + (i == 0 ? " = 1" : "")
+    end
+    str << array.join(",\n") << "\n"
+    str << "\t};\n"
+  end
+
+  def generate_properties_array
+    attrs = public_attributes
+    return "" if attrs.empty?
+
+    str = "\t\tstatic JSPropertySpec properties[] = {\n"
+    array = []
+    attrs.each do |m|
+      array << "\t\t\t{\"#{m.name}\", k#{m.name.zcapitalize}, JSPROP_PERMANENT | JSPROP_SHARED, #{js_name}::jsPropertyGet, #{js_name}::jsPropertySet}"
+    end
+    str << array.join(",\n") << "\n"
+    str << "\t\t};\n"
+    str
+  end
+
+  def generate_constructor_code
+    if @constructor
+      # output just the body for the constructor
+      @constructor.generate_binding_code(self, 1, true)
+    end
   end
 end
 
@@ -421,10 +520,12 @@ class CppHeaderParser
   end
 
   def method_ended(method)
-    # puts "found method: #{@current_method}"
     if @current_method.name =~ /^init/ || @current_method.name == @current_class.name
       if @current_class.constructor
-        @current_method.min_arg_count = [@current_method.arguments.size, @current_class.constructor.arguments.size].min
+        @current_method.min_arg_count = [@current_method.arguments.size, @current_class.constructor.min_arg_count].min
+        # puts "found method: #{@current_method} - #{@current_method.arguments.size},#{@current_class.constructor.min_arg_count},#{@current_method.min_arg_count}"
+      else
+        @current_method.min_arg_count = @current_method.arguments.size
       end
       @current_class.constructor = @current_method
     else
@@ -483,33 +584,23 @@ class CppHeaderParser
   def generate_binding_code(header_file)
     outname = File.basename(header_file, ".h")
     out = File.open("#{outname}_generated.cpp", "w+")
-    header = File.open("#{outname}_generated.h", "w+")
     # output constants used across code
-    out.puts "#include <JavaScriptCore/JavaScriptCore.h>"
     out.puts "#include \"cocos2d.h\""
-    out.puts "#include \"ScriptingCore.h\""
-    out.puts "#include \"#{header_file}\"\n\n"
-    out.puts "static JSGlobalContextRef GLOBAL_CTX = ScriptingCore::getInstance().getGlobalContext();"
-    out.puts "static JSObjectRef GLOBAL_OBJ = ScriptingCore::getInstance().getGlobalObject();\n\n"
-    out.puts "#define CCPoint_COPY(val, ptr) do {ptr->x = val.x; ptr->y = val.y} while(0)"
-    out.puts "#define CCSize_COPY(val, ptr) do {ptr->width = val.width; ptr->height = val.height} while(0)\n\n"
+    out.puts "#include \"ScriptingCore.h\"\n\n"
+    out.puts "using namespace cocos2d;\n\n"
 
     # first, output the enums
     @enums.each do |enum|
-      header.puts enum.generate_header_code
       out.puts enum.generate_binding_code
     end
 
-    header.puts "\n"
     out.puts "\n"
 
     # now the classes
     @classes.each do |klass|
       out.puts klass.generate_binding_code
-      header.puts klass.generate_header_code
     end
     out.close
-    header.close
   end
 
   def process_id(pos)
@@ -547,7 +638,7 @@ def run_machine(parser, fname)
     parser.generate_binding_code(fname)
   else
     $stderr.puts "error parsing at line #{line_no}"
-    $stderr.puts ">> p: #{p} pe: #{pe}; p[p-5,5]: '#{data[p-5,5]}'"
+    $stderr.puts ">> p: #{p} pe: #{pe}; p[p-10,10]: '#{data[p-10,10]}'"
     exit(1)
   end
 end

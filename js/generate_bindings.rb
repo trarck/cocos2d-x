@@ -59,9 +59,8 @@ class CppClass
       # puts field if @name == "CCPoint"
       md = field['name'].match(/m_([nfpbt])(\w+)/)
       if md
-        field_type = md[1]
         field_name = md[2].uncapitalize
-        @properties[field_name] = {:type => field_type, :getter => nil, :setter => nil}
+        @properties[field_name] = {:type => field['type'], :getter => nil, :setter => nil}
       else
         @properties[field['name']] = {:type => field['type']} if field['access'] == 'public'
       end
@@ -82,8 +81,8 @@ class CppClass
           prop[:setter] = CppMethod.new(method, self, bindings_generator) if action == "set"
         end
       # store the initXXX methods
-      elsif md = method['name'].match(/^init/)
-        @init_methods << CppMethod.new(method, self, bindings_generator)
+      # elsif md = method['name'].match(/^init/)
+      #   @init_methods << CppMethod.new(method, self, bindings_generator)
       # everything else but operator overloading
       elsif method['name'] !~ /^operator/
         if method['access'] == "public"
@@ -108,13 +107,39 @@ class CppClass
 
   def generate_properties_array
     arr = []
-    @properties.each_with_index do |prop, i|
+    @properties.each do |prop|
       name = prop[0]
       arr << "\t\t\t{\"#{name}\", k#{name.capitalize}, JSPROP_PERMANENT | JSPROP_SHARED, S_#{@name}::jsPropertyGet, S_#{@name}::jsPropertySet}"
     end
+    arr << "\t\t\t{0, 0, 0, 0, 0}"
     str =  "\t\tstatic JSPropertySpec properties[] = {\n"
     str << arr.join(",\n") << "\n"
     str << "\t\t};\n"
+  end
+
+  def generate_funcs_array
+    arr = []
+    @methods.each do |method|
+      name = method[0]
+      m = method[1].first
+      arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
+    end
+    arr << "\t\t\tJS_FS_END"
+    str =  "\t\tstatic JSFunctionSpec funcs[] = {\n"
+    str << arr.join(",\n") << "\n"
+    str << "\t\t};\n"
+  end
+
+  def generate_funcs
+    str = ""
+    @methods.each do |method|
+      name = method[0]
+      m = method[1].first
+      str << "\tJSBool #{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
+      str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);"
+      str << "\t\treturn JS_TRUE;\n"
+      str << "\t};"
+    end
   end
 
   def generate_constructor_code
@@ -154,7 +179,7 @@ class CppClass
     str << "\t\tswitch(propId) {\n"
     @properties.each do |prop, val|
       str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_value_to_js(val[:type], "cobj->#{prop}", "val", 3)}\n"
+      str << "\t\t\t#{convert_value_to_js(val, "cobj->#{prop}", "val", 3)}\n"
       str << "\t\t\treturn JS_TRUE;\n"
       str << "\t\t\tbreak;\n"
     end
@@ -176,7 +201,7 @@ class CppClass
     str << "\t\tswitch(propId) {\n"
     @properties.each do |prop, val|
       str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_value_from_js(val[:type], "val", "cobj->#{prop}", 3)}\n"
+      str << "\t\t\t#{convert_value_from_js(val, "val", "cobj->#{prop}", 3)}\n"
       str << "\t\t\tret = JS_TRUE;\n"
       str << "\t\t\tbreak;\n"
     end
@@ -215,9 +240,11 @@ class CppClass
     str << "\t\tjsClass->finalize = jsFinalize;\n"
     str << "\t\tjsClass->flags = JSCLASS_HAS_PRIVATE;\n"
     str << generate_properties_array << "\n"
-    str << "\t\tjsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_#{@name}::jsConstructor,0,properties,NULL,NULL,NULL);\n"
+    str << generate_funcs_array << "\n"
+    str << "\t\tjsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,NULL);\n"
     str << "\t};\n"
-    str << "};\n"
+    str << "};\n\n"
+    str << generate_funcs << "\n"
     str << "JSClass* S_#{@name}::jsClass = NULL;\n"
     str << "JSObject* S_#{@name}::jsObject = NULL;\n"
   end
@@ -228,7 +255,8 @@ class CppClass
 
 private
   # convert a JS object to C++
-  def convert_value_from_js(prop, invalue, outvalue, indent_level)
+  def convert_value_from_js(val, invalue, outvalue, indent_level)
+    prop = val[:type]
     indent = "\t" * (indent_level || 0)
     str = ""
     type = @generator.fundamental_types[prop]
@@ -246,7 +274,7 @@ private
       end
       if type
         str << "do {\n"
-        str << "#{indent}\tS_#{type[:name]}* tmp; JSGET_PTRSHELL(S_#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
+        str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
         str << "#{indent}\tif (tmp) { #{outvalue} = #{ref ? "*" : ""}tmp; }\n"
         str << "#{indent}} while (0);"
       else
@@ -257,7 +285,8 @@ private
   end
 
   # convert a C++ object to JS
-  def convert_value_to_js(prop, invalue, outvalue, indent_level)
+  def convert_value_to_js(val, invalue, outvalue, indent_level)
+    prop = val[:type]
     indent = "\t" * (indent_level || 0)
     str = ""
     type = @generator.fundamental_types[prop]
@@ -265,7 +294,7 @@ private
       # ok, it's a fundamental type... so let's convert that to proper js type
       case type
       when /int|long|float|double|short/
-        str << "JS_NewNumberValue(cx, #{invalue}, #{outvalue});"
+        str << "JS_NewNumberValue(cx, #{val[:getter] ? "cobj->#{val[:getter].name}()" : invalue}, #{outvalue});"
       end
     else
       type = @generator.pointer_types[prop]
@@ -275,8 +304,11 @@ private
         ref = true
       end
       if type
+        is_class = type[:kind] == :class
+        js_class = (is_class) ? "S_#{type[:name]}::jsClass" : "NULL"
+        js_proto = (is_class) ? "S_#{type[:name]}::jsObject" : "NULL"
         str << "do {\n"
-        str << "#{indent}\tJSObject *tmp = JS_NewObject(cx, S_#{type[:name]}::jsClass, S_#{type[:name]}::jsObject, NULL);\n"
+        str << "#{indent}\tJSObject *tmp = JS_NewObject(cx, #{js_class}, #{js_proto}, NULL);\n"
         str << "#{indent}\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
         str << "#{indent}\tpt->flags = kPointerTemporary;\n"
         str << "#{indent}\tpt->data = #{ref ? "&" : ""}#{invalue};\n"
@@ -346,7 +378,7 @@ private
       (@translation_unit / "*/CXXRecord[@type=#{record['id']}]").each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
-          @classes[record['id']] = {:name => record['name'], :xml => cxx_record}
+          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record}
           break
         end
       end # each CXXRecord
@@ -354,7 +386,7 @@ private
     # p @pointer_types
     # actually create the generators
     # p @classes.map { |k,v| v[:name] }
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCNode).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       puts v[:generator]
     end

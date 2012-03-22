@@ -67,3 +67,8 @@ Device-Release/
 
 # Ignore vim swaps
 *.swp
+
+# js ignores
+js/cocos2d.xml
+js/out.cpp
+

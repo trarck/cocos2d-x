@@ -227,7 +227,7 @@ class CppMethod
       str << "#{indent}\t}\n"
       str << "#{indent}\treturn false;\n"
     else
-      str << "#{indent}\t// do the call here\n"
+      str << "#{indent}\tthis->#{@name}();\n"
       str << "#{indent}\treturn true;\n"
     end
     str << "#{indent}};\n" unless content_only
@@ -419,6 +419,11 @@ JSObject* #{js_name}::jsClassObj = NULL;
       str << "\t\tcase k#{m.name.zcapitalize}:\n"
       if CppMethod::INT_TYPES.include?(m.return_type) || CppMethod::FLOAT_TYPES.include?(m.return_type)
         str << "\t\t\tJS_NewNumberValue(cx, cobj->#{m.name}, val);\n"
+      else
+        # create a temp return object for a complex attr
+        str << "\t\t\tJSObject *tmp = JS_NewObject(cx, S_#{m.return_type}::jsClass, S_#{m.return_type}::jsObject, NULL);\n"
+        str << "\t\t\tJS_SetPrivate(cx, tmp, &cobj->#{m.name});\n"
+        str << "\t\t\tJS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));\n"
       end
       str << "\t\t\treturn JS_TRUE;\n"
       str << "\t\t\tbreak;\n"

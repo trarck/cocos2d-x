@@ -437,7 +437,7 @@ class CppMethod
       str << "#{indent}\t}\n"
       str << "#{indent}\treturn false;\n"
     else
-      str << "#{indent}\t// do the call here\n"
+      str << "#{indent}\tthis->#{@name}();\n"
       str << "#{indent}\treturn true;\n"
     end
     str << "#{indent}};\n" unless content_only

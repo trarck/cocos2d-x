@@ -58,6 +58,18 @@ public:
 		}
 		return JS_TRUE;
 	};
+
+	/**
+	 * Force a cycle of GC
+	 * @param cx
+	 * @param argc
+	 * @param vp
+	 */
+	static JSBool forceGC(JSContext *cx, uint32_t argc, jsval *vp)
+	{
+		JS_GC(cx);
+		return JS_TRUE;
+	};
 };
 
 #endif

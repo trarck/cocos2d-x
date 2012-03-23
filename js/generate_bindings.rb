@@ -136,10 +136,11 @@ class CppClass
       name = method[0]
       m = method[1].first
       str << "\tJSBool #{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
-      str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);"
+      str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
       str << "\t\treturn JS_TRUE;\n"
-      str << "\t};"
+      str << "\t};\n"
     end
+    str
   end
 
   def generate_constructor_code
@@ -150,7 +151,7 @@ class CppClass
     str << "\t\tJSObject *obj = JS_NewObject(cx, S_#{@name}::jsClass, S_#{@name}::jsObject, NULL);\n"
     str << "\t\tS_#{@name} *cobj = new S_#{@name}(obj);\n"
     str << "\t\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
-    str << "\t\tpt->flags = 0; pt->data = cobj;"
+    str << "\t\tpt->flags = 0; pt->data = cobj;\n"
     str << "\t\tJS_SetPrivate(obj, pt);\n"
     str << "\t\tJS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));\n"
     str << "\t\treturn JS_TRUE;\n"

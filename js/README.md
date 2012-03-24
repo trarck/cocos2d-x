@@ -3,7 +3,7 @@
 1. Clone the cocos2d-x project
 2. <code>cd /path/to/cocos2d-x</code>
 3. <code>git submodule init && git submodule update</code>
-4. <code>cd js/spidermonkey/src/build-ios</code>
+4. <code>cd js/spidermonkey/js/src/build-ios</code>
 5. <code>sh build\_ios\_fat.sh</code>
 
 # How to use the JS scripting

@@ -3,8 +3,12 @@
 1. Clone the cocos2d-x project
 2. <code>cd /path/to/cocos2d-x</code>
 3. <code>git submodule init && git submodule update</code>
-4. <code>cd js/spidermonkey/src/build-ios</code>
-5. <code>sh build\_ios\_fat.sh</code>
+4. <code>cd js/spidermonkey/js/src</code>
+4. <code>autoconf213</code>
+   * For OS X, macports or homebrew can be used to install autoconf213
+5. <code>cd build-ios</code>
+6. <code>sh build\_ios\_fat.sh</code>
+   * If you are using Xcode older than 4.3, you will need to edit the SDK paths and Clang path in the ../configure file
 
 # How to use the JS scripting
 

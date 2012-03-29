@@ -4,6 +4,7 @@
 
 require 'rubygems'
 require 'nokogiri'
+require 'ruby-debug'
 
 class String
   def uncapitalize
@@ -21,20 +22,72 @@ class CppMethod
     @name = node['name']
     @static = node['static'] == "1" ? true : false
     @num_arguments = node['num_args'].to_i
+    @arguments = []
+    @type = node['type']
+    (node / "ParmVar").each do |par|
+      @arguments << {
+        :name => par['name'],
+        :type => par['type']
+      }
+    end
   end
 
-  def generate_method_code
-  end
-
-  def generate_setter_code
-  end
-
-  def generate_getter_code
+  def convert_arguments_and_call(str, klass, indent_level = 0)
+    indent = "\t" * indent_level
+    str << "#{indent}if (argc == #{@num_arguments}) {\n"
+    args_str = ""
+    call_params = []
+    convert_params = []
+    @arguments.each_with_index do |arg, i|
+      type = {}
+      args_str << klass.generator.arg_format(arg, type)
+      # fundamental type
+      if type[:fundamental]
+        str << "#{indent}\t#{type[:name]} arg#{i};\n"
+        call_params << "arg#{i}"
+        convert_params << "&arg#{i}"
+      else
+        if type[:pointer]
+          type = klass.generator.pointer_types[arg[:type]]
+          deref = false
+        else
+          deref = true
+        end
+        str << "#{indent}\tJSObject *arg#{i};\n"
+        call_params << [type[:name] + (deref ? "" : "*"), ((deref ? "*" : "") + "narg#{i}")]
+        convert_params << "arg#{i}"
+      end
+    end
+    convert_str = (convert_params.size > 0 ? ", #{convert_params.join(', ')}" : "")
+    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, vp, \"#{args_str}\"#{convert_str});\n"
+    # conver the JSObjects to the proper native object
+    args_str.split(//).each_with_index do |type, i|
+      if type == "o"
+        ntype = call_params[i][0]
+        str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype.gsub(/\s*\*/, '')}, narg#{i}, arg#{i});\n"
+      end
+    end
+    # do the call
+    type = {}
+    if klass.generator.find_type(@type, type)
+      ret = ""
+      unless type[:fundamental] && type[:name] == "void"
+        ret = type[:name]
+        ret += (type[:kind] == :pointer ? "*" : "")
+        ret += " ret = "
+      end
+      str << "#{indent}\t#{ret}self->#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
+      str << klass.convert_value_to_js(type, "ret", "vp", 3) << "\n"
+    else
+      str << "#{indent}\t//INVALID RETURN TYPE #{@type}\n"
+    end
+    str << "#{indent}\treturn JS_TRUE;\n"
+    str << "#{indent}}\n"
   end
 end
 
 class CppClass
-  attr_reader :name
+  attr_reader :name, :generator
 
   # initialize the class with a nokogiri node
   def initialize(node, bindings_generator)
@@ -80,9 +133,6 @@ class CppClass
           prop[:getter] = CppMethod.new(method, self, bindings_generator) if action == "get"
           prop[:setter] = CppMethod.new(method, self, bindings_generator) if action == "set"
         end
-      # store the initXXX methods
-      # elsif md = method['name'].match(/^init/)
-      #   @init_methods << CppMethod.new(method, self, bindings_generator)
       # everything else but operator overloading
       elsif method['name'] !~ /^operator/
         if method['access'] == "public"
@@ -122,7 +172,7 @@ class CppClass
     @methods.each do |method|
       name = method[0]
       m = method[1].first
-      arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
+      arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
     arr << "\t\t\tJS_FS_END"
     str =  "\t\tstatic JSFunctionSpec funcs[] = {\n"
@@ -135,7 +185,23 @@ class CppClass
     @methods.each do |method|
       name = method[0]
       m = method[1].first
-      str << "\tJSBool #{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
+      str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
+      str << "\t\t// static\n" if m.static
+      str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
+      str << "\t\tS_#{@name}* self = (S_#{@name} *)JS_GetPrivate(obj);\n"
+      str << "\t\tif (self == NULL) return;\n"
+      # event
+      if name =~ /^on/
+        str << "\t\tJSBool found;\n"
+        str << "\t\tJSHasProperty(cx, obj, \"#{name}\", &found);\n"
+        str << "\t\tif (found == JS_TRUE) {\n"
+        str << "\t\t\tjsval rval, fval;\n"
+        str << "\t\t\tJSGetProperty(cx, obj, \"#{name}\", &fval);\n"
+        str << "\t\t\tJS_CallFunctionValue(cx, obj, fval, 0, 0, &rval);\n"
+        str << "\t\t}\n"
+      else
+        m.convert_arguments_and_call(str, self, 2)
+      end
       str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
       str << "\t\treturn JS_TRUE;\n"
       str << "\t};\n"
@@ -243,9 +309,9 @@ class CppClass
     str << generate_properties_array << "\n"
     str << generate_funcs_array << "\n"
     str << "\t\tjsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,NULL);\n"
-    str << "\t};\n"
-    str << "};\n\n"
+    str << "\t};\n\n"
     str << generate_funcs << "\n"
+    str << "};\n\n"
     str << "JSClass* S_#{@name}::jsClass = NULL;\n"
     str << "JSObject* S_#{@name}::jsObject = NULL;\n"
   end
@@ -254,57 +320,60 @@ class CppClass
     generate_code
   end
 
-private
   # convert a JS object to C++
   def convert_value_from_js(val, invalue, outvalue, indent_level)
-    prop = val[:type]
+    v = {:type => val[:type]}
+    @generator.real_type(v)
+    prop = v[:type]
+
     indent = "\t" * (indent_level || 0)
     str = ""
-    type = @generator.fundamental_types[prop]
-    if type
-      case type
-      when /int|long|float|double|short/
-        str << "do { double tmp; JS_ValueToNumber(cx, *#{invalue}, &tmp); #{outvalue} = tmp; } while (0);"
-      end
-    else
-      type = @generator.pointer_types[prop]
-      ref = false
-      if type.nil?
-        type = @generator.classes[prop]
-        ref = true
-      end
-      if type
+    type = {}
+    if @generator.find_type(prop, type)
+      if type[:fundamental]
+        case type[:name]
+        when /int|long|float|double|short/
+          str << "do { double tmp; JS_ValueToNumber(cx, *#{invalue}, &tmp); #{outvalue} = tmp; } while (0);"
+        end
+      else
+        ref = false
+        if type[:class] || type[:reference]
+          ref = true
+        end
         str << "do {\n"
         str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
         str << "#{indent}\tif (tmp) { #{outvalue} = #{ref ? "*" : ""}tmp; }\n"
         str << "#{indent}} while (0);"
-      else
-        str << "// don't know what this is"
       end
+    else
+      str << "#{indent}// don't know what this is (js ~> c, #{prop})"
     end
     str
   end
 
   # convert a C++ object to JS
   def convert_value_to_js(val, invalue, outvalue, indent_level)
-    prop = val[:type]
+    v = {:type => val[:type]}
+    @generator.real_type(v)
+    prop = v[:type]
+
     indent = "\t" * (indent_level || 0)
     str = ""
-    type = @generator.fundamental_types[prop]
-    if type
-      # ok, it's a fundamental type... so let's convert that to proper js type
-      case type
-      when /int|long|float|double|short/
-        str << "JS_NewNumberValue(cx, #{val[:getter] ? "cobj->#{val[:getter].name}()" : invalue}, #{outvalue});"
-      end
-    else
-      type = @generator.pointer_types[prop]
-      ref = false
-      if type.nil?
-        type = @generator.classes[prop]
-        ref = true
-      end
-      if type
+    type = {}
+    if @generator.find_type(prop, type)
+      if type[:fundamental]
+        inval_str = val[:getter] ? "cobj->#{val[:getter].name}()" : invalue
+        case type[:name]
+        when /int|long|float|double|short/
+          str << "JS_NewNumberValue(cx, #{inval_str}, #{outvalue});"
+        when /bool/
+          str << "#{outvalue} = BOOLEAN_TO_JSVAL(#{inval_str});"
+        end
+      else
+        ref = false
+        if type[:class] || type[:reference]
+          ref = true
+        end
         is_class = type[:kind] == :class
         js_class = (is_class) ? "S_#{type[:name]}::jsClass" : "NULL"
         js_proto = (is_class) ? "S_#{type[:name]}::jsObject" : "NULL"
@@ -316,10 +385,10 @@ private
         str << "#{indent}\tJS_SetPrivate(tmp, pt);\n"
         str << "#{indent}\tJS_SET_RVAL(cx, #{outvalue}, OBJECT_TO_JSVAL(tmp));\n"
         str << "#{indent}} while (0);"
-      else
-        str << "// don't know what this is"
-      end # if type
-    end # if type
+      end
+    else
+      str << "#{indent}// don't know what this is (c ~> js, #{val.inspect})"
+    end # if find_type
     str
   end
 end
@@ -338,12 +407,94 @@ class BindingsGenerator
 
     @fundamental_types = {}
     @pointer_types = {}
+    @reference_types = {}
     @classes = {}
+    @const_volatile = {}
+    @typedefs = {}
 
     find_fundamental_types
     find_pointer_types
+    find_references
     find_classes
-end
+    find_const_volatile_type
+    find_typedefs
+    # iterate over all collections finding incomplete dependencies
+    # this is very expensive
+    find_missing_dependencies
+    instantiate_class_generators
+  end
+
+  # returns a single character to append to the argument format string
+  # @see https://developer.mozilla.org/en/SpiderMonkey/JSAPI_Reference/JS_ConvertArguments
+  def arg_format(arg, type)
+    if find_type(arg[:type], type)
+      if type[:fundamental]
+        case type[:name]
+        when /bool|BOOL/
+          return "b"
+        when /char/
+          return "c"
+        when /int|long|short/
+          return "i"
+        when /float|double/
+          return "d"
+        else
+          return "*"
+        end
+      end
+      return "o"
+    else
+      $stderr.puts "no type for #{arg[:type]}"
+      return "*"
+    end
+  end
+
+  # searchs for a type, first on fundamental, then on references and finally
+  # on classes. It also searches for a const-volatile type
+  def find_type(type_id, result = {})
+    ftype = @const_volatile[type_id]
+    if ftype
+      result[:const] = true
+      return find_type(ftype[:type], result)
+    end
+    ftype = @fundamental_types[type_id]
+    if ftype.nil?
+      ftype = @pointer_types[type_id]
+      if ftype
+        result[:pointer] = true
+        result[:name] = ftype[:name]
+        return true
+      end
+      ftype = @classes[type_id]
+      if ftype
+        result[:name] = ftype[:name]
+        result[:class] = true
+        return true
+      end
+      ftype = @reference_types[type_id]
+      if ftype
+        result[:name] = ftype[:name]
+        result[:reference] = true
+        return true
+      end
+    else
+      result[:name] = ftype
+      result[:fundamental] = true
+      return true
+    end
+    result[:name] = "INVALID"
+    return false
+  end
+
+  # search for the real type
+  def real_type(v)
+    td = @typedefs[v[:type]]
+    if td
+      v[:type] = td[:type]
+      # search for recursive typedef
+      real_type(v)
+    end
+  end
 
 private
   def test_xml(cond)
@@ -363,46 +514,154 @@ private
         @pointer_types[pt['id']] = {:type => pt['type'], :name => ft, :kind => :fundamental}
       else
         # will be filled later
-        @pointer_types[pt['id']] = {:type => pt['type'], :kind => :class}
+        @pointer_types[pt['id']] = {:type => pt['type']}
       end
+    end
+  end
+
+  def find_references
+    (@reference_section / "ReferenceType").each do |ref|
+      @reference_types[ref['id']] = {:type => ref['type']}
     end
   end
 
   def find_classes
     (@reference_section / "Record[@kind=class]").each do |record|
-      # find the pointer type and fill in the info
-      pt = @pointer_types.select { |k,v| v[:type] == record['id'] }.first
-      if pt
-        pt[1][:name] = record['name']
-      end # if pointer type
       # find the record on the translation unit and create the class
       (@translation_unit / "*/CXXRecord[@type=#{record['id']}]").each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
+          # $stderr.puts "found class #{record['name']} - #{record['id']}"
           @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record}
           break
         end
       end # each CXXRecord
     end # each Record(class)
-    # p @pointer_types
-    # actually create the generators
-    # p @classes.map { |k,v| v[:name] }
+    (@reference_section / "Record[@kind=struct]").each do |record|
+      # find the record on the translation unit and create the class
+      (@translation_unit / "*/CXXRecord[@type=#{record['id']}]").each do |cxx_record|
+        if cxx_record['forward'].nil?
+          # just store the xml, we will instantiate them later
+          # $stderr.puts "found class #{record['name']} - #{record['id']}"
+          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record}
+          break
+        end
+      end # each CXXRecord
+    end # each Record(struct)
+  end
+
+  def find_const_volatile_type
+    (@reference_section / "*/CvQualifiedType").each do |cv|
+      if cv['const'] == "1"
+        @const_volatile[cv['id']] = {:type => cv['type']}
+      end
+    end
+  end
+
+  def find_typedefs
+    (@reference_section / "*/Typedef").each do |td|
+      # $stderr.puts "typedef from #{td['id']} -> #{td['type']}"
+      @typedefs[td['id']] = {:name => td['name'], :type => td['type']}
+    end
+  end
+
+  # iterate over references, pointers and const volatile to see if we have
+  # missing dependencies (i.e. a pointer to a const, a const pointer, etc)
+  def find_missing_dependencies
+    # class pointer 
+    @pointer_types.select { |k, v| v[:kind].nil? }.each do |k, v|
+      real_type(v)
+      klass = @classes[v[:type]]
+      unless klass.nil?
+        v[:name] = klass[:name]
+        v[:kind] = :class
+        next
+      end
+      cv = @const_volatile[v[:type]]
+      unless cv.nil?
+        cv[:deps] ||= []
+        cv[:deps] << v
+        next
+      end
+      ref = @reference_types[v[:type]]
+      unless ref.nil?
+        ref[:deps] ||= []
+        ref[:deps] << v
+      end
+    end
+    # const pointer
+    @const_volatile.each do |k, v|
+      real_type(v)
+      fund = @fundamental_types[v[:type]]
+      if fund
+        v[:kind] = :fundamental
+        v[:name] = fund
+        complete_deps(v)
+        next
+      end
+      ptr = @pointer_types[v[:type]]
+      unless ptr.nil?
+        v[:kind] = :pointer
+        v[:name] = ptr[:name]
+        complete_deps(v)
+        next
+      end
+      # might be a class?
+      klass = @classes[v[:type]]
+      unless klass.nil?
+        v[:kind] = :class
+        v[:name] = klass[:name]
+        complete_deps(v)
+      else
+        $stderr.puts "unknown cv for type #{v[:type]}"
+      end
+    end
+    # references
+    @reference_types.each do |k, v|
+      real_type(v)
+      # fundamental
+      fund = @fundamental_types[v[:type]]
+      unless fund.nil?
+        v[:kind] = :fundamental
+        v[:name] = fund
+        complete_deps(v)
+        next
+      end
+      # find refs to classes
+      klass = @classes[v[:type]]
+      unless klass.nil?
+        v[:kind] = :class
+        v[:name] = klass[:name]
+        complete_deps(v)
+        next
+      end
+      # try with const volatile
+      cv = @const_volatile[v[:type]]
+      unless cv.nil?
+        v[:kind] = cv[:kind]
+        v[:name] = cv[:name]
+        complete_deps(v)
+      else
+        $stderr.puts "unknown reference for type #{v[:type]}"
+      end
+    end
+  end
+
+  def instantiate_class_generators
     @classes.select { |k,v| %w(CCPoint CCSize CCRect CCNode).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       puts v[:generator]
     end
   end
+
+  def complete_deps(v)
+    while dep = v[:deps].pop
+      dep[:kind] = v[:kind]
+      dep[:name] = v[:name]
+    end if v[:deps]
+  end
+
 end
 
 doc = Nokogiri::XML(File.read("cocos2d.xml"))
 BindingsGenerator.new(doc)
-
-# (tu / "*/CXXRecord").each do |record|
-#   pt = pointer_types[record['type']]
-#   if pt && pt[:kind] == :class && record['forward'].nil?
-#     puts "class: #{record['name']}"
-#   end
-# end
-
-# puts fundamental_types.inspect
-# puts pointer_types.inspect

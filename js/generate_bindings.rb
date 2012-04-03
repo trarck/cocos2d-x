@@ -10,20 +10,24 @@ class String
   def uncapitalize
     self[0].downcase + self[1, length]
   end
+
   def capitalize
     self[0].upcase + self[1, length]
   end
 end
 
 class CppMethod
-  attr_reader :name, :static, :num_arguments
+  attr_reader :name, :static, :num_arguments, :type
 
   def initialize(node, klass, bindings_generator)
     @name = node['name']
     @static = node['static'] == "1" ? true : false
     @num_arguments = node['num_args'].to_i
     @arguments = []
-    @type = node['type']
+    v = {:type => node['type']}
+    bindings_generator.real_type(v)
+    @type = v[:type]
+    @klass = klass
     (node / "ParmVar").each do |par|
       @arguments << {
         :name => par['name'],
@@ -32,29 +36,63 @@ class CppMethod
     end
   end
 
-  def convert_arguments_and_call(str, klass, indent_level = 0)
+  # returns the native, original signature, useful for overriden the method
+  def native_signature
+    type = {}
+    signature = ""
+    if @klass.generator.find_type(@type, type)
+      ptr 
+      signature << "#{type[:name]} "
+      signature << @name
+      signature << "("
+      args = []
+      @arguments.each do |arg|
+        type = {}
+        arg_str = ""
+        if @klass.generator.find_type(arg[:type], type)
+          arg_str << "#{type[:name]} #{arg[:name]}"
+        end
+        args << arg_str
+      end
+      signature << args.join(", ")
+      signature << ")"
+    end
+  end
+
+  # handy for setters
+  def first_argument_type
+    return nil if @arguments.empty?
+    type = {}
+    if @klass.generator.find_type(@arguments[0][:type], type)
+      return type
+    end
+    return nil
+  end
+
+  def convert_arguments_and_call(str, indent_level = 0)
     indent = "\t" * indent_level
     str << "#{indent}if (argc == #{@num_arguments}) {\n"
     args_str = ""
     call_params = []
     convert_params = []
+    # debugger if @name == "isScheduled"
     @arguments.each_with_index do |arg, i|
       type = {}
-      args_str << klass.generator.arg_format(arg, type)
+      args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
       if type[:fundamental]
         str << "#{indent}\t#{type[:name]} arg#{i};\n"
-        call_params << "arg#{i}"
+        call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
       else
         if type[:pointer]
-          type = klass.generator.pointer_types[arg[:type]]
+          type = @klass.generator.pointer_types[arg[:type]]
           deref = false
         else
           deref = true
         end
         str << "#{indent}\tJSObject *arg#{i};\n"
-        call_params << [type[:name] + (deref ? "" : "*"), ((deref ? "*" : "") + "narg#{i}")]
+        call_params << [type[:name], ((deref ? "*" : "") + "narg#{i}")]
         convert_params << "arg#{i}"
       end
     end
@@ -69,15 +107,19 @@ class CppMethod
     end
     # do the call
     type = {}
-    if klass.generator.find_type(@type, type)
+    if @klass.generator.find_type(@type, type)
       ret = ""
+      void_ret = ""
       unless type[:fundamental] && type[:name] == "void"
         ret = type[:name]
-        ret += (type[:kind] == :pointer ? "*" : "")
+        ret += (type[:pointer] ? "*" : "")
         ret += " ret = "
+      else
+        void_ret = "JS_SET_RVAL(cx, vp, JSVAL_FALSE)"
       end
       str << "#{indent}\t#{ret}self->#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
-      str << klass.convert_value_to_js(type, "ret", "vp", 3) << "\n"
+      str << "#{indent}\t" << @klass.convert_value_to_js({:type => @type, :pointer => type[:pointer]}, "ret", "vp", 3, "") << "\n"
+      str << "#{indent}\t#{void_ret}\n"
     else
       str << "#{indent}\t//INVALID RETURN TYPE #{@type}\n"
     end
@@ -113,9 +155,9 @@ class CppClass
       md = field['name'].match(/m_([nfpbt])(\w+)/)
       if md
         field_name = md[2].uncapitalize
-        @properties[field_name] = {:type => field['type'], :getter => nil, :setter => nil}
+        @properties[field_name] = {:type => field['type'], :getter => nil, :setter => nil, :requires_accessor => true}
       else
-        @properties[field['name']] = {:type => field['type']} if field['access'] == 'public'
+        @properties[field['name']] = {:type => field['type']} if field['access'] == "public"
       end
     end
 
@@ -125,21 +167,26 @@ class CppClass
 
     (node / "CXXMethod").each do |method|
       # the accessors
+      next if method['access'] != "public"
+      # no support for "node" or "descrition" (yet)
+      next if method['name'].match(/^(node|description)/)
+      # FIXME
+      # remove this when working
+      next if method['name'].match(/^on/)
+
       if md = method['name'].match(/(get|set)(\w+)/)
         action = md[1]
         field_name = md[2].uncapitalize
         prop = @properties[field_name]
         if prop
-          prop[:getter] = CppMethod.new(method, self, bindings_generator) if action == "get"
-          prop[:setter] = CppMethod.new(method, self, bindings_generator) if action == "set"
+          prop[:getter] = CppMethod.new(method, self, bindings_generator) if action == "get" && method['num_args'] == "0"
+          prop[:setter] = CppMethod.new(method, self, bindings_generator) if action == "set" && method['num_args'] == "1"
         end
       # everything else but operator overloading
       elsif method['name'] !~ /^operator/
-        if method['access'] == "public"
-          m = CppMethod.new(method, self, bindings_generator)
-          @methods[m.name] ||= []
-          @methods[m.name] << m
-        end
+        m = CppMethod.new(method, self, bindings_generator)
+        @methods[m.name] ||= []
+        @methods[m.name] << m
       end # if (accessor)
     end
   end
@@ -171,6 +218,8 @@ class CppClass
     arr = []
     @methods.each do |method|
       name = method[0]
+      # skip event methods (for now)
+      next if name =~ /^on/
       m = method[1].first
       arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
@@ -185,22 +234,25 @@ class CppClass
     @methods.each do |method|
       name = method[0]
       m = method[1].first
-      str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
-      str << "\t\t// static\n" if m.static
-      str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
-      str << "\t\tS_#{@name}* self = (S_#{@name} *)JS_GetPrivate(obj);\n"
-      str << "\t\tif (self == NULL) return;\n"
       # event
       if name =~ /^on/
-        str << "\t\tJSBool found;\n"
-        str << "\t\tJSHasProperty(cx, obj, \"#{name}\", &found);\n"
-        str << "\t\tif (found == JS_TRUE) {\n"
-        str << "\t\t\tjsval rval, fval;\n"
-        str << "\t\t\tJSGetProperty(cx, obj, \"#{name}\", &fval);\n"
-        str << "\t\t\tJS_CallFunctionValue(cx, obj, fval, 0, 0, &rval);\n"
+        # override the instance method
+        str << "\t#{m.native_signature} {\n"
+        str << "\t\tif (m_jsobj) {\n"
+        str << "\t\t\tJSBool found; JSHasProperty(cx, m_jsobj, \"#{name}\", &found);\n"
+        str << "\t\t\tif (found == JS_TRUE) {\n"
+        str << "\t\t\t\tjsval rval, fval;\n"
+        str << "\t\t\t\tJSGetProperty(cx, obj, \"#{name}\", &fval);\n"
+        str << "\t\t\t\tJS_CallFunctionValue(cx, obj, fval, 0, 0, &rval);\n"
+        str << "\t\t\t}\n"
         str << "\t\t}\n"
       else
-        m.convert_arguments_and_call(str, self, 2)
+        str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
+        str << "\t\t// static\n" if m.static
+        str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
+        str << "\t\tS_#{@name}* self = (S_#{@name} *)JS_GetPrivate(obj);\n"
+        str << "\t\tif (self == NULL) return JS_FALSE;\n"
+        m.convert_arguments_and_call(str, 2)
       end
       str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
       str << "\t\treturn JS_TRUE;\n"
@@ -211,7 +263,7 @@ class CppClass
 
   def generate_constructor_code
     str =  ""
-    str << "\tS_#{@name}(JSObject *obj) : #{@name}(), m_obj(obj) {};\n\n"
+    str << "\tS_#{@name}(JSObject *obj) : #{@name}(), m_jsobj(obj) {};\n\n"
     str << "\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)\n"
     str << "\t{\n"
     str << "\t\tJSObject *obj = JS_NewObject(cx, S_#{@name}::jsClass, S_#{@name}::jsObject, NULL);\n"
@@ -245,8 +297,11 @@ class CppClass
     str << "\t\tif (!cobj) return JS_FALSE;\n"
     str << "\t\tswitch(propId) {\n"
     @properties.each do |prop, val|
+      next if val[:requires_accessor] && val[:getter].nil?
+      convert_code = convert_value_to_js(val, prop, "val", 3)
+      next if convert_code.nil?
       str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_value_to_js(val, "cobj->#{prop}", "val", 3)}\n"
+      str << "\t\t\t#{convert_code}\n"
       str << "\t\t\treturn JS_TRUE;\n"
       str << "\t\t\tbreak;\n"
     end
@@ -267,8 +322,11 @@ class CppClass
     str << "\t\tJSBool ret = JS_FALSE;\n"
     str << "\t\tswitch(propId) {\n"
     @properties.each do |prop, val|
+      next if val[:requires_accessor] && val[:setter].nil?
+      convert_code = convert_value_from_js(val, "val", prop, 3)
+      next if convert_code.nil?
       str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_value_from_js(val, "val", "cobj->#{prop}", 3)}\n"
+      str << "\t\t\t#{convert_code}\n"
       str << "\t\t\tret = JS_TRUE;\n"
       str << "\t\t\tbreak;\n"
     end
@@ -283,7 +341,7 @@ class CppClass
     str =  ""
     str << "class S_#{@name} : public #{@name}\n"
     str << "{\n"
-    str << "\tJSObject *m_obj;\n"
+    str << "\tJSObject *m_jsobj;\n"
     str << "public:\n"
     str << "\tstatic JSClass *jsClass;\n"
     str << "\tstatic JSObject *jsObject;\n\n"
@@ -313,7 +371,7 @@ class CppClass
     str << generate_funcs << "\n"
     str << "};\n\n"
     str << "JSClass* S_#{@name}::jsClass = NULL;\n"
-    str << "JSObject* S_#{@name}::jsObject = NULL;\n"
+    str << "JSObject* S_#{@name}::jsObject = NULL;\n\n"
   end
 
   def to_s
@@ -321,7 +379,7 @@ class CppClass
   end
 
   # convert a JS object to C++
-  def convert_value_from_js(val, invalue, outvalue, indent_level)
+  def convert_value_from_js(val, invalue, outvalue, indent_level, outvalue_prefix = "cobj->")
     v = {:type => val[:type]}
     @generator.real_type(v)
     prop = v[:type]
@@ -329,20 +387,56 @@ class CppClass
     indent = "\t" * (indent_level || 0)
     str = ""
     type = {}
+    # debugger if outvalue == "opacity"
     if @generator.find_type(prop, type)
-      if type[:fundamental]
-        case type[:name]
-        when /int|long|float|double|short/
-          str << "do { double tmp; JS_ValueToNumber(cx, *#{invalue}, &tmp); #{outvalue} = tmp; } while (0);"
+      return nil if type[:name].nil?
+      if type[:fundamental] && !type[:pointer]
+        case type[:name]          
+        when /float|double/
+          if val[:requires_accessor] && val[:setter]
+            set_str = "#{outvalue_prefix}#{val[:setter].name}(tmp)"
+            str << "do { double tmp; JS_ValueToNumber(cx, *#{invalue}, &tmp); #{set_str}; } while (0);"
+          else
+            str << "do { double tmp; JS_ValueToNumber(cx, *#{invalue}, &tmp); #{outvalue_prefix}#{outvalue} = tmp; } while (0);"
+          end
+        when /int|long|short|char/
+          if val[:requires_accessor] && val[:setter]
+            set_str = "#{outvalue_prefix}#{val[:setter].name}(tmp)"
+            str << "do { uint32_t tmp; JS_ValueToECMAUint32(cx, *#{invalue}, &tmp); #{set_str}; } while (0);"
+          else
+            str << "do { uint32_t tmp; JS_ValueToECMAUint32(cx, *#{invalue}, &tmp); #{outvalue_prefix}#{outvalue} = tmp; } while (0);"
+          end
+        when /bool|BOOL/
+          if val[:requires_accessor] && val[:setter]
+            set_str = "#{outvalue_prefix}#{val[:setter].name}(tmp)"
+            str << "do { JSBool tmp; JS_ValueToBoolean(cx, *#{invalue}, &tmp); #{set_str}; } while (0);"
+          else
+            str << "do { JSBool tmp; JS_ValueToBoolean(cx, *#{invalue}, &tmp); #{outvalue_prefix}#{outvalue} = tmp; } while (0);"
+          end
         end
       else
+        set_str = outvalue_prefix
+        setter = false
+        if val[:requires_accessor]
+          return nil if val[:setter].nil?
+          set_str << "#{val[:setter].name}("
+          setter = true
+          setter_type = val[:setter].first_argument_type
+        else
+          set_str << outvalue
+        end
         ref = false
         if type[:class] || type[:reference]
-          ref = true
+          ref = true unless setter && setter_type[:pointer]
         end
         str << "do {\n"
         str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
-        str << "#{indent}\tif (tmp) { #{outvalue} = #{ref ? "*" : ""}tmp; }\n"
+        if setter
+          set_str << "#{ref ? "*" : ""}tmp)"
+        else
+          set_str << " = #{ref ? "*" : ""}tmp"
+        end
+        str << "#{indent}\tif (tmp) { #{set_str}; }\n"
         str << "#{indent}} while (0);"
       end
     else
@@ -352,7 +446,7 @@ class CppClass
   end
 
   # convert a C++ object to JS
-  def convert_value_to_js(val, invalue, outvalue, indent_level)
+  def convert_value_to_js(val, invalue, outvalue, indent_level, inval_prefix = "cobj->")
     v = {:type => val[:type]}
     @generator.real_type(v)
     prop = v[:type]
@@ -360,28 +454,37 @@ class CppClass
     indent = "\t" * (indent_level || 0)
     str = ""
     type = {}
+    # debugger if invalue == "opacity"
     if @generator.find_type(prop, type)
-      if type[:fundamental]
-        inval_str = val[:getter] ? "cobj->#{val[:getter].name}()" : invalue
+      return nil if type[:name].nil?
+      inval_str = inval_prefix
+      if val[:requires_accessor]
+        return nil if val[:getter].nil? || !@generator.find_type(val[:getter].type, type)
+        inval_str << "#{val[:getter].name}()"
+      else
+        inval_str << invalue
+      end
+      if type[:fundamental] && !val[:pointer]
         case type[:name]
-        when /int|long|float|double|short/
-          str << "JS_NewNumberValue(cx, #{inval_str}, #{outvalue});"
+        when /int|long|float|double|short|char/
+          str << "do { jsval tmp; JS_NewNumberValue(cx, #{inval_str}, &tmp); JS_SET_RVAL(cx, #{outvalue}, tmp); } while (0);"
         when /bool/
-          str << "#{outvalue} = BOOLEAN_TO_JSVAL(#{inval_str});"
+          str << "JS_SET_RVAL(cx, #{outvalue}, BOOLEAN_TO_JSVAL(#{inval_str}));"
         end
       else
         ref = false
         if type[:class] || type[:reference]
-          ref = true
+          ref = true unless val[:pointer] || type[:pointer]
         end
-        is_class = type[:kind] == :class
+        # debugger if @name == "CCRect"
+        is_class = type[:class]
         js_class = (is_class) ? "S_#{type[:name]}::jsClass" : "NULL"
         js_proto = (is_class) ? "S_#{type[:name]}::jsObject" : "NULL"
         str << "do {\n"
         str << "#{indent}\tJSObject *tmp = JS_NewObject(cx, #{js_class}, #{js_proto}, NULL);\n"
         str << "#{indent}\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
         str << "#{indent}\tpt->flags = kPointerTemporary;\n"
-        str << "#{indent}\tpt->data = #{ref ? "&" : ""}#{invalue};\n"
+        str << "#{indent}\tpt->data = (void *)#{ref ? "&" : ""}#{inval_str};\n"
         str << "#{indent}\tJS_SetPrivate(tmp, pt);\n"
         str << "#{indent}\tJS_SET_RVAL(cx, #{outvalue}, OBJECT_TO_JSVAL(tmp));\n"
         str << "#{indent}} while (0);"
@@ -444,7 +547,7 @@ class BindingsGenerator
       end
       return "o"
     else
-      $stderr.puts "no type for #{arg[:type]}"
+      # $stderr.puts "no type for #{arg[:type]}"
       return "*"
     end
   end
@@ -463,6 +566,7 @@ class BindingsGenerator
       if ftype
         result[:pointer] = true
         result[:name] = ftype[:name]
+        result[:class] = true if ftype[:kind] == :class
         return true
       end
       ftype = @classes[type_id]
@@ -613,7 +717,7 @@ private
         v[:name] = klass[:name]
         complete_deps(v)
       else
-        $stderr.puts "unknown cv for type #{v[:type]}"
+        # $stderr.puts "unknown cv for type #{v[:type]}"
       end
     end
     # references
@@ -642,13 +746,13 @@ private
         v[:name] = cv[:name]
         complete_deps(v)
       else
-        $stderr.puts "unknown reference for type #{v[:type]}"
+        # $stderr.puts "unknown reference for type #{v[:type]}"
       end
     end
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCNode).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCNode CCSprite).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       puts v[:generator]
     end

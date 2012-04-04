@@ -25,20 +25,6 @@ While we create the template, the easiest way would be to:
 8. modify your AppDelegate to look like this:
 
 ```c++
-# FILE: AppDelegate.h
-
-#ifndef  _APP_DELEGATE_H_
-#define  _APP_DELEGATE_H_
-
-#include "CCApplication.h"
-#include "ScriptingCore.h"
-
-class  AppDelegate : private cocos2d::CCApplication
-{
-	ScriptingCore *m_scripting;
-...
-};
-
 # FILE: AppDelegate.cpp
 
 bool AppDelegate::applicationDidFinishLaunching()
@@ -59,14 +45,8 @@ bool AppDelegate::applicationDidFinishLaunching()
 	// set FPS. the default value is 1.0/60 if you don't call this
 	pDirector->setAnimationInterval(1.0 / 60);
 
-	// create a scene. it's an autorelease object
-	CCScene *pScene = HelloWorld::scene();
-
-	// run
-	pDirector->runWithScene(pScene);
-
-	m_scripting = new ScriptingCore();
-	m_scripting->runScript("JS/main.js");
+	// run the main script
+	ScriptingCore::getInstance().runScript("JS/main.js");
 
 	return true;
 }

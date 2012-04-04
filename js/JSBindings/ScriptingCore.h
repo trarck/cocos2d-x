@@ -16,16 +16,34 @@ class ScriptingCore
 	JSRuntime *rt;
 	JSContext *cx;
 	JSObject  *global;
-public:
+
 	ScriptingCore();
+public:
 	~ScriptingCore();
+
+	static ScriptingCore & getInstance() {
+		static ScriptingCore instance;
+		return instance;
+	};
 
 	/**
 	 * will eval the specified string
 	 * @param string The string with the javascript code to be evaluated
 	 */
 	void evalString(const char *string);
+
+	/**
+	 * will run the specified string
+	 * @param string The path of the script to be run
+	 */
 	void runScript(const char *path);
+
+	/**
+	 * @return the global context
+	 */
+	JSContext* getGlobalContext() {
+		return cx;
+	};
 
 	/**
 	 * @param cx

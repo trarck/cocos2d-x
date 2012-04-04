@@ -41,7 +41,6 @@ class CppMethod
     type = {}
     signature = ""
     if @klass.generator.find_type(@type, type)
-      ptr 
       signature << "#{type[:name]} "
       signature << @name
       signature << "("
@@ -75,12 +74,13 @@ class CppMethod
     args_str = ""
     call_params = []
     convert_params = []
-    # debugger if @name == "isScheduled"
+    self_str = @static ? "#{@klass.name}::" : "self->"
+    # debugger if @name == "initWithSpriteFrameName"
     @arguments.each_with_index do |arg, i|
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
-      if type[:fundamental]
+      if type[:fundamental] && !type[:pointer]
         str << "#{indent}\t#{type[:name]} arg#{i};\n"
         call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
@@ -91,18 +91,24 @@ class CppMethod
         else
           deref = true
         end
-        str << "#{indent}\tJSObject *arg#{i};\n"
+        if type[:name] =~ /char/
+          str << "#{indent}\tJSString *arg#{i};\n"
+        else
+          str << "#{indent}\tJSObject *arg#{i};\n"
+        end
         call_params << [type[:name], ((deref ? "*" : "") + "narg#{i}")]
-        convert_params << "arg#{i}"
+        convert_params << "&arg#{i}"
       end
     end
     convert_str = (convert_params.size > 0 ? ", #{convert_params.join(', ')}" : "")
-    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, vp, \"#{args_str}\"#{convert_str});\n"
+    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, JS_ARGV(cx, vp), \"#{args_str}\"#{convert_str});\n"
     # conver the JSObjects to the proper native object
     args_str.split(//).each_with_index do |type, i|
       if type == "o"
         ntype = call_params[i][0]
         str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype.gsub(/\s*\*/, '')}, narg#{i}, arg#{i});\n"
+      elsif type == "S"
+        str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
       end
     end
     # do the call
@@ -115,9 +121,9 @@ class CppMethod
         ret += (type[:pointer] ? "*" : "")
         ret += " ret = "
       else
-        void_ret = "JS_SET_RVAL(cx, vp, JSVAL_FALSE)"
+        void_ret = "JS_SET_RVAL(cx, vp, JSVAL_TRUE);"
       end
-      str << "#{indent}\t#{ret}self->#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
+      str << "#{indent}\t#{ret}#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
       str << "#{indent}\t" << @klass.convert_value_to_js({:type => @type, :pointer => type[:pointer]}, "ret", "vp", 3, "") << "\n"
       str << "#{indent}\t#{void_ret}\n"
     else
@@ -170,9 +176,6 @@ class CppClass
       next if method['access'] != "public"
       # no support for "node" or "descrition" (yet)
       next if method['name'].match(/^(node|description)/)
-      # FIXME
-      # remove this when working
-      next if method['name'].match(/^on/)
 
       if md = method['name'].match(/(get|set)(\w+)/)
         action = md[1]
@@ -218,44 +221,76 @@ class CppClass
     arr = []
     @methods.each do |method|
       name = method[0]
-      # skip event methods (for now)
-      next if name =~ /^on/
       m = method[1].first
+      # skip event methods (only called from C++) and static methods (also, skip update)
+      next if name =~ /^on/ || m.static || name == "update"
       arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
     arr << "\t\t\tJS_FS_END"
     str =  "\t\tstatic JSFunctionSpec funcs[] = {\n"
+    str << arr.join(",\n") << "\n"
+    str << "\t\t};\n\n"
+
+    # static functions
+    arr = []
+    @methods.each do |method|
+      name = method[0]
+      m = method[1].first
+      next if !m.static
+      arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
+    end
+    arr << "\t\t\tJS_FS_END"
+    str << "\t\tstatic JSFunctionSpec st_funcs[] = {\n"
     str << arr.join(",\n") << "\n"
     str << "\t\t};\n"
   end
 
   def generate_funcs
     str = ""
+    needs_update = false
     @methods.each do |method|
       name = method[0]
       m = method[1].first
+      needs_update = true if name =~ /^scheduleUpdate/
       # event
       if name =~ /^on/
         # override the instance method
         str << "\t#{m.native_signature} {\n"
         str << "\t\tif (m_jsobj) {\n"
-        str << "\t\t\tJSBool found; JSHasProperty(cx, m_jsobj, \"#{name}\", &found);\n"
+        str << "\t\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
+        str << "\t\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"#{name}\", &found);\n"
         str << "\t\t\tif (found == JS_TRUE) {\n"
         str << "\t\t\t\tjsval rval, fval;\n"
-        str << "\t\t\t\tJSGetProperty(cx, obj, \"#{name}\", &fval);\n"
-        str << "\t\t\t\tJS_CallFunctionValue(cx, obj, fval, 0, 0, &rval);\n"
+        str << "\t\t\t\tJS_GetProperty(cx, m_jsobj, \"#{name}\", &fval);\n"
+        str << "\t\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);\n"
         str << "\t\t\t}\n"
         str << "\t\t}\n"
       else
         str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
-        str << "\t\t// static\n" if m.static
-        str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
-        str << "\t\tS_#{@name}* self = (S_#{@name} *)JS_GetPrivate(obj);\n"
-        str << "\t\tif (self == NULL) return JS_FALSE;\n"
+        unless m.static
+          str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
+          str << "\t\tS_#{@name}* self = NULL; JSGET_PTRSHELL(S_#{@name}, self, obj);\n"
+          str << "\t\tif (self == NULL) return JS_FALSE;\n"
+        end
         m.convert_arguments_and_call(str, 2)
+        str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
+        str << "\t\treturn JS_TRUE;\n"
       end
-      str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
-      str << "\t\treturn JS_TRUE;\n"
+      str << "\t};\n"
+    end
+    # add "update" if needed
+    if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
+      str << "\tvirtual void update(ccTime delta) {\n"
+      str << "\t\tif (m_jsobj) {\n"
+      str << "\t\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
+      str << "\t\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"update\", &found);\n"
+      str << "\t\t\tif (found == JS_TRUE) {\n"
+      str << "\t\t\t\tjsval rval, fval;\n"
+      str << "\t\t\t\tJS_GetProperty(cx, m_jsobj, \"update\", &fval);\n"
+      str << "\t\t\t\tjsval jsdelta; JS_NewNumberValue(cx, delta, &jsdelta);\n"
+      str << "\t\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);\n"
+      str << "\t\t\t}\n"
+      str << "\t\t}\n"
       str << "\t};\n"
     end
     str
@@ -366,7 +401,12 @@ class CppClass
     str << "\t\tjsClass->flags = JSCLASS_HAS_PRIVATE;\n"
     str << generate_properties_array << "\n"
     str << generate_funcs_array << "\n"
-    str << "\t\tjsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,NULL);\n"
+    parent_proto = "NULL"
+    unless @parents.empty?
+      parent = @parents[0]
+      parent_proto = "S_#{parent[:name]}::jsObject" unless parent[:name] == "CCObject"
+    end
+    str << "\t\tjsObject = JS_InitClass(cx,globalObj,#{parent_proto},jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,st_funcs);\n"
     str << "\t};\n\n"
     str << generate_funcs << "\n"
     str << "};\n\n"
@@ -430,7 +470,13 @@ class CppClass
           ref = true unless setter && setter_type[:pointer]
         end
         str << "do {\n"
-        str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
+        # special case for char *
+        if type[:fundamental] && type[:name] =~ /char/
+          str << "#{indent}\tchar *tmp = JS_EncodeString(cx, *#{invalue});\n"
+          ref = false
+        else
+          str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
+        end
         if setter
           set_str << "#{ref ? "*" : ""}tmp)"
         else
@@ -536,7 +582,11 @@ class BindingsGenerator
         when /bool|BOOL/
           return "b"
         when /char/
-          return "c"
+          if type[:pointer]
+            return "S"
+          else
+            return "c"
+          end
         when /int|long|short/
           return "i"
         when /float|double/
@@ -567,6 +617,7 @@ class BindingsGenerator
         result[:pointer] = true
         result[:name] = ftype[:name]
         result[:class] = true if ftype[:kind] == :class
+        result[:fundamental] = true if ftype[:kind] == :fundamental
         return true
       end
       ftype = @classes[type_id]
@@ -752,7 +803,7 @@ private
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCNode CCSprite).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       puts v[:generator]
     end

@@ -9,28 +9,10 @@
 #include <iostream>
 #include "cocos2d.h"
 #include "ScriptingCore.h"
+#include "out.hpp"
 
 using namespace cocos2d;
 
-typedef struct {
-	uint32_t flags;
-	void* data;
-} pointerShell_t;
-
-typedef enum {
-	kPointerTemporary = 1
-} pointerShellFlags;
-
-#define JSGET_PTRSHELL(type, cobj, jsobj) do { \
-	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(jsobj); \
-	if (pt) { \
-		cobj = (type *)pt->data; \
-	} else { \
-		cobj = NULL; \
-	} \
-} while (0)
-
-#include "out.cpp"
 
 static JSClass global_class = {
 	"global", JSCLASS_GLOBAL_FLAGS,
@@ -63,6 +45,12 @@ ScriptingCore::ScriptingCore()
 	S_CCNode::jsCreateClass(this->cx, cocos, "Node");
 	S_CCScene::jsCreateClass(this->cx, cocos, "Scene");
 	S_CCSprite::jsCreateClass(this->cx, cocos, "Sprite");
+	S_CCSpriteFrame::jsCreateClass(this->cx, cocos, "SpriteFrame");
+	S_CCSpriteFrameCache::jsCreateClass(this->cx, cocos, "SpriteFrameCache");
+	S_CCAnimation::jsCreateClass(this->cx, cocos, "Animation");
+	S_CCAction::jsCreateClass(this->cx, cocos, "Action");
+	S_CCAnimate::jsCreateClass(this->cx, cocos, "Animate");
+	S_CCRepeatForever::jsCreateClass(this->cx, cocos, "RepeatForever");
 
 	// register some global functions
 	JS_DefineFunction(this->cx, cocos, "log", ScriptingCore::log, 0, JSPROP_READONLY | JSPROP_PERMANENT);

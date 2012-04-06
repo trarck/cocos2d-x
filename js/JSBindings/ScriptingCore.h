@@ -10,6 +10,7 @@
 #define cocos2dx_ScriptingCore_h
 
 #include "jsapi.h"
+#include "cocos2d.h"
 
 class ScriptingCore
 {

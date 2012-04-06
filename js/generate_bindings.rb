@@ -37,12 +37,16 @@ class CppMethod
   end
 
   # returns the native, original signature, useful for overriden the method
-  def native_signature
+  def native_signature(impl = false)
     type = {}
     signature = ""
     if @klass.generator.find_type(@type, type)
       signature << "#{type[:name]} "
-      signature << @name
+      if impl
+        signature << "S_#{@klass.name}::#{@name}"
+      else
+        signature << @name
+      end
       signature << "("
       args = []
       @arguments.each do |arg|
@@ -75,7 +79,7 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
-    # debugger if @name == "initWithSpriteFrameName"
+    # debugger if @name == "initWithDuration"
     @arguments.each_with_index do |arg, i|
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
@@ -96,6 +100,21 @@ class CppMethod
         else
           str << "#{indent}\tJSObject *arg#{i};\n"
         end
+        if type[:name].nil? && !deref
+          if arg[:name] =~ /dictionary/i
+            if @name.downcase =~ /spriteframe/i
+              type[:name] = "CCDictionary<std::string,CCSpriteFrame*>"
+            else
+              type[:name] = "CCDictionary<std::string,CCObject*>"
+            end
+          elsif arg[:name] =~ /array/i
+            type[:name] = "CCMutableArray<CCObject*>"
+          elsif arg[:name] =~ /frames/i
+            type[:name] = "CCMutableArray<CCSpriteFrame*>"
+          else
+            raise "unknown pointer, please check - might be a weird template (in #{@name}, #{@klass.name})"
+          end
+        end
         call_params << [type[:name], ((deref ? "*" : "") + "narg#{i}")]
         convert_params << "&arg#{i}"
       end
@@ -106,7 +125,7 @@ class CppMethod
     args_str.split(//).each_with_index do |type, i|
       if type == "o"
         ntype = call_params[i][0]
-        str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype.gsub(/\s*\*/, '')}, narg#{i}, arg#{i});\n"
+        str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype}, narg#{i}, arg#{i});\n"
       elsif type == "S"
         str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
       end
@@ -135,7 +154,7 @@ class CppMethod
 end
 
 class CppClass
-  attr_reader :name, :generator
+  attr_reader :name, :generator, :singleton
 
   # initialize the class with a nokogiri node
   def initialize(node, bindings_generator)
@@ -146,8 +165,10 @@ class CppClass
     # the constructor/init methods
     @constructors = []
     @init_methods = []
+    @singleton = false
 
     @name = node['name']
+    prefixless_name = @name.gsub(/^CC/, '').downcase
     # puts node if @name == "CCPoint"
 
     # test for super classes
@@ -175,7 +196,11 @@ class CppClass
       # the accessors
       next if method['access'] != "public"
       # no support for "node" or "descrition" (yet)
-      next if method['name'].match(/^(node|description)/)
+      next if method['name'].match(/^(node|description|copyWithZone)/)
+      next if method['name'].match(/step|update/) && (@name == "CCAction" || @parents.map { |n| n[:name] }.include?("CCAction"))
+
+      # mark as singleton (produce no constructor code)
+      @singleton = true if method['name'].match(/^shared.*#{prefixless_name}/i)
 
       if md = method['name'].match(/(get|set)(\w+)/)
         action = md[1]
@@ -195,6 +220,7 @@ class CppClass
   end
 
   def generate_properties_enum
+    return "" if @properties.empty?
     arr = []
     @properties.each_with_index do |prop, i|
       name = prop[0]
@@ -245,6 +271,26 @@ class CppClass
     str << "\t\t};\n"
   end
 
+  def generate_funcs_declarations
+    str = ""
+    needs_update = false
+    @methods.each do |method|
+      name = method[0]
+      m = method[1].first
+      needs_update = true if name =~ /^scheduleUpdate/
+      if name =~ /^on/
+        # override the instance method
+        str << "\t#{m.native_signature};"
+      else
+        str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp);\n"
+      end
+    end
+    if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
+      str << "\tvirtual void update(ccTime delta);\n"
+    end
+    str
+  end
+
   def generate_funcs
     str = ""
     needs_update = false
@@ -255,124 +301,130 @@ class CppClass
       # event
       if name =~ /^on/
         # override the instance method
-        str << "\t#{m.native_signature} {\n"
-        str << "\t\tif (m_jsobj) {\n"
-        str << "\t\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
-        str << "\t\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"#{name}\", &found);\n"
-        str << "\t\t\tif (found == JS_TRUE) {\n"
-        str << "\t\t\t\tjsval rval, fval;\n"
-        str << "\t\t\t\tJS_GetProperty(cx, m_jsobj, \"#{name}\", &fval);\n"
-        str << "\t\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);\n"
-        str << "\t\t\t}\n"
+        str << "#{m.native_signature(true)} {\n"
+        str << "\tif (m_jsobj) {\n"
+        str << "\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
+        str << "\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"#{name}\", &found);\n"
+        str << "\t\tif (found == JS_TRUE) {\n"
+        str << "\t\t\tjsval rval, fval;\n"
+        str << "\t\t\tJS_GetProperty(cx, m_jsobj, \"#{name}\", &fval);\n"
+        str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);\n"
         str << "\t\t}\n"
+        str << "\t}\n"
       else
-        str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
+        str << "JSBool S_#{@name}::js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
         unless m.static
-          str << "\t\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
-          str << "\t\tS_#{@name}* self = NULL; JSGET_PTRSHELL(S_#{@name}, self, obj);\n"
-          str << "\t\tif (self == NULL) return JS_FALSE;\n"
+          str << "\tJSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);\n"
+          str << "\tS_#{@name}* self = NULL; JSGET_PTRSHELL(S_#{@name}, self, obj);\n"
+          str << "\tif (self == NULL) return JS_FALSE;\n"
         end
-        m.convert_arguments_and_call(str, 2)
-        str << "\t\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
-        str << "\t\treturn JS_TRUE;\n"
+        m.convert_arguments_and_call(str, 1)
+        str << "\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
+        str << "\treturn JS_TRUE;\n"
       end
-      str << "\t};\n"
+      str << "}\n"
     end
     # add "update" if needed
     if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
-      str << "\tvirtual void update(ccTime delta) {\n"
-      str << "\t\tif (m_jsobj) {\n"
-      str << "\t\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
-      str << "\t\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"update\", &found);\n"
-      str << "\t\t\tif (found == JS_TRUE) {\n"
-      str << "\t\t\t\tjsval rval, fval;\n"
-      str << "\t\t\t\tJS_GetProperty(cx, m_jsobj, \"update\", &fval);\n"
-      str << "\t\t\t\tjsval jsdelta; JS_NewNumberValue(cx, delta, &jsdelta);\n"
-      str << "\t\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);\n"
-      str << "\t\t\t}\n"
+      str << "void S_#{@name}::update(ccTime delta) {\n"
+      str << "\tif (m_jsobj) {\n"
+      str << "\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
+      str << "\t\tJSBool found; JS_HasProperty(cx, m_jsobj, \"update\", &found);\n"
+      str << "\t\tif (found == JS_TRUE) {\n"
+      str << "\t\t\tjsval rval, fval;\n"
+      str << "\t\t\tJS_GetProperty(cx, m_jsobj, \"update\", &fval);\n"
+      str << "\t\t\tjsval jsdelta; JS_NewNumberValue(cx, delta, &jsdelta);\n"
+      str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);\n"
       str << "\t\t}\n"
-      str << "\t};\n"
+      str << "\t}\n"
+      str << "}\n"
     end
     str
   end
 
   def generate_constructor_code
     str =  ""
-    str << "\tS_#{@name}(JSObject *obj) : #{@name}(), m_jsobj(obj) {};\n\n"
-    str << "\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)\n"
-    str << "\t{\n"
-    str << "\t\tJSObject *obj = JS_NewObject(cx, S_#{@name}::jsClass, S_#{@name}::jsObject, NULL);\n"
-    str << "\t\tS_#{@name} *cobj = new S_#{@name}(obj);\n"
-    str << "\t\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
-    str << "\t\tpt->flags = 0; pt->data = cobj;\n"
-    str << "\t\tJS_SetPrivate(obj, pt);\n"
-    str << "\t\tJS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));\n"
-    str << "\t\treturn JS_TRUE;\n"
-    str << "\t};\n"
+    if @singleton
+      str << "JSBool S_#{@name}::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)\n"
+      str << "{\n"
+      str << "\treturn JS_FALSE;\n"
+      str << "};\n"
+    else
+      str << "JSBool S_#{@name}::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)\n"
+      str << "{\n"
+      str << "\tJSObject *obj = JS_NewObject(cx, S_#{@name}::jsClass, S_#{@name}::jsObject, NULL);\n"
+      str << "\tS_#{@name} *cobj = new S_#{@name}(obj);\n"
+      str << "\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
+      str << "\tpt->flags = 0; pt->data = cobj;\n"
+      str << "\tJS_SetPrivate(obj, pt);\n"
+      str << "\tJS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));\n"
+      str << "\treturn JS_TRUE;\n"
+      str << "}\n"
+    end
   end
 
   def generate_finalizer
     str =  ""
-    str << "\tstatic void jsFinalize(JSContext *cx, JSObject *obj)\n"
-    str << "\t{\n"
-    str << "\t\tpointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);\n"
-    str << "\t\tif (pt) {\n"
-    str << "\t\t\tif (!(pt->flags & kPointerTemporary) && pt->data) delete (S_#{@name} *)pt->data;\n"
-    str << "\t\t\tJS_free(cx, pt);\n"
-    str << "\t\t}\n"
-    str << "\t};\n"
+    str << "void S_#{@name}::jsFinalize(JSContext *cx, JSObject *obj)\n"
+    str << "{\n"
+    str << "\tpointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);\n"
+    str << "\tif (pt) {\n"
+    str << "\t\tif (!(pt->flags & kPointerTemporary) && pt->data) delete (S_#{@name} *)pt->data;\n"
+    str << "\t\tJS_free(cx, pt);\n"
+    str << "\t}\n"
+    str << "}\n"
   end
 
   def generate_getter
     str =  ""
-    str << "\tstatic JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)\n"
-    str << "\t{\n"
-    str << "\t\tint32_t propId = JSID_TO_INT(_id);\n"
-    str << "\t\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
-    str << "\t\tif (!cobj) return JS_FALSE;\n"
-    str << "\t\tswitch(propId) {\n"
+    str << "JSBool S_#{@name}::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)\n"
+    str << "{\n"
+    str << "\tint32_t propId = JSID_TO_INT(_id);\n"
+    str << "\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
+    str << "\tif (!cobj) return JS_FALSE;\n"
+    str << "\tswitch(propId) {\n"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:getter].nil?
-      convert_code = convert_value_to_js(val, prop, "val", 3)
+      convert_code = convert_value_to_js(val, prop, "val", 2)
       next if convert_code.nil?
-      str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_code}\n"
-      str << "\t\t\treturn JS_TRUE;\n"
-      str << "\t\t\tbreak;\n"
+      str << "\tcase k#{prop.capitalize}:\n"
+      str << "\t\t#{convert_code}\n"
+      str << "\t\treturn JS_TRUE;\n"
+      str << "\t\tbreak;\n"
     end
-    str << "\t\tdefault:\n"
-    str << "\t\t\tbreak;\n"
-    str << "\t\t}\n"
-    str << "\t\treturn JS_FALSE;\n"
-    str << "\t};\n"
+    str << "\tdefault:\n"
+    str << "\t\tbreak;\n"
+    str << "\t}\n"
+    str << "\treturn JS_FALSE;\n"
+    str << "}\n"
   end
 
   def generate_setter
     str =  ""
-    str << "\tstatic JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)\n"
-    str << "\t{\n"
-    str << "\t\tint32_t propId = JSID_TO_INT(_id);\n"
-    str << "\t\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
-    str << "\t\tif (!cobj) return JS_FALSE;\n"
-    str << "\t\tJSBool ret = JS_FALSE;\n"
-    str << "\t\tswitch(propId) {\n"
+    str << "JSBool S_#{@name}::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)\n"
+    str << "{\n"
+    str << "\tint32_t propId = JSID_TO_INT(_id);\n"
+    str << "\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
+    str << "\tif (!cobj) return JS_FALSE;\n"
+    str << "\tJSBool ret = JS_FALSE;\n"
+    str << "\tswitch(propId) {\n"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:setter].nil?
-      convert_code = convert_value_from_js(val, "val", prop, 3)
+      convert_code = convert_value_from_js(val, "val", prop, 2)
       next if convert_code.nil?
-      str << "\t\tcase k#{prop.capitalize}:\n"
-      str << "\t\t\t#{convert_code}\n"
-      str << "\t\t\tret = JS_TRUE;\n"
-      str << "\t\t\tbreak;\n"
+      str << "\tcase k#{prop.capitalize}:\n"
+      str << "\t\t#{convert_code}\n"
+      str << "\t\tret = JS_TRUE;\n"
+      str << "\t\tbreak;\n"
     end
-    str << "\t\tdefault:\n"
-    str << "\t\t\tbreak;\n"
-    str << "\t\t}\n"
-    str << "\t\treturn ret;\n"
-    str << "\t};\n"
+    str << "\tdefault:\n"
+    str << "\t\tbreak;\n"
+    str << "\t}\n"
+    str << "\treturn ret;\n"
+    str << "};\n"
   end
 
-  def generate_code
+  def generate_declaration
     str =  ""
     str << "class S_#{@name} : public #{@name}\n"
     str << "{\n"
@@ -380,25 +432,39 @@ class CppClass
     str << "public:\n"
     str << "\tstatic JSClass *jsClass;\n"
     str << "\tstatic JSObject *jsObject;\n\n"
+    str << "\tS_#{@name}(JSObject *obj) : #{@name}(), m_jsobj(obj) {};\n" unless @singleton
     str << generate_properties_enum << "\n"
+    str << "\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);\n"
+    str << "\tstatic void jsFinalize(JSContext *cx, JSObject *obj);\n"
+    str << "\tstatic JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);\n"
+    str << "\tstatic JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);\n"
+    str << "\tstatic void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);\n"
+    str << generate_funcs_declarations << "\n"
+    str << "};\n\n"
+  end
+
+  def generate_implementation
+    str =  ""
+    str << "JSClass* S_#{@name}::jsClass = NULL;\n"
+    str << "JSObject* S_#{@name}::jsObject = NULL;\n\n"
     str << generate_constructor_code << "\n"
     str << generate_finalizer << "\n"
     str << generate_getter << "\n"
     str << generate_setter << "\n"
-    # class registration method
-    str << "\tstatic void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)\n"
-    str << "\t{\n"
-    str << "\t\tjsClass = (JSClass *)calloc(1, sizeof(JSClass));\n"
-    str << "\t\tjsClass->name = name;\n"
-    str << "\t\tjsClass->addProperty = JS_PropertyStub;\n"
-    str << "\t\tjsClass->delProperty = JS_PropertyStub;\n"
-    str << "\t\tjsClass->getProperty = JS_PropertyStub;\n"
-    str << "\t\tjsClass->setProperty = JS_StrictPropertyStub;\n"
-    str << "\t\tjsClass->enumerate = JS_EnumerateStub;\n"
-    str << "\t\tjsClass->resolve = JS_ResolveStub;\n"
-    str << "\t\tjsClass->convert = JS_ConvertStub;\n"
-    str << "\t\tjsClass->finalize = jsFinalize;\n"
-    str << "\t\tjsClass->flags = JSCLASS_HAS_PRIVATE;\n"
+    # class registration +method+
+    str << "void S_#{@name}::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)\n"
+    str << "{\n"
+    str << "\tjsClass = (JSClass *)calloc(1, sizeof(JSClass));\n"
+    str << "\tjsClass->name = name;\n"
+    str << "\tjsClass->addProperty = JS_PropertyStub;\n"
+    str << "\tjsClass->delProperty = JS_PropertyStub;\n"
+    str << "\tjsClass->getProperty = JS_PropertyStub;\n"
+    str << "\tjsClass->setProperty = JS_StrictPropertyStub;\n"
+    str << "\tjsClass->enumerate = JS_EnumerateStub;\n"
+    str << "\tjsClass->resolve = JS_ResolveStub;\n"
+    str << "\tjsClass->convert = JS_ConvertStub;\n"
+    str << "\tjsClass->finalize = jsFinalize;\n"
+    str << "\tjsClass->flags = JSCLASS_HAS_PRIVATE;\n"
     str << generate_properties_array << "\n"
     str << generate_funcs_array << "\n"
     parent_proto = "NULL"
@@ -406,16 +472,13 @@ class CppClass
       parent = @parents[0]
       parent_proto = "S_#{parent[:name]}::jsObject" unless parent[:name] == "CCObject"
     end
-    str << "\t\tjsObject = JS_InitClass(cx,globalObj,#{parent_proto},jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,st_funcs);\n"
-    str << "\t};\n\n"
+    str << "\tjsObject = JS_InitClass(cx,globalObj,#{parent_proto},jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,st_funcs);\n"
+    str << "}\n\n"
     str << generate_funcs << "\n"
-    str << "};\n\n"
-    str << "JSClass* S_#{@name}::jsClass = NULL;\n"
-    str << "JSObject* S_#{@name}::jsObject = NULL;\n\n"
   end
 
   def to_s
-    generate_code
+    "Class: #{@name}"
   end
 
   # convert a JS object to C++
@@ -543,10 +606,15 @@ class CppClass
 end
 
 class BindingsGenerator
-  attr_reader :classes, :fundamental_types, :pointer_types
+  attr_reader :classes, :fundamental_types, :pointer_types, :out_header, :out_impl
 
   # initialize everything with a nokogiri document
-  def initialize(doc)
+  def initialize(doc, out_prefix)
+    out_prefix ||= "out"
+
+    @out_header = File.open("#{out_prefix}.hpp", "w+")
+    @out_impl   = File.open("#{out_prefix}.cpp", "w+")
+
     raise "Invalid XML file" if doc.root.name != "CLANG_XML"
     @translation_unit = (doc.root / "TranslationUnit").first rescue nil
     test_xml(@translation_unit && @translation_unit.name == "TranslationUnit")
@@ -561,6 +629,38 @@ class BindingsGenerator
     @const_volatile = {}
     @typedefs = {}
 
+    @out_header.puts <<-EOS
+
+#ifndef __#{out_prefix}__h
+#define __#{out_prefix}__h
+
+#include "ScriptingCore.h"
+#include "cocos2d.h"
+
+using namespace cocos2d;
+
+typedef struct {
+\tuint32_t flags;
+\tvoid* data;
+} pointerShell_t;
+
+typedef enum {
+\tkPointerTemporary = 1
+} pointerShellFlags;
+
+#define JSGET_PTRSHELL(type, cobj, jsobj) do { \\
+\tpointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(jsobj); \\
+\tif (pt) { \\
+\t\tcobj = (type *)pt->data; \\
+\t} else { \\
+\t\tcobj = NULL; \\
+\t} \\
+} while (0)
+
+    EOS
+
+    @out_impl.puts "#include \"#{out_prefix}.hpp\"\n\n"
+
     find_fundamental_types
     find_pointer_types
     find_references
@@ -571,11 +671,16 @@ class BindingsGenerator
     # this is very expensive
     find_missing_dependencies
     instantiate_class_generators
+
+    @out_header.puts "#endif\n\n"
+    @out_header.close
+    @out_impl.close
   end
 
   # returns a single character to append to the argument format string
   # @see https://developer.mozilla.org/en/SpiderMonkey/JSAPI_Reference/JS_ConvertArguments
   def arg_format(arg, type)
+    real_type(arg)
     if find_type(arg[:type], type)
       if type[:fundamental]
         case type[:name]
@@ -803,9 +908,10 @@ private
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
-      puts v[:generator]
+      @out_header.puts v[:generator].generate_declaration
+      @out_impl.puts   v[:generator].generate_implementation
     end
   end
 
@@ -818,5 +924,5 @@ private
 
 end
 
-doc = Nokogiri::XML(File.read("cocos2d.xml"))
-BindingsGenerator.new(doc)
+doc = Nokogiri::XML(File.read(ARGV[0]))
+BindingsGenerator.new(doc, ARGV[1])

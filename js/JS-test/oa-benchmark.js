@@ -19,12 +19,13 @@ var background = new cocos.Sprite();
 background.initWithFile("background.png");
 scene.addChild(background);
 
-//CCSpriteFrameCache.addSpriteFramesWithFile("tank.plist");
+var spriteFrameCache = cocos.SpriteFrameCache.sharedSpriteFrameCache();
+spriteFrameCache.addSpriteFramesWithFile("tank.plist");
 
 // wrapper around CCSprite
 var Tank = function () {
 	var sprite = new cocos.Sprite();
-	sprite.initWithFile("tank1.png");
+	sprite.initWithSpriteFrameName("tank1.png");
 
 	var pos = new cocos.Point();
 	pos.x = Math.random() * 320;
@@ -65,20 +66,29 @@ var Tank = function () {
 	this.sprite = sprite;
 };
 
+// create animation
+var frames = ["tank1.png", "tank2.png", "tank3.png", "tank4.png", "tank5.png"];
+var animation = new cocos.Animation();
+animation.init();
+animation.delay = 0.1;
+for (var i=0; i < frames.length; i++) {
+	var frame = spriteFrameCache.spriteFrameByName(frames[i]);
+	animation.addFrame(frame);
+}
+
 // do the fun
 var totalTanks = 100;
-//var frames = ["tank1.png", "tank2.png", "tank3.png", "tank4.png", "tank5.png"];
-// create animation
-//var animation = new CCAnimation(frames, 0.05);
-
 for (var i=0; i < totalTanks; i++) {
 	var tank = new Tank();
 	tank.tankId = i;
 	scene.addChild(tank.sprite);
 
 	// second argument false by default
-//	var action = new CCAnimate(animation);
-//	tank.sprite.runAction(new CCRepeatForever(action));
+	var action = new cocos.Animate();
+	action.initWithAnimation(animation);
+	var repeat = new cocos.RepeatForever();
+	repeat.initWithAction(action);
+	tank.sprite.runAction(repeat);
 }
 
 var director = cocos.Director.sharedDirector();

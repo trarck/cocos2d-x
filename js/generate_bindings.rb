@@ -53,7 +53,8 @@ class CppMethod
         type = {}
         arg_str = ""
         if @klass.generator.find_type(arg[:type], type)
-          arg_str << "#{type[:name]} #{arg[:name]}"
+          pointer = type[:pointer] ? "*" : ""
+          arg_str << "#{type[:name]}#{pointer} #{arg[:name]}"
         end
         args << arg_str
       end
@@ -79,7 +80,7 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
-    # debugger if @name == "initWithDuration"
+    # debugger if @name == "didAccelerate"
     @arguments.each_with_index do |arg, i|
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
@@ -135,15 +136,22 @@ class CppMethod
     if @klass.generator.find_type(@type, type)
       ret = ""
       void_ret = ""
+      ref = false
+      # debugger if @name == "initWithAnimation"
       unless type[:fundamental] && type[:name] == "void"
         ret = type[:name]
-        ret += (type[:pointer] ? "*" : "")
-        ret += " ret = "
+        ref = type[:pointer].nil? && type[:fundamental].nil?
+        ret += "#{type[:fundamental] ? "" : "*"} ret = "
       else
         void_ret = "JS_SET_RVAL(cx, vp, JSVAL_TRUE);"
       end
-      str << "#{indent}\t#{ret}#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
-      str << "#{indent}\t" << @klass.convert_value_to_js({:type => @type, :pointer => type[:pointer]}, "ret", "vp", 3, "") << "\n"
+      if ref
+        str << "#{indent}\t#{ret}new #{type[:name]}(#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')}));\n"
+        type[:pointer] = true
+      else
+        str << "#{indent}\t#{ret}#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
+      end
+      str << "#{indent}\t" << @klass.convert_value_to_js({:type => @type, :pointer => type[:pointer]}, "ret", "vp", indent_level+1, "") << "\n"
       str << "#{indent}\t#{void_ret}\n"
     else
       str << "#{indent}\t//INVALID RETURN TYPE #{@type}\n"
@@ -179,9 +187,14 @@ class CppClass
 
     (node / "Field").each do |field|
       # puts field if @name == "CCPoint"
-      md = field['name'].match(/m_([nfpbt])(\w+)/)
+      md = field['name'].match(/m_(\w+)/)
       if md
-        field_name = md[2].uncapitalize
+        # might be m_var or m_([nfpbt])Var
+        if md_ = md[1].match(/[nfpbtus]([A-Z]\w*)/)
+          field_name = md_[1].uncapitalize
+        else
+          field_name = md[1].uncapitalize
+        end
         @properties[field_name] = {:type => field['type'], :getter => nil, :setter => nil, :requires_accessor => true}
       else
         @properties[field['name']] = {:type => field['type']} if field['access'] == "public"
@@ -196,7 +209,7 @@ class CppClass
       # the accessors
       next if method['access'] != "public"
       # no support for "node" or "descrition" (yet)
-      next if method['name'].match(/^(node|description|copyWithZone)/)
+      next if method['name'].match(/^(node|description|copyWithZone|mutableCopy)/)
       next if method['name'].match(/step|update/) && (@name == "CCAction" || @parents.map { |n| n[:name] }.include?("CCAction"))
 
       # mark as singleton (produce no constructor code)
@@ -249,7 +262,7 @@ class CppClass
       name = method[0]
       m = method[1].first
       # skip event methods (only called from C++) and static methods (also, skip update)
-      next if name =~ /^on/ || m.static || name == "update"
+      next if name =~ /^on/ || name =~ /^ccTouch/ || m.static || name == "update"
       arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
     arr << "\t\t\tJS_FS_END"
@@ -278,9 +291,9 @@ class CppClass
       name = method[0]
       m = method[1].first
       needs_update = true if name =~ /^scheduleUpdate/
-      if name =~ /^on/
+      if name =~ /^(on|ccTouch)/
         # override the instance method
-        str << "\t#{m.native_signature};"
+        str << "\tvirtual #{m.native_signature};\n"
       else
         str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp);\n"
       end
@@ -299,8 +312,9 @@ class CppClass
       m = method[1].first
       needs_update = true if name =~ /^scheduleUpdate/
       # event
-      if name =~ /^on/
+      if name =~ /^(on|ccTouch)/
         # override the instance method
+        touchBegan = name == "ccTouchBegan"
         str << "#{m.native_signature(true)} {\n"
         str << "\tif (m_jsobj) {\n"
         str << "\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
@@ -308,9 +322,49 @@ class CppClass
         str << "\t\tif (found == JS_TRUE) {\n"
         str << "\t\t\tjsval rval, fval;\n"
         str << "\t\t\tJS_GetProperty(cx, m_jsobj, \"#{name}\", &fval);\n"
-        str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);\n"
+        if name =~ /^on/
+          str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);\n"
+        else
+          # check if we're on a touch or touches: if it's touch, just pass a CCTouch, otherwise pass
+          # and array of CCTouches
+          if name =~ /ccTouches/
+            str << "\t\t\tjsval *touches = new jsval[pTouches->count()];\n"
+            str << "\t\t\tCCTouch *pTouch;\n"
+            str << "\t\t\tCCSetIterator setIter;\n"
+            str << "\t\t\tint i=0;\n"
+            str << "\t\t\tfor (setIter = pTouches->begin(); setIter != pTouches->end(); setIter++, i++) {\n"
+            str << "\t\t\t\tpTouch = (CCTouch *)(*setIter);\n"
+            str << "\t\t\t\tCCPoint pt = pTouch->locationInView();\n"
+            str << "\t\t\t\tCCTouch *touch = new CCTouch(pt.x, pt.y);\n"
+            str << "\t\t\t\tpointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
+            str << "\t\t\t\tshell->flags = kPointerTemporary;\n"
+            str << "\t\t\t\tshell->data = (void *)touch;\n"
+            str << "\t\t\t\tJSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);\n"
+            str << "\t\t\t\tJS_SetPrivate(tmp, shell);\n"
+            str << "\t\t\t\ttouches[i] = OBJECT_TO_JSVAL(tmp);\n"
+            str << "\t\t\t}\n"
+            str << "\t\t\tJSObject *array = JS_NewArrayObject(cx, pTouches->count(), touches);\n"
+            str << "\t\t\tjsval arg = OBJECT_TO_JSVAL(array);\n"
+            str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);\n"
+            str << "\t\t\tdelete touches;\n"
+          else
+            str << "\t\t\tpointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
+            str << "\t\t\tshell->flags = kPointerTemporary;\n"
+            str << "\t\t\tshell->data = (void *)pTouch;\n"
+            str << "\t\t\tJSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);\n"
+            str << "\t\t\tJS_SetPrivate(tmp, shell);\n"
+            str << "\t\t\tjsval arg = OBJECT_TO_JSVAL(tmp);\n"
+            str << "\t\t\tJS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);\n"
+          end
+          if touchBegan
+            str << "\t\t\tJSBool ret = false;\n"
+            str << "\t\t\tJS_ValueToBoolean(cx, rval, &ret);\n"
+            str << "\t\t\treturn ret;\n"
+          end
+        end
         str << "\t\t}\n"
         str << "\t}\n"
+        str << "\treturn false;\n" if touchBegan
       else
         str << "JSBool S_#{@name}::js#{name}(JSContext *cx, uint32_t argc, jsval *vp) {\n"
         unless m.static
@@ -321,6 +375,9 @@ class CppClass
         m.convert_arguments_and_call(str, 1)
         str << "\tJS_SET_RVAL(cx, vp, JSVAL_TRUE);\n"
         str << "\treturn JS_TRUE;\n"
+      end
+      if name =~ /^on/
+        str << "\t\t\t#{@name}::#{name}();\n"
       end
       str << "}\n"
     end
@@ -383,6 +440,7 @@ class CppClass
     str << "\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
     str << "\tif (!cobj) return JS_FALSE;\n"
     str << "\tswitch(propId) {\n"
+    # debugger if @name == "CCTouch"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:getter].nil?
       convert_code = convert_value_to_js(val, prop, "val", 2)
@@ -585,15 +643,23 @@ class CppClass
         if type[:class] || type[:reference]
           ref = true unless val[:pointer] || type[:pointer]
         end
-        # debugger if @name == "CCRect"
+        # debugger if @name == "CCNode" && inval_str == "ret"
         is_class = type[:class]
         js_class = (is_class) ? "S_#{type[:name]}::jsClass" : "NULL"
         js_proto = (is_class) ? "S_#{type[:name]}::jsObject" : "NULL"
         str << "do {\n"
         str << "#{indent}\tJSObject *tmp = JS_NewObject(cx, #{js_class}, #{js_proto}, NULL);\n"
         str << "#{indent}\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));\n"
-        str << "#{indent}\tpt->flags = kPointerTemporary;\n"
-        str << "#{indent}\tpt->data = (void *)#{ref ? "&" : ""}#{inval_str};\n"
+        if ref
+          # uses the copy constructor to get a new (in stack) object
+          str << "#{indent}\t#{type[:name]}* ctmp = new #{type[:name]}(#{inval_str});\n"
+          str << "#{indent}\tpt->flags = 0;\n"
+          inval_str = "ctmp"
+        else
+          # just pass the reference, wrapped in a temporary object
+          str << "#{indent}\tpt->flags = kPointerTemporary;\n"
+        end
+        str << "#{indent}\tpt->data = (void *)#{inval_str};\n"
         str << "#{indent}\tJS_SetPrivate(tmp, pt);\n"
         str << "#{indent}\tJS_SET_RVAL(cx, #{outvalue}, OBJECT_TO_JSVAL(tmp));\n"
         str << "#{indent}} while (0);"
@@ -607,6 +673,12 @@ end
 
 class BindingsGenerator
   attr_reader :classes, :fundamental_types, :pointer_types, :out_header, :out_impl
+  CCRETAIN_METHODS = %w(
+    addChild
+    runAction
+    runWithScene
+    initWith*
+  )
 
   # initialize everything with a nokogiri document
   def initialize(doc, out_prefix)
@@ -751,6 +823,7 @@ typedef enum {
     td = @typedefs[v[:type]]
     if td
       v[:type] = td[:type]
+      v[:name] = td[:name]
       # search for recursive typedef
       real_type(v)
     end
@@ -908,7 +981,7 @@ private
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch CCSet).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       @out_header.puts v[:generator].generate_declaration
       @out_impl.puts   v[:generator].generate_implementation

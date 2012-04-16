@@ -55,6 +55,46 @@ public:
 
 };
 
+class S_CCLayer : public CCLayer
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCLayer(JSObject *obj) : CCLayer(), m_jsobj(obj) {};
+	enum {
+		kIsTouchEnabled = 1,
+		kIsAccelerometerEnabled,
+		kIsKeypadEnabled,
+		kScriptHandlerEntry
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
+	virtual void onEnter();
+	virtual void onExit();
+	virtual void onEnterTransitionDidFinish();
+	virtual bool ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent);
+	virtual void ccTouchMoved(CCTouch* pTouch, CCEvent* pEvent);
+	virtual void ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent);
+	virtual void ccTouchCancelled(CCTouch* pTouch, CCEvent* pEvent);
+	virtual void ccTouchesBegan(CCSet* pTouches, CCEvent* pEvent);
+	virtual void ccTouchesMoved(CCSet* pTouches, CCEvent* pEvent);
+	virtual void ccTouchesEnded(CCSet* pTouches, CCEvent* pEvent);
+	virtual void ccTouchesCancelled(CCSet* pTouches, CCEvent* pEvent);
+	static JSBool jsdidAccelerate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsregisterWithTouchDispatcher(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsregisterScriptTouchHandler(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunregisterScriptTouchHandler(JSContext *cx, uint32_t argc, jsval *vp);
+	virtual void update(ccTime delta);
+
+};
+
 class S_CCAction : public CCAction
 {
 	JSObject *m_jsobj;
@@ -90,8 +130,12 @@ public:
 
 	S_CCSpriteFrame(JSObject *obj) : CCSpriteFrame(), m_jsobj(obj) {};
 	enum {
-		kRotated = 1,
-		kObTexture
+		kRectInPixels = 1,
+		kRotated,
+		kRect,
+		kOffsetInPixels,
+		kOriginalSizeInPixels,
+		kTexture
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -114,9 +158,9 @@ public:
 
 	S_CCAnimation(JSObject *obj) : CCAnimation(), m_jsobj(obj) {};
 	enum {
-		kAmeStr = 1,
+		kNameStr = 1,
 		kDelay,
-		kObFrames
+		kFrames
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -226,14 +270,14 @@ public:
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
 	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsaddSpriteFramesWithDictionary(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsaddSpriteFramesWithDictionary(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddSpriteFramesWithFile(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddSpriteFrame(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFrames(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveUnusedSpriteFrames(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFrameByName(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFramesFromFile(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsremoveSpriteFramesFromDictionary(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsremoveSpriteFramesFromDictionary(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFramesFromTexture(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsspriteFrameByName(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jssharedSpriteFrameCache(JSContext *cx, uint32_t argc, jsval *vp);
@@ -286,7 +330,10 @@ public:
 	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
-	void onEnter();	void onEnterTransitionDidFinish();	void onExit();	static JSBool jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp);
+	virtual void onEnter();
+	virtual void onEnterTransitionDidFinish();
+	virtual void onExit();
+	static JSBool jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddChild(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveFromParentAndCleanup(JSContext *cx, uint32_t argc, jsval *vp);
@@ -306,17 +353,17 @@ public:
 	static JSBool jsstopAction(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsstopActionByTag(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsnumberOfRunningActions(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsisScheduled(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsisScheduled(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsscheduleUpdateWithPriority(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsschedule(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsunschedule(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsunscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsschedule(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunschedule(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsresumeSchedulerAndActions(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jspauseSchedulerAndActions(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsparentToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
-//	static JSBool jsworldToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsparentToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsworldToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToNodeSpace(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToWorldSpace(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToNodeSpaceAR(JSContext *cx, uint32_t argc, jsval *vp);
@@ -355,24 +402,31 @@ public:
 
 	enum {
 		kPurgeDirecotorInNextLoop = 1,
-		kObOpenGLView,
+		kOpenGLView,
+		kInterval,
 		kLandscape,
 		kDisplayFPS,
 		kAccumDt,
 		kFrameRate,
 		kFPSLabel,
 		kPaused,
+		kTotalFrames,
+		kFrames,
 		kRunningScene,
 		kNextScene,
 		kSendCleanupToScene,
-		kObScenesStack,
+		kScenesStack,
 		kLastUpdate,
 		kDeltaTime,
 		kNextDeltaTimeZero,
+		kEProjection,
+		kWinSizeInPoints,
+		kWinSizeInPixels,
 		kContentScaleFactor,
-		kSzFPS,
+		kPszFPS,
 		kNotificationNode,
 		kProjectionDelegate,
+		kEDeviceOrientation,
 		kIsContentScaleSupported,
 		kRetinaDisplay
 	};
@@ -437,6 +491,58 @@ public:
 
 };
 
+class S_CCSet : public CCSet
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCSet(JSObject *obj) : CCSet(), m_jsobj(obj) {};
+	enum {
+		kSet = 1
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jscopy(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jscount(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsaddObject(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsremoveObject(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jscontainsObject(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsbegin(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsend(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsanyObject(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
+class S_CCTouch : public CCTouch
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCTouch(JSObject *obj) : CCTouch(), m_jsobj(obj) {};
+	enum {
+		kPoint = 1,
+		kPrevPoint
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jslocationInView(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jspreviousLocationInView(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsSetTouchInfo(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
 class S_CCSprite : public CCSprite
 {
 	JSObject *m_jsobj;
@@ -447,14 +553,24 @@ public:
 	S_CCSprite(JSObject *obj) : CCSprite(), m_jsobj(obj) {};
 	enum {
 		kOpacity = 1,
-		kObTextureAtlas,
-		kObBatchNode,
+		kColor,
+		kTextureAtlas,
+		kAtlasIndex,
+		kBatchNode,
+		kTransform,
 		kDirty,
 		kRecursiveDirty,
 		kHasChildren,
-		kObTexture,
+		kBlendFunc,
+		kTexture,
 		kUsesBatchNode,
+		kRect,
+		kRectInPixels,
 		kRectRotated,
+		kOffsetPositionInPixels,
+		kUnflippedOffsetPositionFromCenter,
+		kQuad,
+		kColorUnmodified,
 		kOpacityModifyRGB,
 		kFlipX,
 		kFlipY

@@ -41,9 +41,11 @@ ScriptingCore::ScriptingCore()
 	S_CCPoint::jsCreateClass(this->cx, cocos, "Point");
 	S_CCSize::jsCreateClass(this->cx, cocos, "Size");
 	S_CCRect::jsCreateClass(this->cx, cocos, "Rect");
+	S_CCTouch::jsCreateClass(this->cx, cocos, "Touch");
 	S_CCDirector::jsCreateClass(this->cx, cocos, "Director");
 	S_CCNode::jsCreateClass(this->cx, cocos, "Node");
 	S_CCScene::jsCreateClass(this->cx, cocos, "Scene");
+	S_CCLayer::jsCreateClass(this->cx, cocos, "Layer");
 	S_CCSprite::jsCreateClass(this->cx, cocos, "Sprite");
 	S_CCSpriteFrame::jsCreateClass(this->cx, cocos, "SpriteFrame");
 	S_CCSpriteFrameCache::jsCreateClass(this->cx, cocos, "SpriteFrameCache");
@@ -54,6 +56,8 @@ ScriptingCore::ScriptingCore()
 
 	// register some global functions
 	JS_DefineFunction(this->cx, cocos, "log", ScriptingCore::log, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(this->cx, cocos, "addGCRootObject", ScriptingCore::addRootJS, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+	JS_DefineFunction(this->cx, cocos, "removeGCRootObject", ScriptingCore::removeRootJS, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(this->cx, cocos, "forceGC", ScriptingCore::forceGC, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 }
 

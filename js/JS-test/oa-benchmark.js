@@ -77,19 +77,45 @@ for (var i=0; i < frames.length; i++) {
 }
 
 // do the fun
-var totalTanks = 100;
-for (var i=0; i < totalTanks; i++) {
+// global array to prevent GC
+var tanks = new Array(100);
+for (var i=0; i < tanks.length; i++) {
 	var tank = new Tank();
 	tank.tankId = i;
 	scene.addChild(tank.sprite);
+	if (i == 0) {
+		// this is not working correctly (only on ccnodes)
+		tank.sprite.onEnter = function () {
+			cocos.log("on enter");
+		}
+	}
 
 	// second argument false by default
-	var action = new cocos.Animate();
-	action.initWithAnimation(animation);
-	var repeat = new cocos.RepeatForever();
-	repeat.initWithAction(action);
-	tank.sprite.runAction(repeat);
+	tank.action = new cocos.Animate();
+	tank.action.initWithAnimation(animation);
+	tank.repeat = new cocos.RepeatForever();
+	tank.repeat.initWithAction(tank.action);
+	tank.sprite.runAction(tank.repeat);
+
+	tanks[i] = tank;
 }
+
+var layer = new cocos.Layer();
+layer.onEnter = function () {
+	cocos.log("layer enter");
+};
+layer.isTouchEnabled = true;
+layer.ccTouchBegan = function (touch) {
+	var point = touch.locationInView();
+	cocos.log("cc touch: " + point.x + "," + point.y);
+};
+layer.ccTouchesBegan = function (touches) {
+	for (var i=0; i < touches.length; i++) {
+		var point = touches[i].locationInView();
+		cocos.log("cc touches: " + point.x + "," + point.y);
+	}
+};
+scene.addChild(layer);
 
 var director = cocos.Director.sharedDirector();
 director.runWithScene(scene);

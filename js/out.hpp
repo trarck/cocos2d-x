@@ -178,6 +178,32 @@ public:
 
 };
 
+class S_CCRotateBy : public CCRotateBy
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCRotateBy(JSObject *obj) : CCRotateBy(), m_jsobj(obj) {};
+	enum {
+		kAngle = 1,
+		kStartAngle
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsupdate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsreverse(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
 class S_CCPoint : public CCPoint
 {
 	JSObject *m_jsobj;
@@ -222,6 +248,32 @@ public:
 
 };
 
+class S_CCMoveTo : public CCMoveTo
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMoveTo(JSObject *obj) : CCMoveTo(), m_jsobj(obj) {};
+	enum {
+		kEndPosition = 1,
+		kPosition,
+		kDelta
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsupdate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
 class S_CCRect : public CCRect
 {
 	JSObject *m_jsobj;
@@ -249,6 +301,32 @@ public:
 	static JSBool jsCCRectEqualToRect(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsCCRectContainsPoint(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsCCRectIntersectsRect(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
+class S_CCRotateTo : public CCRotateTo
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCRotateTo(JSObject *obj) : CCRotateTo(), m_jsobj(obj) {};
+	enum {
+		kDstAngle = 1,
+		kStartAngle,
+		kDiffAngle
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsupdate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
 
 };
 
@@ -462,6 +540,27 @@ public:
 	static JSBool jsenableRetinaDisplay(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsisRetinaDisplay(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jssharedDirector(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
+class S_CCMoveBy : public CCMoveBy
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMoveBy(JSObject *obj) : CCMoveBy(), m_jsobj(obj) {};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsreverse(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp);
 
 };
 

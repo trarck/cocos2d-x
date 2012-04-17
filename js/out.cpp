@@ -1310,6 +1310,177 @@ JSBool S_CCAnimation::jsanimationWithFrames(JSContext *cx, uint32_t argc, jsval 
 	return JS_TRUE;
 }
 
+JSClass* S_CCRotateBy::jsClass = NULL;
+JSObject* S_CCRotateBy::jsObject = NULL;
+
+JSBool S_CCRotateBy::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCRotateBy::jsClass, S_CCRotateBy::jsObject, NULL);
+	S_CCRotateBy *cobj = new S_CCRotateBy(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCRotateBy::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCRotateBy *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCRotateBy::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCRotateBy *cobj; JSGET_PTRSHELL(S_CCRotateBy, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCRotateBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCRotateBy *cobj; JSGET_PTRSHELL(S_CCRotateBy, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCRotateBy::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"angle", kAngle, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRotateBy::jsPropertyGet, S_CCRotateBy::jsPropertySet},
+			{"startAngle", kStartAngle, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRotateBy::jsPropertyGet, S_CCRotateBy::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithDuration", S_CCRotateBy::jsinitWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("startWithTarget", S_CCRotateBy::jsstartWithTarget, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("reverse", S_CCRotateBy::jsreverse, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("actionWithDuration", S_CCRotateBy::jsactionWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCRotateBy::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCRotateBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		float arg0;
+		float arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		bool ret = self->initWithDuration(arg0, arg1);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		self->startWithTarget(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateBy::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		float arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->update(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCActionInterval* ret = self->reverse();
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCActionInterval::jsClass, S_CCActionInterval::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 2) {
+		float arg0;
+		float arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		CCRotateBy* ret = CCRotateBy::actionWithDuration(arg0, arg1);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCRotateBy::jsClass, S_CCRotateBy::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
 JSClass* S_CCPoint::jsClass = NULL;
 JSObject* S_CCPoint::jsObject = NULL;
 
@@ -1525,6 +1696,158 @@ JSBool S_CCSize::jsCCSizeEqualToSize(JSContext *cx, uint32_t argc, jsval *vp) {
 		CCSize* narg1; JSGET_PTRSHELL(CCSize, narg1, arg1);
 		bool ret = CCSize::CCSizeEqualToSize(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
+JSClass* S_CCMoveTo::jsClass = NULL;
+JSObject* S_CCMoveTo::jsObject = NULL;
+
+JSBool S_CCMoveTo::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMoveTo::jsClass, S_CCMoveTo::jsObject, NULL);
+	S_CCMoveTo *cobj = new S_CCMoveTo(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMoveTo::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMoveTo *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMoveTo::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMoveTo *cobj; JSGET_PTRSHELL(S_CCMoveTo, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMoveTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMoveTo *cobj; JSGET_PTRSHELL(S_CCMoveTo, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMoveTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"endPosition", kEndPosition, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMoveTo::jsPropertyGet, S_CCMoveTo::jsPropertySet},
+			{"position", kPosition, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMoveTo::jsPropertyGet, S_CCMoveTo::jsPropertySet},
+			{"delta", kDelta, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMoveTo::jsPropertyGet, S_CCMoveTo::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithDuration", S_CCMoveTo::jsinitWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("startWithTarget", S_CCMoveTo::jsstartWithTarget, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("actionWithDuration", S_CCMoveTo::jsactionWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCMoveTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMoveTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		float arg0;
+		JSObject *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		bool ret = self->initWithDuration(arg0, *narg1);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		self->startWithTarget(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		float arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->update(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 2) {
+		float arg0;
+		JSObject *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		CCMoveTo* ret = CCMoveTo::actionWithDuration(arg0, *narg1);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCMoveTo::jsClass, S_CCMoveTo::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
 		
 		return JS_TRUE;
 	}
@@ -1774,6 +2097,156 @@ JSBool S_CCRect::jsCCRectIntersectsRect(JSContext *cx, uint32_t argc, jsval *vp)
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = CCRect::CCRectIntersectsRect(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
+JSClass* S_CCRotateTo::jsClass = NULL;
+JSObject* S_CCRotateTo::jsObject = NULL;
+
+JSBool S_CCRotateTo::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCRotateTo::jsClass, S_CCRotateTo::jsObject, NULL);
+	S_CCRotateTo *cobj = new S_CCRotateTo(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCRotateTo::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCRotateTo *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCRotateTo::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCRotateTo *cobj; JSGET_PTRSHELL(S_CCRotateTo, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCRotateTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCRotateTo *cobj; JSGET_PTRSHELL(S_CCRotateTo, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCRotateTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"dstAngle", kDstAngle, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRotateTo::jsPropertyGet, S_CCRotateTo::jsPropertySet},
+			{"startAngle", kStartAngle, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRotateTo::jsPropertyGet, S_CCRotateTo::jsPropertySet},
+			{"diffAngle", kDiffAngle, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRotateTo::jsPropertyGet, S_CCRotateTo::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithDuration", S_CCRotateTo::jsinitWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("startWithTarget", S_CCRotateTo::jsstartWithTarget, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("actionWithDuration", S_CCRotateTo::jsactionWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCRotateTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCRotateTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		float arg0;
+		float arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		bool ret = self->initWithDuration(arg0, arg1);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		self->startWithTarget(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		float arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->update(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCRotateTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 2) {
+		float arg0;
+		float arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		CCRotateTo* ret = CCRotateTo::actionWithDuration(arg0, arg1);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCRotateTo::jsClass, S_CCRotateTo::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
 		
 		return JS_TRUE;
 	}
@@ -3807,6 +4280,162 @@ JSBool S_CCDirector::jssharedDirector(JSContext *cx, uint32_t argc, jsval *vp) {
 		CCDirector* ret = CCDirector::sharedDirector();
 		do {
 			JSObject *tmp = JS_NewObject(cx, S_CCDirector::jsClass, S_CCDirector::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
+JSClass* S_CCMoveBy::jsClass = NULL;
+JSObject* S_CCMoveBy::jsObject = NULL;
+
+JSBool S_CCMoveBy::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMoveBy::jsClass, S_CCMoveBy::jsObject, NULL);
+	S_CCMoveBy *cobj = new S_CCMoveBy(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMoveBy::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMoveBy *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMoveBy::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMoveBy *cobj; JSGET_PTRSHELL(S_CCMoveBy, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMoveBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMoveBy *cobj; JSGET_PTRSHELL(S_CCMoveBy, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMoveBy::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithDuration", S_CCMoveBy::jsinitWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("startWithTarget", S_CCMoveBy::jsstartWithTarget, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("reverse", S_CCMoveBy::jsreverse, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("actionWithDuration", S_CCMoveBy::jsactionWithDuration, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCMoveTo::jsObject,jsClass,S_CCMoveBy::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMoveBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveBy* self = NULL; JSGET_PTRSHELL(S_CCMoveBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		float arg0;
+		JSObject *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		bool ret = self->initWithDuration(arg0, *narg1);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveBy* self = NULL; JSGET_PTRSHELL(S_CCMoveBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		self->startWithTarget(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMoveBy* self = NULL; JSGET_PTRSHELL(S_CCMoveBy, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCActionInterval* ret = self->reverse();
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCActionInterval::jsClass, S_CCActionInterval::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMoveBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 2) {
+		float arg0;
+		JSObject *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		CCMoveBy* ret = CCMoveBy::actionWithDuration(arg0, *narg1);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCMoveBy::jsClass, S_CCMoveBy::jsObject, NULL);
 			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
 			pt->flags = kPointerTemporary;
 			pt->data = (void *)ret;

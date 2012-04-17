@@ -1389,7 +1389,7 @@ void S_CCRotateBy::jsCreateClass(JSContext *cx, JSObject *globalObj, const char 
 			JS_FS_END
 		};
 
-	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCRotateBy::jsConstructor,0,properties,funcs,NULL,st_funcs);
+	jsObject = JS_InitClass(cx,globalObj,S_CCAction::jsObject,jsClass,S_CCRotateBy::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
 JSBool S_CCRotateBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
@@ -1447,7 +1447,7 @@ JSBool S_CCRotateBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
 		CCActionInterval* ret = self->reverse();
 		do {
-			JSObject *tmp = JS_NewObject(cx, S_CCActionInterval::jsClass, S_CCActionInterval::jsObject, NULL);
+			JSObject *tmp = JS_NewObject(cx, S_CCAction::jsClass, S_CCAction::jsObject, NULL);
 			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
 			pt->flags = kPointerTemporary;
 			pt->data = (void *)ret;
@@ -1782,7 +1782,7 @@ void S_CCMoveTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 			JS_FS_END
 		};
 
-	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCMoveTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
+	jsObject = JS_InitClass(cx,globalObj,S_CCAction::jsObject,jsClass,S_CCMoveTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
 JSBool S_CCMoveTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
@@ -2183,7 +2183,7 @@ void S_CCRotateTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char 
 			JS_FS_END
 		};
 
-	jsObject = JS_InitClass(cx,globalObj,S_CCActionInterval::jsObject,jsClass,S_CCRotateTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
+	jsObject = JS_InitClass(cx,globalObj,S_CCAction::jsObject,jsClass,S_CCRotateTo::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
 JSBool S_CCRotateTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
@@ -4414,7 +4414,7 @@ JSBool S_CCMoveBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
 		CCActionInterval* ret = self->reverse();
 		do {
-			JSObject *tmp = JS_NewObject(cx, S_CCActionInterval::jsClass, S_CCActionInterval::jsObject, NULL);
+			JSObject *tmp = JS_NewObject(cx, S_CCAction::jsClass, S_CCAction::jsObject, NULL);
 			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
 			pt->flags = kPointerTemporary;
 			pt->data = (void *)ret;

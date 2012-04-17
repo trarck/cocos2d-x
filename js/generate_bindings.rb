@@ -981,7 +981,9 @@ private
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch CCSet).include?(v[:name]) }.each do |k,v|
+    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
+                               CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
+                               CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture).include?(v[:name]) }.each do |k,v|
       v[:generator] = CppClass.new(v[:xml], self)
       @out_header.puts v[:generator].generate_declaration
       @out_impl.puts   v[:generator].generate_implementation

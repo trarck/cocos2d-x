@@ -52,6 +52,10 @@ ScriptingCore::ScriptingCore()
 	S_CCAnimation::jsCreateClass(this->cx, cocos, "Animation");
 	S_CCAction::jsCreateClass(this->cx, cocos, "Action");
 	S_CCAnimate::jsCreateClass(this->cx, cocos, "Animate");
+	S_CCMoveBy::jsCreateClass(this->cx, cocos, "MoveBy");
+	S_CCMoveTo::jsCreateClass(this->cx, cocos, "MoveTo");
+	S_CCRotateBy::jsCreateClass(this->cx, cocos, "RotateBy");
+	S_CCRotateTo::jsCreateClass(this->cx, cocos, "RotateTo");
 	S_CCRepeatForever::jsCreateClass(this->cx, cocos, "RepeatForever");
 
 	// register some global functions

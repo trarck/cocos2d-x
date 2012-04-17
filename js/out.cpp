@@ -4762,12 +4762,11 @@ void S_CCRenderTexture::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 }
 
 JSBool S_CCRenderTexture::jsrenderTextureWithWidthAndHeight(JSContext *cx, uint32_t argc, jsval *vp) {
-	if (argc == 3) {
+	if (argc == 2) {
 		int arg0;
 		int arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ii*", &arg0, &arg1, &arg2);
-		CCRenderTexture* ret = CCRenderTexture::renderTextureWithWidthAndHeight(arg0, arg1, *narg2);
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ii", &arg0, &arg1);
+		CCRenderTexture* ret = CCRenderTexture::renderTextureWithWidthAndHeight(arg0, arg1);
 		do {
 			JSObject *tmp = JS_NewObject(cx, S_CCRenderTexture::jsClass, S_CCRenderTexture::jsObject, NULL);
 			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
@@ -4786,12 +4785,11 @@ JSBool S_CCRenderTexture::jsinitWithWidthAndHeight(JSContext *cx, uint32_t argc,
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCRenderTexture* self = NULL; JSGET_PTRSHELL(S_CCRenderTexture, self, obj);
 	if (self == NULL) return JS_FALSE;
-	if (argc == 3) {
+	if (argc == 2) {
 		int arg0;
 		int arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ii*", &arg0, &arg1, &arg2);
-		bool ret = self->initWithWidthAndHeight(arg0, arg1, *narg2);
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ii", &arg0, &arg1);
+		bool ret = self->initWithWidthAndHeight(arg0, arg1, kCCTexture2DPixelFormat_RGBA8888);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
 		return JS_TRUE;

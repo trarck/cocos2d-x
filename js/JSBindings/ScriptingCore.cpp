@@ -47,6 +47,7 @@ ScriptingCore::ScriptingCore()
 	S_CCScene::jsCreateClass(this->cx, cocos, "Scene");
 	S_CCLayer::jsCreateClass(this->cx, cocos, "Layer");
 	S_CCSprite::jsCreateClass(this->cx, cocos, "Sprite");
+	S_CCRenderTexture::jsCreateClass(this->cx, cocos, "RenderTexture");
 	S_CCSpriteFrame::jsCreateClass(this->cx, cocos, "SpriteFrame");
 	S_CCSpriteFrameCache::jsCreateClass(this->cx, cocos, "SpriteFrameCache");
 	S_CCAnimation::jsCreateClass(this->cx, cocos, "Animation");

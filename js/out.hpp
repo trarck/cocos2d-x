@@ -95,6 +95,46 @@ public:
 
 };
 
+class S_CCMenu : public CCMenu
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMenu(JSObject *obj) : CCMenu(), m_jsobj(obj) {};
+	enum {
+		kColor = 1,
+		kCOpacity,
+		kEState,
+		kSelectedItem
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsmenuWithItems(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsmenuWithItem(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinitWithItems(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsVertically(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsVerticallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsHorizontally(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsHorizontallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsalignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsaddChild(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsregisterWithTouchDispatcher(JSContext *cx, uint32_t argc, jsval *vp);
+	virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchCancelled(CCTouch* touch, CCEvent* event);
+	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+	virtual void onExit();
+
+};
+
 class S_CCAction : public CCAction
 {
 	JSObject *m_jsobj;
@@ -119,6 +159,31 @@ public:
 	static JSBool jsstop(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaction(JSContext *cx, uint32_t argc, jsval *vp);
 
+};
+
+class S_CCMenuItemSprite : public CCMenuItemSprite
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMenuItemSprite(JSObject *obj) : CCMenuItemSprite(), m_jsobj(obj) {};
+	enum {
+		kNormalImage = 1,
+		kSelectedImage,
+		kDisabledImage
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsitemFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinitFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
 };
 
 class S_CCSpriteFrame : public CCSpriteFrame
@@ -543,6 +608,39 @@ public:
 
 };
 
+class S_CCMenuItem : public CCMenuItem
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMenuItem(JSObject *obj) : CCMenuItem(), m_jsobj(obj) {};
+	enum {
+		kIsSelected = 1,
+		kIsEnabled,
+		kListener,
+		kSelector,
+		kScriptHandler
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsitemWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsrect(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactivate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp);
+	virtual void update(ccTime delta);
+	void menuAction(CCObject *o);
+};
+
 class S_CCMoveBy : public CCMoveBy
 {
 	JSObject *m_jsobj;
@@ -622,6 +720,33 @@ public:
 	static JSBool jssaveBuffer(JSContext *cx, uint32_t argc, jsval *vp);
 	virtual void update(ccTime delta);
 
+};
+
+class S_CCMenuItemLabel : public CCMenuItemLabel
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMenuItemLabel(JSObject *obj) : CCMenuItemLabel(), m_jsobj(obj) {};
+	enum {
+		kDisabledColor = 1,
+		kLabel,
+		kColorBackup,
+		kOriginalScale
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsitemWithLabel(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinitWithLabel(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsactivate(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
 };
 
 class S_CCSet : public CCSet

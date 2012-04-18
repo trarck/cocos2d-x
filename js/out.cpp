@@ -669,6 +669,382 @@ void S_CCLayer::update(ccTime delta) {
 	}
 }
 
+JSClass* S_CCMenu::jsClass = NULL;
+JSObject* S_CCMenu::jsObject = NULL;
+
+JSBool S_CCMenu::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMenu::jsClass, S_CCMenu::jsObject, NULL);
+	S_CCMenu *cobj = new S_CCMenu(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMenu::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMenu *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMenu::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenu *cobj; JSGET_PTRSHELL(S_CCMenu, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kColor:
+				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000100bff238 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenu>, :setter=>#<CppMethod:0x00000100bfc2b8 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenu>, :requires_accessor=>true})
+		return JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMenu::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenu *cobj; JSGET_PTRSHELL(S_CCMenu, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	case kColor:
+				// don't know what this is (js ~> c, _45B)
+		ret = JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMenu::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"color", kColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenu::jsPropertyGet, S_CCMenu::jsPropertySet},
+			{"cOpacity", kCOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenu::jsPropertyGet, S_CCMenu::jsPropertySet},
+			{"eState", kEState, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenu::jsPropertyGet, S_CCMenu::jsPropertySet},
+			{"selectedItem", kSelectedItem, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenu::jsPropertyGet, S_CCMenu::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("init", S_CCMenu::jsinit, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("initWithItems", S_CCMenu::jsinitWithItems, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsVertically", S_CCMenu::jsalignItemsVertically, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsVerticallyWithPadding", S_CCMenu::jsalignItemsVerticallyWithPadding, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsHorizontally", S_CCMenu::jsalignItemsHorizontally, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsHorizontallyWithPadding", S_CCMenu::jsalignItemsHorizontallyWithPadding, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsInColumns", S_CCMenu::jsalignItemsInColumns, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("alignItemsInRows", S_CCMenu::jsalignItemsInRows, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("addChild", S_CCMenu::jsaddChild, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("registerWithTouchDispatcher", S_CCMenu::jsregisterWithTouchDispatcher, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("menuWithItems", S_CCMenu::jsmenuWithItems, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("menuWithItem", S_CCMenu::jsmenuWithItem, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCLayer::jsObject,jsClass,S_CCMenu::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMenu::jsmenuWithItems(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCMenuItem* narg0; JSGET_PTRSHELL(CCMenuItem, narg0, arg0);
+		CCMenu* ret = CCMenu::menuWithItems(narg0);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCMenu::jsClass, S_CCMenu::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsmenuWithItem(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCMenuItem* narg0; JSGET_PTRSHELL(CCMenuItem, narg0, arg0);
+		CCMenu* ret = CCMenu::menuWithItem(narg0);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCMenu::jsClass, S_CCMenu::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsinit(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		bool ret = self->init();
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsinitWithItems(JSContext *cx, uint32_t argc, jsval *vp) {
+//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+//	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+//	if (self == NULL) return JS_FALSE;
+//	if (argc == 2) {
+//		JSObject *arg0;
+//		JSObject *arg1;
+//		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+//		CCMenuItem* narg0; JSGET_PTRSHELL(CCMenuItem, narg0, arg0);
+//		__va_list_tag* narg1; JSGET_PTRSHELL(__va_list_tag, narg1, arg1);
+//		bool ret = self->initWithItems(narg0, narg1);
+//		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+//		
+//		return JS_TRUE;
+//	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsVertically(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->alignItemsVertically();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsVerticallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		float arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->alignItemsVerticallyWithPadding(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsHorizontally(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->alignItemsHorizontally();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsHorizontallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		float arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->alignItemsHorizontallyWithPadding(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		unsigned int arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		self->alignItemsInColumns(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsalignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		unsigned int arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		self->alignItemsInRows(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsaddChild(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		JSObject *arg0;
+		int arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		self->addChild(narg0, arg1);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenu::jsregisterWithTouchDispatcher(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->registerWithTouchDispatcher();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+bool S_CCMenu::ccTouchBegan(CCTouch* pTouch, CCEvent* event) {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "ccTouchBegan", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "ccTouchBegan", &fval);
+			pointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			shell->flags = kPointerTemporary;
+			shell->data = (void *)pTouch;
+			JSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);
+			JS_SetPrivate(tmp, shell);
+			jsval arg = OBJECT_TO_JSVAL(tmp);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);
+			JSBool ret = false;
+			JS_ValueToBoolean(cx, rval, &ret);
+			return ret;
+		}
+	}
+	return false;
+}
+void S_CCMenu::ccTouchEnded(CCTouch* pTouch, CCEvent* event) {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "ccTouchEnded", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "ccTouchEnded", &fval);
+			pointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			shell->flags = kPointerTemporary;
+			shell->data = (void *)pTouch;
+			JSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);
+			JS_SetPrivate(tmp, shell);
+			jsval arg = OBJECT_TO_JSVAL(tmp);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);
+		}
+	}
+}
+void S_CCMenu::ccTouchCancelled(CCTouch* pTouch, CCEvent* event) {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "ccTouchCancelled", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "ccTouchCancelled", &fval);
+			pointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			shell->flags = kPointerTemporary;
+			shell->data = (void *)pTouch;
+			JSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);
+			JS_SetPrivate(tmp, shell);
+			jsval arg = OBJECT_TO_JSVAL(tmp);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);
+		}
+	}
+}
+void S_CCMenu::ccTouchMoved(CCTouch* pTouch, CCEvent* event) {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "ccTouchMoved", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "ccTouchMoved", &fval);
+			pointerShell_t *shell = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			shell->flags = kPointerTemporary;
+			shell->data = (void *)pTouch;
+			JSObject *tmp = JS_NewObject(cx, S_CCTouch::jsClass, S_CCTouch::jsObject, NULL);
+			JS_SetPrivate(tmp, shell);
+			jsval arg = OBJECT_TO_JSVAL(tmp);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &arg, &rval);
+		}
+	}
+}
+void S_CCMenu::onExit() {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "onExit", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "onExit", &fval);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 0, 0, &rval);
+		}
+	}
+			CCMenu::onExit();
+}
+
 JSClass* S_CCAction::jsClass = NULL;
 JSObject* S_CCAction::jsObject = NULL;
 
@@ -853,6 +1229,216 @@ JSBool S_CCAction::jsaction(JSContext *cx, uint32_t argc, jsval *vp) {
 			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
 		} while (0);
 		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
+JSClass* S_CCMenuItemSprite::jsClass = NULL;
+JSObject* S_CCMenuItemSprite::jsObject = NULL;
+
+JSBool S_CCMenuItemSprite::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMenuItemSprite::jsClass, S_CCMenuItemSprite::jsObject, NULL);
+	S_CCMenuItemSprite *cobj = new S_CCMenuItemSprite(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMenuItemSprite::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMenuItemSprite *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMenuItemSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItemSprite *cobj; JSGET_PTRSHELL(S_CCMenuItemSprite, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kNormalImage:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCNode::jsClass, S_CCNode::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getNormalImage();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		return JS_TRUE;
+		break;
+	case kSelectedImage:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCNode::jsClass, S_CCNode::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getSelectedImage();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		return JS_TRUE;
+		break;
+	case kDisabledImage:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCNode::jsClass, S_CCNode::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getDisabledImage();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		return JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMenuItemSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItemSprite *cobj; JSGET_PTRSHELL(S_CCMenuItemSprite, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	case kNormalImage:
+		do {
+			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setNormalImage(tmp); }
+		} while (0);
+		ret = JS_TRUE;
+		break;
+	case kSelectedImage:
+		do {
+			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setSelectedImage(tmp); }
+		} while (0);
+		ret = JS_TRUE;
+		break;
+	case kDisabledImage:
+		do {
+			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setDisabledImage(tmp); }
+		} while (0);
+		ret = JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMenuItemSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"normalImage", kNormalImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
+			{"selectedImage", kSelectedImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
+			{"disabledImage", kDisabledImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initFromNormalSprite", S_CCMenuItemSprite::jsinitFromNormalSprite, 5, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("selected", S_CCMenuItemSprite::jsselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("unselected", S_CCMenuItemSprite::jsunselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("itemFromNormalSprite", S_CCMenuItemSprite::jsitemFromNormalSprite, 3, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCMenuItem::jsObject,jsClass,S_CCMenuItemSprite::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMenuItemSprite::jsitemFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 3) {
+		JSObject *arg0;
+		JSObject *arg1;
+		JSObject *arg2;
+		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ooo", &arg0, &arg1, &arg2);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		CCNode* narg1; JSGET_PTRSHELL(CCNode, narg1, arg1);
+		CCNode* narg2; JSGET_PTRSHELL(CCNode, narg2, arg2);
+		CCMenuItemSprite* ret = CCMenuItemSprite::itemFromNormalSprite(narg0, narg1, narg2);
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCMenuItemSprite::jsClass, S_CCMenuItemSprite::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemSprite::jsinitFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemSprite* self = NULL; JSGET_PTRSHELL(S_CCMenuItemSprite, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 5) {
+		JSObject *arg0;
+		JSObject *arg1;
+		JSObject *arg2;
+		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "ooo", &arg0, &arg1, &arg2);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		CCNode* narg1; JSGET_PTRSHELL(CCNode, narg1, arg1);
+		CCNode* narg2; JSGET_PTRSHELL(CCNode, narg2, arg2);
+		bool ret = self->initFromNormalSprite(narg0, narg1, narg2, self, menu_selector(S_CCMenuItem::menuAction));
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemSprite::jsselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemSprite* self = NULL; JSGET_PTRSHELL(S_CCMenuItemSprite, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->selected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemSprite::jsunselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemSprite* self = NULL; JSGET_PTRSHELL(S_CCMenuItemSprite, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->unselected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 		return JS_TRUE;
 	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4293,6 +4879,258 @@ JSBool S_CCDirector::jssharedDirector(JSContext *cx, uint32_t argc, jsval *vp) {
 	return JS_TRUE;
 }
 
+JSClass* S_CCMenuItem::jsClass = NULL;
+JSObject* S_CCMenuItem::jsObject = NULL;
+
+JSBool S_CCMenuItem::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMenuItem::jsClass, S_CCMenuItem::jsObject, NULL);
+	S_CCMenuItem *cobj = new S_CCMenuItem(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMenuItem::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMenuItem *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMenuItem::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItem *cobj; JSGET_PTRSHELL(S_CCMenuItem, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kIsSelected:
+		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsSelected()));
+		return JS_TRUE;
+		break;
+	case kIsEnabled:
+		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsEnabled()));
+		return JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMenuItem::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItem *cobj; JSGET_PTRSHELL(S_CCMenuItem, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	case kIsEnabled:
+		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsEnabled(tmp); } while (0);
+		ret = JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMenuItem::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"isSelected", kIsSelected, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItem::jsPropertyGet, S_CCMenuItem::jsPropertySet},
+			{"isEnabled", kIsEnabled, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItem::jsPropertyGet, S_CCMenuItem::jsPropertySet},
+			{"listener", kListener, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItem::jsPropertyGet, S_CCMenuItem::jsPropertySet},
+			{"selector", kSelector, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItem::jsPropertyGet, S_CCMenuItem::jsPropertySet},
+			{"scriptHandler", kScriptHandler, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItem::jsPropertyGet, S_CCMenuItem::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("init", S_CCMenuItem::jsinit, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("rect", S_CCMenuItem::jsrect, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("activate", S_CCMenuItem::jsactivate, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("selected", S_CCMenuItem::jsselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("unselected", S_CCMenuItem::jsunselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("registerScriptHandler", S_CCMenuItem::jsregisterScriptHandler, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("unregisterScriptHandler", S_CCMenuItem::jsunregisterScriptHandler, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("itemWithTarget", S_CCMenuItem::jsitemWithTarget, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCNode::jsObject,jsClass,S_CCMenuItem::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMenuItem::jsitemWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
+//	if (argc == 1) {
+//		JSObject *arg0;
+//		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+//		CCObject* narg0; JSGET_PTRSHELL(CCObject, narg0, arg0);
+//		CCMenuItem* ret = CCMenuItem::itemWithTarget(narg0, NULL);
+//		do {
+//			JSObject *tmp = JS_NewObject(cx, S_CCMenuItem::jsClass, S_CCMenuItem::jsObject, NULL);
+//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+//			pt->flags = kPointerTemporary;
+//			pt->data = (void *)ret;
+//			JS_SetPrivate(tmp, pt);
+//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+//		} while (0);
+//		
+//		return JS_TRUE;
+//	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsinit(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		bool ret = self->initWithTarget(self, menu_selector(S_CCMenuItem::menuAction));
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsrect(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCRect* ret = new CCRect(self->rect());
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCRect::jsClass, S_CCRect::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsactivate(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->activate();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->selected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsunselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->unselected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		int arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		self->registerScriptHandler(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItem::jsunregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->unregisterScriptHandler();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+void S_CCMenuItem::update(ccTime delta) {
+	if (m_jsobj) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		JSBool found; JS_HasProperty(cx, m_jsobj, "update", &found);
+		if (found == JS_TRUE) {
+			jsval rval, fval;
+			JS_GetProperty(cx, m_jsobj, "update", &fval);
+			jsval jsdelta; JS_NewNumberValue(cx, delta, &jsdelta);
+			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);
+		}
+	}
+}
+void S_CCMenuItem::menuAction(cocos2d::CCObject *o)
+{
+	if (m_jsobj) {
+		JSBool hasMethod;
+		JSContext *cx = ScriptingCore::getInstance().getGlobalContext();
+		JS_HasProperty(cx, m_jsobj, "action", &hasMethod);
+		if (hasMethod == JS_TRUE) {
+			jsval callback, rval;
+			JS_GetProperty(cx, m_jsobj, "action", &callback);
+			JS_CallFunctionValue(cx, m_jsobj, callback, 0, 0, &rval);
+		}
+	}
+}
+
 JSClass* S_CCMoveBy::jsClass = NULL;
 JSObject* S_CCMoveBy::jsObject = NULL;
 
@@ -4907,6 +5745,199 @@ void S_CCRenderTexture::update(ccTime delta) {
 			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);
 		}
 	}
+}
+
+JSClass* S_CCMenuItemLabel::jsClass = NULL;
+JSObject* S_CCMenuItemLabel::jsObject = NULL;
+
+JSBool S_CCMenuItemLabel::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCMenuItemLabel::jsClass, S_CCMenuItemLabel::jsObject, NULL);
+	S_CCMenuItemLabel *cobj = new S_CCMenuItemLabel(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCMenuItemLabel::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCMenuItemLabel *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCMenuItemLabel::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItemLabel *cobj; JSGET_PTRSHELL(S_CCMenuItemLabel, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kDisabledColor:
+				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000100b6e3a0 @name="getDisabledColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenuItemLabel>, :setter=>#<CppMethod:0x00000100b6d360 @name="setDisabledColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenuItemLabel>, :requires_accessor=>true})
+		return JS_TRUE;
+		break;
+	case kLabel:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCNode::jsClass, S_CCNode::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getLabel();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		return JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return JS_FALSE;
+}
+
+JSBool S_CCMenuItemLabel::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCMenuItemLabel *cobj; JSGET_PTRSHELL(S_CCMenuItemLabel, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	case kDisabledColor:
+				// don't know what this is (js ~> c, _45B)
+		ret = JS_TRUE;
+		break;
+	case kLabel:
+		do {
+			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setLabel(tmp); }
+		} while (0);
+		ret = JS_TRUE;
+		break;
+	default:
+		break;
+	}
+	return ret;
+};
+
+void S_CCMenuItemLabel::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"disabledColor", kDisabledColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{"label", kLabel, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{"colorBackup", kColorBackup, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{"originalScale", kOriginalScale, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithLabel", S_CCMenuItemLabel::jsinitWithLabel, 3, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("activate", S_CCMenuItemLabel::jsactivate, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("selected", S_CCMenuItemLabel::jsselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("unselected", S_CCMenuItemLabel::jsunselected, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("itemWithLabel", S_CCMenuItemLabel::jsitemWithLabel, 3, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCMenuItem::jsObject,jsClass,S_CCMenuItemLabel::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCMenuItemLabel::jsitemWithLabel(JSContext *cx, uint32_t argc, jsval *vp) {
+//	if (argc == 3) {
+//		JSObject *arg0;
+//		JSObject *arg1;
+//		JSObject *arg2;
+//		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "oo*", &arg0, &arg1, &arg2);
+//		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+//		CCObject* narg1; JSGET_PTRSHELL(CCObject, narg1, arg1);
+//		CCMenuItemLabel* ret = CCMenuItemLabel::itemWithLabel(narg0, narg1, *narg2);
+//		do {
+//			JSObject *tmp = JS_NewObject(cx, S_CCMenuItemLabel::jsClass, S_CCMenuItemLabel::jsObject, NULL);
+//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+//			pt->flags = kPointerTemporary;
+//			pt->data = (void *)ret;
+//			JS_SetPrivate(tmp, pt);
+//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+//		} while (0);
+//		
+//		return JS_TRUE;
+//	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemLabel::jsinitWithLabel(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemLabel* self = NULL; JSGET_PTRSHELL(S_CCMenuItemLabel, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		bool ret = self->initWithLabel(narg0, self, menu_selector(S_CCMenuItem::menuAction));
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemLabel::jsactivate(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemLabel* self = NULL; JSGET_PTRSHELL(S_CCMenuItemLabel, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->activate();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemLabel::jsselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemLabel* self = NULL; JSGET_PTRSHELL(S_CCMenuItemLabel, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->selected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCMenuItemLabel::jsunselected(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCMenuItemLabel* self = NULL; JSGET_PTRSHELL(S_CCMenuItemLabel, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->unselected();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
 }
 
 JSClass* S_CCSet::jsClass = NULL;

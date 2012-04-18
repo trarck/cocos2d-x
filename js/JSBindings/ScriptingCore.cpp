@@ -50,6 +50,7 @@ ScriptingCore::ScriptingCore()
 	S_CCRenderTexture::jsCreateClass(this->cx, cocos, "RenderTexture");
 	S_CCMenu::jsCreateClass(this->cx, cocos, "Menu");
 	S_CCMenuItem::jsCreateClass(this->cx, cocos, "MenuItem");
+	S_CCMenuItemImage::jsCreateClass(this->cx, cocos, "MenuItemImage");
 	S_CCMenuItemLabel::jsCreateClass(this->cx, cocos, "MenuItemLabel");
 	S_CCMenuItemSprite::jsCreateClass(this->cx, cocos, "MenuItemSprite");
 	S_CCSpriteFrame::jsCreateClass(this->cx, cocos, "SpriteFrame");

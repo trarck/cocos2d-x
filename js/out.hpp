@@ -25,6 +25,21 @@ typedef enum {
 	} \
 } while (0)
 
+#define MENU_ITEM_ACTION(klass) \
+void klass::menuAction(cocos2d::CCObject *o) \
+{ \
+	if (m_jsobj) { \
+		JSBool hasMethod; \
+		JSContext *cx = ScriptingCore::getInstance().getGlobalContext(); \
+		JS_HasProperty(cx, m_jsobj, "action", &hasMethod); \
+		if (hasMethod == JS_TRUE) { \
+			jsval callback, rval; \
+			JS_GetProperty(cx, m_jsobj, "action", &callback); \
+			JS_CallFunctionValue(cx, m_jsobj, callback, 0, 0, &rval); \
+		} \
+	} \
+}
+
 class S_CCAnimate : public CCAnimate
 {
 	JSObject *m_jsobj;
@@ -125,14 +140,7 @@ public:
 	static JSBool jsalignItemsHorizontallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsaddChild(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsregisterWithTouchDispatcher(JSContext *cx, uint32_t argc, jsval *vp);
-	virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
-	virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
-	virtual void ccTouchCancelled(CCTouch* touch, CCEvent* event);
-	virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
-	virtual void onExit();
-
 };
 
 class S_CCAction : public CCAction
@@ -184,6 +192,7 @@ public:
 	static JSBool jsinitFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
+	void menuAction(cocos2d::CCObject *o);
 };
 
 class S_CCSpriteFrame : public CCSpriteFrame
@@ -241,6 +250,25 @@ public:
 	static JSBool jsanimation(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsanimationWithFrames(JSContext *cx, uint32_t argc, jsval *vp);
 
+};
+
+class S_CCMenuItemImage : public CCMenuItemImage
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCMenuItemImage(JSObject *obj) : CCMenuItemImage(), m_jsobj(obj) {};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jsitemFromNormalImage(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinitFromNormalImage(JSContext *cx, uint32_t argc, jsval *vp);
+	void menuAction(cocos2d::CCObject *o);
 };
 
 class S_CCRotateBy : public CCRotateBy
@@ -747,6 +775,7 @@ public:
 	static JSBool jsactivate(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
+	void menuAction(cocos2d::CCObject *o);
 };
 
 class S_CCSet : public CCSet
@@ -852,7 +881,6 @@ public:
 	static JSBool jsremoveChild(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveAllChildrenWithCleanup(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsreorderChild(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsaddChild(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsisFlipX(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsisFlipY(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsupdateColor(JSContext *cx, uint32_t argc, jsval *vp);

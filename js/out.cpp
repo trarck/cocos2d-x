@@ -4227,6 +4227,163 @@ void S_CCNode::update(ccTime delta) {
 	}
 }
 
+JSClass* S_CCLabelTTF::jsClass = NULL;
+JSObject* S_CCLabelTTF::jsObject = NULL;
+
+JSBool S_CCLabelTTF::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCLabelTTF::jsClass, S_CCLabelTTF::jsObject, NULL);
+	S_CCLabelTTF *cobj = new S_CCLabelTTF(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCLabelTTF::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCLabelTTF *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCLabelTTF::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCLabelTTF *cobj; JSGET_PTRSHELL(S_CCLabelTTF, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return S_CCSprite::jsPropertyGet(cx, obj, _id, val);
+}
+
+JSBool S_CCLabelTTF::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCLabelTTF *cobj; JSGET_PTRSHELL(S_CCLabelTTF, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	JSBool ret = JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	if (ret == false) {
+		return S_CCSprite::jsPropertySet(cx, obj, _id, strict, val);
+	}
+	return ret;
+};
+
+void S_CCLabelTTF::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"dimensions", kDimensions, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelTTF::jsPropertyGet, S_CCLabelTTF::jsPropertySet},
+			{"eAlignment", kEAlignment, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelTTF::jsPropertyGet, S_CCLabelTTF::jsPropertySet},
+			{"fontName", kFontName, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelTTF::jsPropertyGet, S_CCLabelTTF::jsPropertySet},
+			{"fontSize", kFontSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelTTF::jsPropertyGet, S_CCLabelTTF::jsPropertySet},
+			{"string", kString, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelTTF::jsPropertyGet, S_CCLabelTTF::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("initWithString", S_CCLabelTTF::jsinitWithString, 5, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("convertToLabelProtocol", S_CCLabelTTF::jsconvertToLabelProtocol, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("labelWithString", S_CCLabelTTF::jslabelWithString, 5, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,S_CCSprite::jsObject,jsClass,S_CCLabelTTF::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCLabelTTF::jslabelWithString(JSContext *cx, uint32_t argc, jsval *vp) {
+//	if (argc == 5) {
+//		JSString *arg0;
+//		JSObject *arg1;
+//		JSObject *arg2;
+//		JSString *arg3;
+//		float arg4;
+//		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "So*Sd", &arg0, &arg1, &arg2, &arg3, &arg4);
+//		char *narg0 = JS_EncodeString(cx, arg0);
+//		CCSize* narg1; JSGET_PTRSHELL(CCSize, narg1, arg1);
+//		char *narg3 = JS_EncodeString(cx, arg3);
+//		CCLabelTTF* ret = CCLabelTTF::labelWithString(narg0, *narg1, *narg2, narg3, arg4);
+//		do {
+//			JSObject *tmp = JS_NewObject(cx, S_CCLabelTTF::jsClass, S_CCLabelTTF::jsObject, NULL);
+//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+//			pt->flags = kPointerTemporary;
+//			pt->data = (void *)ret;
+//			JS_SetPrivate(tmp, pt);
+//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+//		} while (0);
+//		
+//		return JS_TRUE;
+//	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCLabelTTF::jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCLabelTTF* self = NULL; JSGET_PTRSHELL(S_CCLabelTTF, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 5) {
+		JSString *arg0;
+		JSObject *arg1;
+		int arg2;
+		JSString *arg3;
+		float arg4;
+		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "SoiSd", &arg0, &arg1, &arg2, &arg3, &arg4);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		CCSize* narg1; JSGET_PTRSHELL(CCSize, narg1, arg1);
+		char *narg3 = JS_EncodeString(cx, arg3);
+		bool ret = self->initWithString(narg0, *narg1, (CCTextAlignment)arg2, narg3, arg4);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCLabelTTF::jsconvertToLabelProtocol(JSContext *cx, uint32_t argc, jsval *vp) {
+//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+//	S_CCLabelTTF* self = NULL; JSGET_PTRSHELL(S_CCLabelTTF, self, obj);
+//	if (self == NULL) return JS_FALSE;
+//	if (argc == 0) {
+//		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+//		CCLabelProtocol* ret = self->convertToLabelProtocol();
+//		do {
+//			JSObject *tmp = JS_NewObject(cx, S_CCLabelProtocol::jsClass, S_CCLabelProtocol::jsObject, NULL);
+//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+//			pt->flags = kPointerTemporary;
+//			pt->data = (void *)ret;
+//			JS_SetPrivate(tmp, pt);
+//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+//		} while (0);
+//		
+//		return JS_TRUE;
+//	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
 JSClass* S_CCScene::jsClass = NULL;
 JSObject* S_CCScene::jsObject = NULL;
 
@@ -4369,6 +4526,18 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 		} while (0);
 		return JS_TRUE;
 		break;
+	case kWinSize:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCSize::jsClass, S_CCSize::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			CCSize* ctmp = new CCSize(cobj->getWinSize());
+			pt->flags = 0;
+			pt->data = (void *)ctmp;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		return JS_TRUE;
+		break;
 	case kWinSizeInPixels:
 		do {
 			JSObject *tmp = JS_NewObject(cx, S_CCSize::jsClass, S_CCSize::jsObject, NULL);
@@ -4467,7 +4636,7 @@ void S_CCDirector::jsCreateClass(JSContext *cx, JSObject *globalObj, const char 
 			{"deltaTime", kDeltaTime, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"nextDeltaTimeZero", kNextDeltaTimeZero, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"eProjection", kEProjection, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
-			{"winSizeInPoints", kWinSizeInPoints, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
+			{"winSize", kWinSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"winSizeInPixels", kWinSizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"contentScaleFactor", kContentScaleFactor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"pszFPS", kPszFPS, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},

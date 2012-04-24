@@ -545,6 +545,33 @@ public:
 
 };
 
+class S_CCLabelTTF : public CCLabelTTF
+{
+	JSObject *m_jsobj;
+public:
+	static JSClass *jsClass;
+	static JSObject *jsObject;
+
+	S_CCLabelTTF(JSObject *obj) : CCLabelTTF(), m_jsobj(obj) {};
+	enum {
+		kDimensions = 1,
+		kEAlignment,
+		kFontName,
+		kFontSize,
+		kString
+	};
+
+	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
+	static void jsFinalize(JSContext *cx, JSObject *obj);
+	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
+	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
+	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
+	static JSBool jslabelWithString(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp);
+	static JSBool jsconvertToLabelProtocol(JSContext *cx, uint32_t argc, jsval *vp);
+
+};
+
 class S_CCScene : public CCScene
 {
 	JSObject *m_jsobj;
@@ -591,7 +618,7 @@ public:
 		kDeltaTime,
 		kNextDeltaTimeZero,
 		kEProjection,
-		kWinSizeInPoints,
+		kWinSize,
 		kWinSizeInPixels,
 		kContentScaleFactor,
 		kPszFPS,

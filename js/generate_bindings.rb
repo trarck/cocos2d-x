@@ -5,6 +5,7 @@
 require 'rubygems'
 require 'nokogiri'
 require 'ruby-debug'
+require 'fileutils'
 
 class String
   def uncapitalize
@@ -162,7 +163,7 @@ class CppMethod
 end
 
 class CppClass
-  attr_reader :name, :generator, :singleton
+  attr_reader :name, :generator, :singleton, :methods, :properties
 
   # initialize the class with a nokogiri node
   def initialize(node, bindings_generator)
@@ -250,6 +251,20 @@ class CppClass
       name = prop[0]
       arr << "\t\t\t{\"#{name}\", k#{name.capitalize}, JSPROP_PERMANENT | JSPROP_SHARED, S_#{@name}::jsPropertyGet, S_#{@name}::jsPropertySet}"
     end
+    # not needed!
+    # @parents.each do |parent|
+    #   only_names = @properties.map { |m| m[0] }
+    #   real_class = @generator.classes[parent[:record_id]]
+    #   if real_class[:generator].nil?
+    #     real_class[:generator] = CppClass.new(real_class[:xml], @generator)
+    #   end
+    #   real_class[:generator].properties.each do |prop|
+    #     name = prop[0]
+    #     unless only_names.include?(name)
+    #       arr << "\t\t\t{\"#{name}\", k#{name.capitalize}, JSPROP_PERMANENT | JSPROP_SHARED, S_#{parent[:name]}::jsPropertyGet, S_#{parent[:name]}::jsPropertySet}"
+    #     end
+    #   end
+    # end
     arr << "\t\t\t{0, 0, 0, 0, 0}"
     str =  "\t\tstatic JSPropertySpec properties[] = {\n"
     str << arr.join(",\n") << "\n"
@@ -265,6 +280,23 @@ class CppClass
       next if name =~ /^on/ || name =~ /^ccTouch/ || m.static || name == "update"
       arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
+    # not needed!
+    # @parents.each do |parent|
+    #   only_names = @methods.map { |m| m[0] }
+    #   real_class = @generator.classes[parent[:record_id]]
+    #   if real_class[:generator].nil?
+    #     real_class[:generator] = CppClass.new(real_class[:xml], @generator)
+    #   end
+    #   real_class[:generator].methods.each do |method|
+    #     name = method[0]
+    #     m = method[1].first
+    #     next if name =~ /^on/ || name =~ /^ccTouch/ || m.static || name == "update"
+    #     unless only_names.include?(name)
+    #       arr << "\t\t\tJS_FN(\"#{name}\", S_#{parent[:name]}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
+    #     end
+    #   end
+    # end
+
     arr << "\t\t\tJS_FS_END"
     str =  "\t\tstatic JSFunctionSpec funcs[] = {\n"
     str << arr.join(",\n") << "\n"
@@ -453,7 +485,7 @@ class CppClass
     str << "\tdefault:\n"
     str << "\t\tbreak;\n"
     str << "\t}\n"
-    str << "\treturn JS_FALSE;\n"
+    str << "\treturn JS_TRUE;\n"
     str << "}\n"
   end
 
@@ -464,7 +496,6 @@ class CppClass
     str << "\tint32_t propId = JSID_TO_INT(_id);\n"
     str << "\tS_#{@name} *cobj; JSGET_PTRSHELL(S_#{@name}, cobj, obj);\n"
     str << "\tif (!cobj) return JS_FALSE;\n"
-    str << "\tJSBool ret = JS_FALSE;\n"
     str << "\tswitch(propId) {\n"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:setter].nil?
@@ -472,14 +503,13 @@ class CppClass
       next if convert_code.nil?
       str << "\tcase k#{prop.capitalize}:\n"
       str << "\t\t#{convert_code}\n"
-      str << "\t\tret = JS_TRUE;\n"
       str << "\t\tbreak;\n"
     end
     str << "\tdefault:\n"
     str << "\t\tbreak;\n"
     str << "\t}\n"
-    str << "\treturn ret;\n"
-    str << "};\n"
+    str << "\treturn JS_TRUE;\n"
+    str << "}\n"
   end
 
   def generate_declaration
@@ -683,9 +713,18 @@ class BindingsGenerator
   # initialize everything with a nokogiri document
   def initialize(doc, out_prefix)
     out_prefix ||= "out"
+    hfile_name = "#{out_prefix}.hpp"
+    ifile_name = "#{out_prefix}.cpp"
 
-    @out_header = File.open("#{out_prefix}.hpp", "w+")
-    @out_impl   = File.open("#{out_prefix}.cpp", "w+")
+    if File.exists?(hfile_name)
+      FileUtils.copy(hfile_name, File.basename(hfile_name, ".hpp") + ".old.hpp")
+    end
+    if File.exists?(ifile_name)
+      FileUtils.copy(ifile_name, File.basename(ifile_name, ".cpp") + ".old.cpp")
+    end
+
+    @out_header = File.open(hfile_name, "w+")
+    @out_impl   = File.open(ifile_name, "w+")
 
     raise "Invalid XML file" if doc.root.name != "CLANG_XML"
     @translation_unit = (doc.root / "TranslationUnit").first rescue nil
@@ -865,7 +904,7 @@ private
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"
-          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record}
+          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record, :record_id => record['id']}
           break
         end
       end # each CXXRecord
@@ -876,7 +915,7 @@ private
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"
-          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record}
+          @classes[record['id']] = {:name => record['name'], :kind => :class, :xml => cxx_record, :record_id => record['id']}
           break
         end
       end # each CXXRecord
@@ -981,13 +1020,20 @@ private
   end
 
   def instantiate_class_generators
-    @classes.select { |k,v| %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
-                               CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
-                               CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture).include?(v[:name]) }.each do |k,v|
-      v[:generator] = CppClass.new(v[:xml], self)
+    green_lighted = %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
+                       CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
+                       CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
+                       CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF)
+    @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
+      # do not always create the generator, it might have already being created
+      # by a subclass
+      v[:generator] ||= CppClass.new(v[:xml], self)
       @out_header.puts v[:generator].generate_declaration
       @out_impl.puts   v[:generator].generate_implementation
     end
+
+    # output which ones are not greenlighted
+    # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) }
   end
 
   def complete_deps(v)

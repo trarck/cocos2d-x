@@ -1308,14 +1308,14 @@ JSBool S_CCMenuItemSprite::jsinitFromNormalSprite(JSContext *cx, uint32_t argc, 
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCMenuItemSprite* self = NULL; JSGET_PTRSHELL(S_CCMenuItemSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
-	if (argc == 5) {
+	if (argc >= 2) {
 		JSObject *arg0;
 		JSObject *arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "ooo", &arg0, &arg1, &arg2);
+		JSObject *arg2 = NULL;
+		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "oo/o", &arg0, &arg1, &arg2);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		CCNode* narg1; JSGET_PTRSHELL(CCNode, narg1, arg1);
-		CCNode* narg2; JSGET_PTRSHELL(CCNode, narg2, arg2);
+		CCNode* narg2 = NULL; if (argc == 3) JSGET_PTRSHELL(CCNode, narg2, arg2);
 		bool ret = self->initFromNormalSprite(narg0, narg1, narg2, self, menu_selector(S_CCMenuItemSprite::menuAction));
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		

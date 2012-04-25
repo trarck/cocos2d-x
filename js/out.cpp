@@ -38,12 +38,11 @@ JSBool S_CCAnimate::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval 
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCAnimate::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -51,20 +50,18 @@ JSBool S_CCAnimate::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCAnimate *cobj; JSGET_PTRSHELL(S_CCAnimate, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kAnimation:
 		do {
 			CCAnimation* tmp; JSGET_PTRSHELL(CCAnimation, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setAnimation(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCAnimate::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -278,20 +275,17 @@ JSBool S_CCLayer::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *v
 	switch(propId) {
 	case kIsTouchEnabled:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsTouchEnabled()));
-		return JS_TRUE;
 		break;
 	case kIsAccelerometerEnabled:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsAccelerometerEnabled()));
-		return JS_TRUE;
 		break;
 	case kIsKeypadEnabled:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsKeypadEnabled()));
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCLayer::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -299,25 +293,21 @@ JSBool S_CCLayer::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool s
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCLayer *cobj; JSGET_PTRSHELL(S_CCLayer, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kIsTouchEnabled:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsTouchEnabled(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kIsAccelerometerEnabled:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsAccelerometerEnabled(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kIsKeypadEnabled:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsKeypadEnabled(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCLayer::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -699,13 +689,12 @@ JSBool S_CCMenu::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
 	case kColor:
-				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000100bff238 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenu>, :setter=>#<CppMethod:0x00000100bfc2b8 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenu>, :requires_accessor=>true})
-		return JS_TRUE;
+				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000101aeed48 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenu>, :setter=>#<CppMethod:0x00000101aedc40 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenu>, :requires_accessor=>true})
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMenu::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -713,17 +702,15 @@ JSBool S_CCMenu::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool st
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMenu *cobj; JSGET_PTRSHELL(S_CCMenu, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kColor:
 				// don't know what this is (js ~> c, _45B)
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMenu::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -991,7 +978,6 @@ JSBool S_CCAction::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kTarget:
 		do {
@@ -1002,16 +988,14 @@ JSBool S_CCAction::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kTag:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getTag(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCAction::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1019,31 +1003,27 @@ JSBool S_CCAction::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCAction *cobj; JSGET_PTRSHELL(S_CCAction, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kOriginalTarget:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setOriginalTarget(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kTarget:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setTarget(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kTag:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setTag(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCAction::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -1181,7 +1161,6 @@ JSBool S_CCMenuItemSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kSelectedImage:
 		do {
@@ -1192,7 +1171,6 @@ JSBool S_CCMenuItemSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kDisabledImage:
 		do {
@@ -1203,12 +1181,11 @@ JSBool S_CCMenuItemSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMenuItemSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1216,34 +1193,30 @@ JSBool S_CCMenuItemSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id,
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMenuItemSprite *cobj; JSGET_PTRSHELL(S_CCMenuItemSprite, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kNormalImage:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setNormalImage(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kSelectedImage:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setSelectedImage(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kDisabledImage:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setDisabledImage(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMenuItemSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -1393,7 +1366,6 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kRect:
 		do {
@@ -1405,7 +1377,6 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kOffsetInPixels:
 		do {
@@ -1417,7 +1388,6 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kOriginalSizeInPixels:
 		do {
@@ -1429,7 +1399,6 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 //	case kTexture:
 //		do {
@@ -1445,7 +1414,7 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCSpriteFrame::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1453,52 +1422,45 @@ JSBool S_CCSpriteFrame::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JS
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCSpriteFrame *cobj; JSGET_PTRSHELL(S_CCSpriteFrame, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kRectInPixels:
 		do {
 			CCRect* tmp; JSGET_PTRSHELL(CCRect, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setRectInPixels(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kRotated:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setRotated(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kRect:
 		do {
 			CCRect* tmp; JSGET_PTRSHELL(CCRect, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setRect(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kOffsetInPixels:
 		do {
 			CCPoint* tmp; JSGET_PTRSHELL(CCPoint, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setOffsetInPixels(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kOriginalSizeInPixels:
 		do {
 			CCSize* tmp; JSGET_PTRSHELL(CCSize, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setOriginalSizeInPixels(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kTexture:
 		do {
 			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setTexture(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCSpriteFrame::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -1623,12 +1585,11 @@ JSBool S_CCAnimation::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsva
 	switch(propId) {
 	case kDelay:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getDelay(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCAnimation::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1636,17 +1597,15 @@ JSBool S_CCAnimation::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCAnimation *cobj; JSGET_PTRSHELL(S_CCAnimation, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kDelay:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setDelay(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCAnimation::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -1837,7 +1796,7 @@ JSBool S_CCMenuItemImage::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMenuItemImage::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1845,13 +1804,12 @@ JSBool S_CCMenuItemImage::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMenuItemImage *cobj; JSGET_PTRSHELL(S_CCMenuItemImage, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMenuItemImage::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -1959,7 +1917,7 @@ JSBool S_CCRotateBy::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCRotateBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -1967,13 +1925,12 @@ JSBool S_CCRotateBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCRotateBy *cobj; JSGET_PTRSHELL(S_CCRotateBy, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCRotateBy::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2129,16 +2086,14 @@ JSBool S_CCPoint::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *v
 	switch(propId) {
 	case kX:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->x, &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kY:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->y, &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCPoint::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2146,21 +2101,18 @@ JSBool S_CCPoint::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool s
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCPoint *cobj; JSGET_PTRSHELL(S_CCPoint, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kX:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->x = tmp; } while (0);
-		ret = JS_TRUE;
 		break;
 	case kY:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->y = tmp; } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCPoint::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2240,16 +2192,14 @@ JSBool S_CCSize::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 	switch(propId) {
 	case kWidth:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->width, &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kHeight:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->height, &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCSize::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2257,21 +2207,18 @@ JSBool S_CCSize::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool st
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCSize *cobj; JSGET_PTRSHELL(S_CCSize, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kWidth:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->width = tmp; } while (0);
-		ret = JS_TRUE;
 		break;
 	case kHeight:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->height = tmp; } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCSize::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2352,7 +2299,7 @@ JSBool S_CCMoveTo::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMoveTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2360,13 +2307,12 @@ JSBool S_CCMoveTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMoveTo *cobj; JSGET_PTRSHELL(S_CCMoveTo, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMoveTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2511,7 +2457,6 @@ JSBool S_CCRect::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kSize:
 		do {
@@ -2523,12 +2468,11 @@ JSBool S_CCRect::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCRect::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2536,27 +2480,24 @@ JSBool S_CCRect::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool st
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCRect *cobj; JSGET_PTRSHELL(S_CCRect, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kOrigin:
 		do {
 			CCPoint* tmp; JSGET_PTRSHELL(CCPoint, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->origin = *tmp; }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kSize:
 		do {
 			CCSize* tmp; JSGET_PTRSHELL(CCSize, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->size = *tmp; }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCRect::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2753,7 +2694,7 @@ JSBool S_CCRotateTo::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCRotateTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2761,13 +2702,12 @@ JSBool S_CCRotateTo::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCRotateTo *cobj; JSGET_PTRSHELL(S_CCRotateTo, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCRotateTo::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -2897,7 +2837,7 @@ JSBool S_CCSpriteFrameCache::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _i
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCSpriteFrameCache::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -2905,13 +2845,12 @@ JSBool S_CCSpriteFrameCache::jsPropertySet(JSContext *cx, JSObject *obj, jsid _i
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCSpriteFrameCache *cobj; JSGET_PTRSHELL(S_CCSpriteFrameCache, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCSpriteFrameCache::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -3198,23 +3137,18 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 	switch(propId) {
 	case kZOrder:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getZOrder(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kVertexZ:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getVertexZ(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kRotation:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getRotation(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kScaleX:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getScaleX(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kScaleY:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getScaleY(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kPosition:
 		do {
@@ -3226,7 +3160,6 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kPositionInPixels:
 		do {
@@ -3238,15 +3171,12 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kSkewX:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getSkewX(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kSkewY:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getSkewY(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 //	case kChildren:
 //		do {
@@ -3272,7 +3202,6 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 //		break;
 	case kIsVisible:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsVisible()));
-		return JS_TRUE;
 		break;
 	case kAnchorPoint:
 		do {
@@ -3284,7 +3213,6 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kAnchorPointInPixels:
 		do {
@@ -3296,7 +3224,6 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kContentSize:
 		do {
@@ -3308,7 +3235,6 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kContentSizeInPixels:
 		do {
@@ -3320,11 +3246,9 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kIsRunning:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsRunning()));
-		return JS_TRUE;
 		break;
 	case kParent:
 		do {
@@ -3335,24 +3259,20 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kIsRelativeAnchorPoint:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsRelativeAnchorPoint()));
-		return JS_TRUE;
 		break;
 	case kTag:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getTag(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kUserData:
 		
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCNode::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -3360,98 +3280,81 @@ JSBool S_CCNode::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool st
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCNode *cobj; JSGET_PTRSHELL(S_CCNode, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kVertexZ:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setVertexZ(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kRotation:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setRotation(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kScaleX:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setScaleX(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kScaleY:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setScaleY(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kPosition:
 		do {
 			CCPoint* tmp; JSGET_PTRSHELL(CCPoint, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setPosition(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kPositionInPixels:
 		do {
 			CCPoint* tmp; JSGET_PTRSHELL(CCPoint, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setPositionInPixels(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kSkewX:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setSkewX(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kSkewY:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setSkewY(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kIsVisible:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsVisible(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kAnchorPoint:
 		do {
 			CCPoint* tmp; JSGET_PTRSHELL(CCPoint, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setAnchorPoint(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kContentSize:
 		do {
 			CCSize* tmp; JSGET_PTRSHELL(CCSize, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setContentSize(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kContentSizeInPixels:
 		do {
 			CCSize* tmp; JSGET_PTRSHELL(CCSize, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setContentSizeInPixels(*tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kParent:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setParent(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kIsRelativeAnchorPoint:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsRelativeAnchorPoint(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kTag:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setTag(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kUserData:
 		do {
 			void* tmp; JSGET_PTRSHELL(void, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setUserData(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCNode::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -4259,7 +4162,7 @@ JSBool S_CCLabelTTF::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	default:
 		break;
 	}
-	return S_CCSprite::jsPropertyGet(cx, obj, _id, val);
+	return JS_TRUE;
 }
 
 JSBool S_CCLabelTTF::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -4267,16 +4170,12 @@ JSBool S_CCLabelTTF::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCLabelTTF *cobj; JSGET_PTRSHELL(S_CCLabelTTF, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	if (ret == false) {
-		return S_CCSprite::jsPropertySet(cx, obj, _id, strict, val);
-	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCLabelTTF::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -4416,7 +4315,7 @@ JSBool S_CCScene::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *v
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCScene::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -4424,13 +4323,12 @@ JSBool S_CCScene::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool s
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCScene *cobj; JSGET_PTRSHELL(S_CCScene, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCScene::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -4513,7 +4411,6 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	switch(propId) {
 	case kFrames:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getFrames(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kRunningScene:
 		do {
@@ -4524,7 +4421,6 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kWinSize:
 		do {
@@ -4536,7 +4432,6 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kWinSizeInPixels:
 		do {
@@ -4548,11 +4443,9 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kContentScaleFactor:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getContentScaleFactor(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kNotificationNode:
 		do {
@@ -4563,12 +4456,11 @@ JSBool S_CCDirector::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCDirector::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -4576,32 +4468,27 @@ JSBool S_CCDirector::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCDirector *cobj; JSGET_PTRSHELL(S_CCDirector, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kDisplayFPS:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setDisplayFPS(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kNextDeltaTimeZero:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setNextDeltaTimeZero(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kContentScaleFactor:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setContentScaleFactor(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kNotificationNode:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setNotificationNode(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCDirector::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -5112,16 +4999,14 @@ JSBool S_CCMenuItem::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	switch(propId) {
 	case kIsSelected:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsSelected()));
-		return JS_TRUE;
 		break;
 	case kIsEnabled:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsEnabled()));
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMenuItem::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -5129,17 +5014,15 @@ JSBool S_CCMenuItem::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMenuItem *cobj; JSGET_PTRSHELL(S_CCMenuItem, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kIsEnabled:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsEnabled(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMenuItem::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -5353,7 +5236,7 @@ JSBool S_CCMoveBy::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMoveBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -5361,13 +5244,12 @@ JSBool S_CCMoveBy::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMoveBy *cobj; JSGET_PTRSHELL(S_CCMoveBy, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMoveBy::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -5515,12 +5397,11 @@ JSBool S_CCRepeatForever::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCRepeatForever::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -5528,20 +5409,18 @@ JSBool S_CCRepeatForever::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCRepeatForever *cobj; JSGET_PTRSHELL(S_CCRepeatForever, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kInnerAction:
 		do {
 			CCActionInterval* tmp; JSGET_PTRSHELL(CCActionInterval, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setInnerAction(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCRepeatForever::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -5719,12 +5598,11 @@ JSBool S_CCRenderTexture::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCRenderTexture::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -5732,20 +5610,18 @@ JSBool S_CCRenderTexture::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCRenderTexture *cobj; JSGET_PTRSHELL(S_CCRenderTexture, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kSprite:
 		do {
 			CCSprite* tmp; JSGET_PTRSHELL(CCSprite, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setSprite(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCRenderTexture::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -5967,8 +5843,7 @@ JSBool S_CCMenuItemLabel::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
 	case kDisabledColor:
-				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000100b6e3a0 @name="getDisabledColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenuItemLabel>, :setter=>#<CppMethod:0x00000100b6d360 @name="setDisabledColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenuItemLabel>, :requires_accessor=>true})
-		return JS_TRUE;
+				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x0000010182b0e8 @name="getDisabledColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCMenuItemLabel>, :setter=>#<CppMethod:0x00000101829540 @name="setDisabledColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCMenuItemLabel>, :requires_accessor=>true})
 		break;
 	case kLabel:
 		do {
@@ -5979,12 +5854,11 @@ JSBool S_CCMenuItemLabel::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCMenuItemLabel::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -5992,24 +5866,21 @@ JSBool S_CCMenuItemLabel::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCMenuItemLabel *cobj; JSGET_PTRSHELL(S_CCMenuItemLabel, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kDisabledColor:
 				// don't know what this is (js ~> c, _45B)
-		ret = JS_TRUE;
 		break;
 	case kLabel:
 		do {
 			CCNode* tmp; JSGET_PTRSHELL(CCNode, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setLabel(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCMenuItemLabel::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -6163,7 +6034,7 @@ JSBool S_CCSet::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCSet::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -6171,13 +6042,12 @@ JSBool S_CCSet::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool str
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCSet *cobj; JSGET_PTRSHELL(S_CCSet, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCSet::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -6377,7 +6247,7 @@ JSBool S_CCTouch::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *v
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCTouch::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -6385,13 +6255,12 @@ JSBool S_CCTouch::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool s
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCTouch *cobj; JSGET_PTRSHELL(S_CCTouch, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCTouch::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {
@@ -6516,11 +6385,9 @@ JSBool S_CCSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 	switch(propId) {
 	case kOpacity:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getOpacity(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kColor:
-				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x00000100b11b50 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x00000100b10a98 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
-		return JS_TRUE;
+				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x000001020557a0 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x0000010203d088 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
 		break;
 //	case kTextureAtlas:
 //		do {
@@ -6535,11 +6402,9 @@ JSBool S_CCSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 //		break;
 	case kAtlasIndex:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getAtlasIndex(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
-		return JS_TRUE;
 		break;
 	case kBlendFunc:
-				// don't know what this is (c ~> js, {:type=>"_208F", :getter=>#<CppMethod:0x00000100af0568 @name="getBlendFunc", @static=false, @num_arguments=0, @arguments=[], @type="_5AC", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x00000100aef730 @name="setBlendFunc", @static=false, @num_arguments=1, @arguments=[{:name=>"blendFunc", :type=>"_208F"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
-		return JS_TRUE;
+				// don't know what this is (c ~> js, {:type=>"_208F", :getter=>#<CppMethod:0x00000101bd4b68 @name="getBlendFunc", @static=false, @num_arguments=0, @arguments=[], @type="_5AC", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x00000101bd2110 @name="setBlendFunc", @static=false, @num_arguments=1, @arguments=[{:name=>"blendFunc", :type=>"_208F"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
 		break;
 //	case kTexture:
 //		do {
@@ -6562,16 +6427,14 @@ JSBool S_CCSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 			JS_SetPrivate(tmp, pt);
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
-		return JS_TRUE;
 		break;
 	case kQuad:
-				// don't know what this is (c ~> js, {:type=>"_2930", :getter=>#<CppMethod:0x00000100afce80 @name="getQuad", @static=false, @num_arguments=0, @arguments=[], @type="_587", @klass=Class: CCSprite>, :setter=>nil, :requires_accessor=>true})
-		return JS_TRUE;
+				// don't know what this is (c ~> js, {:type=>"_2930", :getter=>#<CppMethod:0x00000101c3c948 @name="getQuad", @static=false, @num_arguments=0, @arguments=[], @type="_587", @klass=Class: CCSprite>, :setter=>nil, :requires_accessor=>true})
 		break;
 	default:
 		break;
 	}
-	return JS_FALSE;
+	return JS_TRUE;
 }
 
 JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
@@ -6579,55 +6442,45 @@ JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	int32_t propId = JSID_TO_INT(_id);
 	S_CCSprite *cobj; JSGET_PTRSHELL(S_CCSprite, cobj, obj);
 	if (!cobj) return JS_FALSE;
-	JSBool ret = JS_FALSE;
 	switch(propId) {
 	case kOpacity:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setOpacity(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kColor:
 				// don't know what this is (js ~> c, _45B)
-		ret = JS_TRUE;
 		break;
 	case kTextureAtlas:
 		do {
 			CCTextureAtlas* tmp; JSGET_PTRSHELL(CCTextureAtlas, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setTextureAtlas(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kAtlasIndex:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setAtlasIndex(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kDirty:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setDirty(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kBlendFunc:
 				// don't know what this is (js ~> c, _5AC)
-		ret = JS_TRUE;
 		break;
 	case kTexture:
 		do {
 			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
 			if (tmp) { cobj->setTexture(tmp); }
 		} while (0);
-		ret = JS_TRUE;
 		break;
 	case kFlipX:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setFlipX(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	case kFlipY:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setFlipY(tmp); } while (0);
-		ret = JS_TRUE;
 		break;
 	default:
 		break;
 	}
-	return ret;
-};
+	return JS_TRUE;
+}
 
 void S_CCSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
 {

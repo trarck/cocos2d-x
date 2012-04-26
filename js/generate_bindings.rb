@@ -1032,6 +1032,7 @@ private
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
                        CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence)
+    # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
       # by a subclass
@@ -1041,7 +1042,6 @@ private
     end
 
     # output which ones are not greenlighted
-    # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) }
   end
 
   def complete_deps(v)

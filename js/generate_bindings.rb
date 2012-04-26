@@ -4,8 +4,8 @@
 
 require 'rubygems'
 require 'nokogiri'
-require 'ruby-debug'
 require 'fileutils'
+# require 'ruby-debug'
 
 class String
   def uncapitalize
@@ -87,6 +87,8 @@ class CppMethod
       args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
       if type[:fundamental] && !type[:pointer]
+        # fix for JS_ConvertArguments (it only accepts doubles)
+        type[:name] = "double" if type[:name] == "float"
         str << "#{indent}\t#{type[:name]} arg#{i};\n"
         call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
@@ -151,6 +153,13 @@ class CppMethod
         type[:pointer] = true
       else
         str << "#{indent}\t#{ret}#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
+        # test for null pointers
+        if type[:pointer]
+          str << "#{indent}\tif (ret == NULL) {\n"
+          str << "#{indent}\t\tJS_SET_RVAL(cx, vp, JSVAL_NULL);\n"
+          str << "#{indent}\t\treturn JS_TRUE;\n"
+          str << "#{indent}\t}\n"
+        end
       end
       str << "#{indent}\t" << @klass.convert_value_to_js({:type => @type, :pointer => type[:pointer]}, "ret", "vp", indent_level+1, "") << "\n"
       str << "#{indent}\t#{void_ret}\n"
@@ -479,7 +488,6 @@ class CppClass
       next if convert_code.nil?
       str << "\tcase k#{prop.capitalize}:\n"
       str << "\t\t#{convert_code}\n"
-      str << "\t\treturn JS_TRUE;\n"
       str << "\t\tbreak;\n"
     end
     str << "\tdefault:\n"
@@ -1023,7 +1031,7 @@ private
     green_lighted = %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
-                       CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF)
+                       CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence)
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
       # by a subclass

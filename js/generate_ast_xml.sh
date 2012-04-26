@@ -24,6 +24,5 @@ fi
 
 if [ -e $1 ]; then
 	OUT=$(basename $1 .h).xml
-	echo OUT: $OUT
-	${CLANG_28}/bin/clang++ -cc1 -ast-print-xml ${INCLUDE_SEARCH_PATH} -isysroot ${SYSROOT} -DTARGET_IPHONE_SIMULATOR -x c++ ../cocos2dx/include/cocos2d.h -o $OUT
+	${CLANG_28}/bin/clang++ -cc1 -ast-print-xml ${INCLUDE_SEARCH_PATH} -isysroot ${SYSROOT} -DTARGET_IPHONE_SIMULATOR -x c++ $1 -o $OUT
 fi

@@ -1031,7 +1031,13 @@ private
     green_lighted = %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
-                       CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence)
+                       CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence
+                       CCActionInterval CCFiniteTimeAction
+                       CCEaseBackInOut CCEaseBackOut CCEaseElasticIn CCEaseElastic CCEaseElasticOut CCEaseElasticInOut
+                       CCEaseBounceIn CCEaseBounce CCEaseBounceInOut CCEaseBackIn CCEaseBounceOut CCEaseIn CCEaseOut
+                       CCEaseExponentialIn CCEaseInOut CCEaseExponentialOut CCEaseExponentialInOut CCEaseSineIn
+                       CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction
+                       CCParticleSystem CCParticleSystemQuad CCParticleSystemPoint)
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created

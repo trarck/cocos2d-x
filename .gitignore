@@ -70,5 +70,5 @@ Device-Release/
 
 # js ignores
 js/cocos2d.xml
-js/out.cpp
+js/out.old*
 

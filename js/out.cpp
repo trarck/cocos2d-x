@@ -1936,17 +1936,6 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
 		break;
-//	case kTexture:
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)cobj->getTexture();
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		return JS_TRUE;
-//		break;
 	default:
 		break;
 	}
@@ -1986,12 +1975,6 @@ JSBool S_CCSpriteFrame::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JS
 			if (tmp) { cobj->setOriginalSizeInPixels(*tmp); }
 		} while (0);
 		break;
-	case kTexture:
-		do {
-			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
-			if (tmp) { cobj->setTexture(tmp); }
-		} while (0);
-		break;
 	default:
 		break;
 	}
@@ -2017,7 +2000,6 @@ void S_CCSpriteFrame::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 			{"rect", kRect, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{"offsetInPixels", kOffsetInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{"originalSizeInPixels", kOriginalSizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
-			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -2551,16 +2533,6 @@ JSBool S_CCParticleSystem::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 	case kTotalParticles:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getTotalParticles(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
-	case kTexture:
-		do {
-			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
-			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-			pt->flags = kPointerTemporary;
-			pt->data = (void *)cobj->getTexture();
-			JS_SetPrivate(tmp, pt);
-			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-		} while (0);
-		break;
 	case kBlendFunc:
 				// don't know what this is (c ~> js, {:type=>"_208F", :getter=>#<CppMethod:0x007fd552c6d840 @name="getBlendFunc", @static=false, @num_arguments=0, @arguments=[], @type="_5AC", @klass=Class: CCParticleSystem>, :setter=>#<CppMethod:0x007fd552c6cc10 @name="setBlendFunc", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_208F"}], @type="_12", @klass=Class: CCParticleSystem>, :requires_accessor=>true})
 		break;
@@ -2654,12 +2626,6 @@ JSBool S_CCParticleSystem::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id,
 	case kTotalParticles:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setTotalParticles(tmp); } while (0);
 		break;
-	case kTexture:
-		do {
-			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
-			if (tmp) { cobj->setTexture(tmp); }
-		} while (0);
-		break;
 	case kBlendFunc:
 				// don't know what this is (js ~> c, _5AC)
 		break;
@@ -2720,7 +2686,6 @@ void S_CCParticleSystem::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 			{"endSpinVar", kEndSpinVar, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"emissionRate", kEmissionRate, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"totalParticles", kTotalParticles, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
-			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"blendFunc", kBlendFunc, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"isBlendAdditive", kIsBlendAdditive, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"type", kType, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
@@ -5836,28 +5801,16 @@ JSBool S_CCNode::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *va
 	case kSkewY:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getSkewY(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
-//	case kChildren:
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCArray::jsClass, S_CCArray::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)cobj->getChildren();
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		return JS_TRUE;
-//		break;
-//	case kCamera:
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCCamera::jsClass, S_CCCamera::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)cobj->getCamera();
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		return JS_TRUE;
-//		break;
+	case kChildren:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCArray::jsClass, S_CCArray::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getChildren();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
 	case kIsVisible:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsVisible()));
 		break;
@@ -6038,7 +5991,6 @@ void S_CCNode::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *nam
 			{"skewX", kSkewX, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
 			{"skewY", kSkewY, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
 			{"children", kChildren, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
-			{"camera", kCamera, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
 			{"grid", kGrid, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
 			{"isVisible", kIsVisible, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
 			{"anchorPoint", kAnchorPoint, JSPROP_PERMANENT | JSPROP_SHARED, S_CCNode::jsPropertyGet, S_CCNode::jsPropertySet},
@@ -6081,17 +6033,12 @@ void S_CCNode::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *nam
 			JS_FN("stopAction", S_CCNode::jsstopAction, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("stopActionByTag", S_CCNode::jsstopActionByTag, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("numberOfRunningActions", S_CCNode::jsnumberOfRunningActions, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("isScheduled", S_CCNode::jsisScheduled, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("scheduleUpdate", S_CCNode::jsscheduleUpdate, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("scheduleUpdateWithPriority", S_CCNode::jsscheduleUpdateWithPriority, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("unscheduleUpdate", S_CCNode::jsunscheduleUpdate, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("schedule", S_CCNode::jsschedule, 1, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("unschedule", S_CCNode::jsunschedule, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("unscheduleAllSelectors", S_CCNode::jsunscheduleAllSelectors, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("resumeSchedulerAndActions", S_CCNode::jsresumeSchedulerAndActions, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("pauseSchedulerAndActions", S_CCNode::jspauseSchedulerAndActions, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("parentToNodeTransform", S_CCNode::jsparentToNodeTransform, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("worldToNodeTransform", S_CCNode::jsworldToNodeTransform, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("convertToNodeSpace", S_CCNode::jsconvertToNodeSpace, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("convertToWorldSpace", S_CCNode::jsconvertToWorldSpace, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("convertToNodeSpaceAR", S_CCNode::jsconvertToNodeSpaceAR, 1, JSPROP_PERMANENT | JSPROP_SHARED),
@@ -6469,21 +6416,6 @@ JSBool S_CCNode::jsnumberOfRunningActions(JSContext *cx, uint32_t argc, jsval *v
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }
-JSBool S_CCNode::jsisScheduled(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 1) {
-//		JSObject *arg0;
-//		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "*", &arg0);
-//		bool ret = self->isScheduled(*narg0);
-//		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
-//		
-//		return JS_TRUE;
-//	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
 JSBool S_CCNode::jsscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
@@ -6527,36 +6459,6 @@ JSBool S_CCNode::jsunscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }
-JSBool S_CCNode::jsschedule(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 1) {
-//		JSObject *arg0;
-//		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "*", &arg0);
-//		self->schedule(*narg0);
-//		
-//		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-//		return JS_TRUE;
-//	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCNode::jsunschedule(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 1) {
-//		JSObject *arg0;
-//		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "*", &arg0);
-//		self->unschedule(*narg0);
-//		
-//		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-//		return JS_TRUE;
-//	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
 JSBool S_CCNode::jsunscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
@@ -6596,48 +6498,6 @@ JSBool S_CCNode::jspauseSchedulerAndActions(JSContext *cx, uint32_t argc, jsval 
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 		return JS_TRUE;
 	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCNode::jsparentToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 0) {
-//		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
-//		CCAffineTransform* ret = new CCAffineTransform(self->parentToNodeTransform());
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCAffineTransform::jsClass, S_CCAffineTransform::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)ret;
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		
-//		return JS_TRUE;
-//	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCNode::jsworldToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 0) {
-//		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
-//		CCAffineTransform* ret = new CCAffineTransform(self->worldToNodeTransform());
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCAffineTransform::jsClass, S_CCAffineTransform::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)ret;
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		
-//		return JS_TRUE;
-//	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }
@@ -7491,7 +7351,6 @@ void S_CCLabelTTF::jsCreateClass(JSContext *cx, JSObject *globalObj, const char 
 
 		static JSFunctionSpec funcs[] = {
 			JS_FN("initWithString", S_CCLabelTTF::jsinitWithString, 5, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("convertToLabelProtocol", S_CCLabelTTF::jsconvertToLabelProtocol, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
 		};
 
@@ -7548,27 +7407,6 @@ JSBool S_CCLabelTTF::jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp) {
 		
 		return JS_TRUE;
 	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCLabelTTF::jsconvertToLabelProtocol(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCLabelTTF* self = NULL; JSGET_PTRSHELL(S_CCLabelTTF, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 0) {
-//		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
-//		CCLabelProtocol* ret = self->convertToLabelProtocol();
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCLabelProtocol::jsClass, S_CCLabelProtocol::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)ret;
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		
-//		return JS_TRUE;
-//	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }
@@ -9834,8 +9672,6 @@ void S_CCRenderTexture::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 			{"sprite", kSprite, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"fBO", kFBO, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"oldFBO", kOldFBO, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
-			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
-			{"uITextureImage", kUITextureImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"ePixelFormat", kEPixelFormat, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
@@ -10779,34 +10615,12 @@ JSBool S_CCSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 	case kColor:
 				// don't know what this is (c ~> js, {:type=>"_45E", :getter=>#<CppMethod:0x000001020557a0 @name="getColor", @static=false, @num_arguments=0, @arguments=[], @type="_2070", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x0000010203d088 @name="setColor", @static=false, @num_arguments=1, @arguments=[{:name=>"var", :type=>"_2070"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
 		break;
-//	case kTextureAtlas:
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCTextureAtlas::jsClass, S_CCTextureAtlas::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)cobj->getTextureAtlas();
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		return JS_TRUE;
-//		break;
 	case kAtlasIndex:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getAtlasIndex(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
 	case kBlendFunc:
 				// don't know what this is (c ~> js, {:type=>"_208F", :getter=>#<CppMethod:0x00000101bd4b68 @name="getBlendFunc", @static=false, @num_arguments=0, @arguments=[], @type="_5AC", @klass=Class: CCSprite>, :setter=>#<CppMethod:0x00000101bd2110 @name="setBlendFunc", @static=false, @num_arguments=1, @arguments=[{:name=>"blendFunc", :type=>"_208F"}], @type="_12", @klass=Class: CCSprite>, :requires_accessor=>true})
 		break;
-//	case kTexture:
-//		do {
-//			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
-//			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-//			pt->flags = kPointerTemporary;
-//			pt->data = (void *)cobj->getTexture();
-//			JS_SetPrivate(tmp, pt);
-//			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-//		} while (0);
-//		return JS_TRUE;
-//		break;
 	case kOffsetPositionInPixels:
 		do {
 			JSObject *tmp = JS_NewObject(cx, S_CCPoint::jsClass, S_CCPoint::jsObject, NULL);
@@ -10839,12 +10653,6 @@ JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	case kColor:
 				// don't know what this is (js ~> c, _45B)
 		break;
-	case kTextureAtlas:
-		do {
-			CCTextureAtlas* tmp; JSGET_PTRSHELL(CCTextureAtlas, tmp, JSVAL_TO_OBJECT(*val));
-			if (tmp) { cobj->setTextureAtlas(tmp); }
-		} while (0);
-		break;
 	case kAtlasIndex:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setAtlasIndex(tmp); } while (0);
 		break;
@@ -10853,12 +10661,6 @@ JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 		break;
 	case kBlendFunc:
 				// don't know what this is (js ~> c, _5AC)
-		break;
-	case kTexture:
-		do {
-			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
-			if (tmp) { cobj->setTexture(tmp); }
-		} while (0);
 		break;
 	case kFlipX:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setFlipX(tmp); } while (0);
@@ -10888,7 +10690,6 @@ void S_CCSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 		static JSPropertySpec properties[] = {
 			{"opacity", kOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"color", kColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
-			{"textureAtlas", kTextureAtlas, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"atlasIndex", kAtlasIndex, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"batchNode", kBatchNode, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"transform", kTransform, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
@@ -10896,7 +10697,6 @@ void S_CCSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 			{"recursiveDirty", kRecursiveDirty, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"hasChildren", kHasChildren, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"blendFunc", kBlendFunc, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
-			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"usesBatchNode", kUsesBatchNode, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"rect", kRect, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"rectInPixels", kRectInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},

@@ -277,8 +277,7 @@ public:
 		kRotated,
 		kRect,
 		kOffsetInPixels,
-		kOriginalSizeInPixels,
-		kTexture
+		kOriginalSizeInPixels
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -377,7 +376,6 @@ public:
 		kEndSpinVar,
 		kEmissionRate,
 		kTotalParticles,
-		kTexture,
 		kBlendFunc,
 		kIsBlendAdditive,
 		kType,
@@ -849,7 +847,6 @@ public:
 		kSkewX,
 		kSkewY,
 		kChildren,
-		kCamera,
 		kGrid,
 		kIsVisible,
 		kAnchorPoint,
@@ -898,17 +895,12 @@ public:
 	static JSBool jsstopAction(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsstopActionByTag(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsnumberOfRunningActions(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsisScheduled(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsscheduleUpdateWithPriority(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunscheduleUpdate(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsschedule(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsunschedule(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunscheduleAllSelectors(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsresumeSchedulerAndActions(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jspauseSchedulerAndActions(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsparentToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsworldToNodeTransform(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToNodeSpace(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToWorldSpace(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsconvertToNodeSpaceAR(JSContext *cx, uint32_t argc, jsval *vp);
@@ -1031,7 +1023,6 @@ public:
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
 	static JSBool jslabelWithString(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsconvertToLabelProtocol(JSContext *cx, uint32_t argc, jsval *vp);
 
 };
 
@@ -1349,8 +1340,6 @@ public:
 		kSprite = 1,
 		kFBO,
 		kOldFBO,
-		kTexture,
-		kUITextureImage,
 		kEPixelFormat
 	};
 
@@ -1488,7 +1477,6 @@ public:
 	enum {
 		kOpacity = 1,
 		kColor,
-		kTextureAtlas,
 		kAtlasIndex,
 		kBatchNode,
 		kTransform,
@@ -1496,7 +1484,6 @@ public:
 		kRecursiveDirty,
 		kHasChildren,
 		kBlendFunc,
-		kTexture,
 		kUsesBatchNode,
 		kRect,
 		kRectInPixels,

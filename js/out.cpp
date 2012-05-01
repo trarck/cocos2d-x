@@ -2696,7 +2696,6 @@ void S_CCParticleSystem::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 
 		static JSFunctionSpec funcs[] = {
 			JS_FN("initWithFile", S_CCParticleSystem::jsinitWithFile, 1, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("initWithDictionary", S_CCParticleSystem::jsinitWithDictionary, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("initWithTotalParticles", S_CCParticleSystem::jsinitWithTotalParticles, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addParticle", S_CCParticleSystem::jsaddParticle, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("initParticle", S_CCParticleSystem::jsinitParticle, 1, JSPROP_PERMANENT | JSPROP_SHARED),
@@ -2748,22 +2747,6 @@ JSBool S_CCParticleSystem::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *v
 		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
 		char *narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithFile(narg0);
-		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
-		
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCParticleSystem::jsinitWithDictionary(JSContext *cx, uint32_t argc, jsval *vp) {
-	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
-	if (self == NULL) return JS_FALSE;
-	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
-		CCDictionary<std::string,CCObject*>* narg0; JSGET_PTRSHELL(CCDictionary<std::string,CCObject*>, narg0, arg0);
-		bool ret = self->initWithDictionary(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
 		return JS_TRUE;
@@ -4628,14 +4611,12 @@ void S_CCSpriteFrameCache::jsCreateClass(JSContext *cx, JSObject *globalObj, con
 
 		static JSFunctionSpec funcs[] = {
 			JS_FN("init", S_CCSpriteFrameCache::jsinit, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("addSpriteFramesWithDictionary", S_CCSpriteFrameCache::jsaddSpriteFramesWithDictionary, 2, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addSpriteFramesWithFile", S_CCSpriteFrameCache::jsaddSpriteFramesWithFile, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addSpriteFrame", S_CCSpriteFrameCache::jsaddSpriteFrame, 2, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("removeSpriteFrames", S_CCSpriteFrameCache::jsremoveSpriteFrames, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("removeUnusedSpriteFrames", S_CCSpriteFrameCache::jsremoveUnusedSpriteFrames, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("removeSpriteFrameByName", S_CCSpriteFrameCache::jsremoveSpriteFrameByName, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("removeSpriteFramesFromFile", S_CCSpriteFrameCache::jsremoveSpriteFramesFromFile, 1, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("removeSpriteFramesFromDictionary", S_CCSpriteFrameCache::jsremoveSpriteFramesFromDictionary, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("removeSpriteFramesFromTexture", S_CCSpriteFrameCache::jsremoveSpriteFramesFromTexture, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("spriteFrameByName", S_CCSpriteFrameCache::jsspriteFrameByName, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
@@ -4661,24 +4642,6 @@ JSBool S_CCSpriteFrameCache::jsinit(JSContext *cx, uint32_t argc, jsval *vp) {
 		
 		return JS_TRUE;
 	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCSpriteFrameCache::jsaddSpriteFramesWithDictionary(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 2) {
-//		JSObject *arg0;
-//		JSObject *arg1;
-//		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
-//		CCDictionary<std::string,CCSpriteFrame*>* narg0; JSGET_PTRSHELL(CCDictionary<std::string,CCSpriteFrame*>, narg0, arg0);
-//		CCTexture2D* narg1; JSGET_PTRSHELL(CCTexture2D, narg1, arg1);
-//		self->addSpriteFramesWithDictionary(narg0, narg1);
-//		
-//		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-//		return JS_TRUE;
-//	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }
@@ -4773,22 +4736,6 @@ JSBool S_CCSpriteFrameCache::jsremoveSpriteFramesFromFile(JSContext *cx, uint32_
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 		return JS_TRUE;
 	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCSpriteFrameCache::jsremoveSpriteFramesFromDictionary(JSContext *cx, uint32_t argc, jsval *vp) {
-//	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-//	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
-//	if (self == NULL) return JS_FALSE;
-//	if (argc == 1) {
-//		JSObject *arg0;
-//		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
-//		CCDictionary<std::string,CCSpriteFrame*>* narg0; JSGET_PTRSHELL(CCDictionary<std::string,CCSpriteFrame*>, narg0, arg0);
-//		self->removeSpriteFramesFromDictionary(narg0);
-//		
-//		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-//		return JS_TRUE;
-//	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
 }

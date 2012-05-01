@@ -390,7 +390,6 @@ public:
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
 	static JSBool jsparticleWithFile(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinitWithFile(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsinitWithDictionary(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinitWithTotalParticles(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddParticle(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinitParticle(JSContext *cx, uint32_t argc, jsval *vp);
@@ -676,14 +675,12 @@ public:
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
 	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsaddSpriteFramesWithDictionary(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddSpriteFramesWithFile(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddSpriteFrame(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFrames(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveUnusedSpriteFrames(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFrameByName(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFramesFromFile(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsremoveSpriteFramesFromDictionary(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsremoveSpriteFramesFromTexture(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsspriteFrameByName(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jssharedSpriteFrameCache(JSContext *cx, uint32_t argc, jsval *vp);

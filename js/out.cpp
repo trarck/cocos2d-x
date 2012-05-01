@@ -6987,6 +6987,7 @@ void S_CCFileUtils::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 		};
 
 		static JSFunctionSpec st_funcs[] = {
+			JS_FN("getFileData", S_CCFileUtils::jsgetFileData, 3, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("fullPathFromRelativePath", S_CCFileUtils::jsfullPathFromRelativePath, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("fullPathFromRelativeFile", S_CCFileUtils::jsfullPathFromRelativeFile, 2, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
@@ -6995,6 +6996,33 @@ void S_CCFileUtils::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCFileUtils::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
+JSBool S_CCFileUtils::jsgetFileData(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 3) {
+		JSString *arg0;
+		JSString *arg1;
+		JSObject *arg2;
+		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "SSi", &arg0, &arg1, &arg2);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		char *narg1 = JS_EncodeString(cx, arg1);
+		unsigned char ret = CCFileUtils::getFileData(narg0, narg1, narg2);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, NULL, NULL, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
 JSBool S_CCFileUtils::jsfullPathFromRelativePath(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
 		JSString *arg0;

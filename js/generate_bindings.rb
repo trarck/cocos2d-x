@@ -5,7 +5,7 @@
 require 'rubygems'
 require 'nokogiri'
 require 'fileutils'
-# require 'ruby-debug'
+require 'ruby-debug'
 
 class String
   def uncapitalize
@@ -196,6 +196,9 @@ class CppClass
     end
 
     (node / "Field").each do |field|
+      # avoid fields named texture (hack for cocos2d-x bindings)
+      next if field['name'].match(/texture|camera/i)
+
       # puts field if @name == "CCPoint"
       md = field['name'].match(/m_(\w+)/)
       if md
@@ -215,23 +218,48 @@ class CppClass
       @constructors << CppMethod.new(method, self, bindings_generator)
     end
 
+    invalid_ccnode_methods = %w(isScheduled schedule unschedule parentToNodeTransform worldToNodeTransform)
+    whitelisted_ccfileutil_methods = %w(fullPathFromRelativePath fullPathFromRelativeFile getFileData)
     (node / "CXXMethod").each do |method|
-      # the accessors
+      # NOTE
+      # this is a series of hacks to make this script produce code that can be compiled
+      # without interaction - you should be careful about these changes if you're parsing
+      # code that is not cocos2d-x
+
+      # debugger if @name == "CCNode"
       next if method['access'] != "public"
       # no support for "node" or "descrition" (yet)
       next if method['name'].match(/^(node|description|copyWithZone|mutableCopy)/)
       next if method['name'].match(/step|update/) && (@name == "CCAction" || @parents.map { |n| n[:name] }.include?("CCAction"))
+      # do not override some methods of CCNode
+      next if invalid_ccnode_methods.include?(method['name']) && (@name == "CCNode")
+      # do not override addChild on subclasses of CCNode
+      next if method['name'] == "addChild" && (@name != "CCNode")
+      # do not override some methods of CCLabelTTF
+      next if method['name'].match(/^convertToLabelProtocol/) && (@name == "CCLabelTTF")
+      # do not override ccTouch(es) and onExit on CCMenu
+      next if method['name'].match(/^(ccTouch|onExit)/) && (@name == "CCMenu")
+      # do not add the initWithDictionary or (xxxWithDictionary)
+      next if method['name'].match(/([wW]ithDictionary|[fF]romDictionary)/)
+      # only whitelisted methods for CCFileUtils
+      next if (@name == "CCFileUtils") && !whitelisted_ccfileutil_methods.include?(method['name'])
 
       # mark as singleton (produce no constructor code)
       @singleton = true if method['name'].match(/^shared.*#{prefixless_name}/i)
 
-      if md = method['name'].match(/(get|set)(\w+)/)
+      # the accessors
+      if method['static'] != "1" && md = method['name'].match(/(get|set)(\w+)/)
         action = md[1]
         field_name = md[2].uncapitalize
         prop = @properties[field_name]
         if prop
           prop[:getter] = CppMethod.new(method, self, bindings_generator) if action == "get" && method['num_args'] == "0"
           prop[:setter] = CppMethod.new(method, self, bindings_generator) if action == "set" && method['num_args'] == "1"
+        elsif action == "get" && !(field_name.match(/texture|camera/i)) && method['num_args'] == "0"
+          # add "fake" property
+          @properties[field_name] = {:type => method['type'],
+                                     :getter => CppMethod.new(method, self, bindings_generator),
+                                     :requires_accessor => true}
         end
       # everything else but operator overloading
       elsif method['name'] !~ /^operator/
@@ -240,6 +268,10 @@ class CppClass
         @methods[m.name] << m
       end # if (accessor)
     end
+  end
+
+  def is_subclass_of(klass)
+    @parents.map { |p| p[:name] }.include?(klass)
   end
 
   def generate_properties_enum
@@ -260,20 +292,6 @@ class CppClass
       name = prop[0]
       arr << "\t\t\t{\"#{name}\", k#{name.capitalize}, JSPROP_PERMANENT | JSPROP_SHARED, S_#{@name}::jsPropertyGet, S_#{@name}::jsPropertySet}"
     end
-    # not needed!
-    # @parents.each do |parent|
-    #   only_names = @properties.map { |m| m[0] }
-    #   real_class = @generator.classes[parent[:record_id]]
-    #   if real_class[:generator].nil?
-    #     real_class[:generator] = CppClass.new(real_class[:xml], @generator)
-    #   end
-    #   real_class[:generator].properties.each do |prop|
-    #     name = prop[0]
-    #     unless only_names.include?(name)
-    #       arr << "\t\t\t{\"#{name}\", k#{name.capitalize}, JSPROP_PERMANENT | JSPROP_SHARED, S_#{parent[:name]}::jsPropertyGet, S_#{parent[:name]}::jsPropertySet}"
-    #     end
-    #   end
-    # end
     arr << "\t\t\t{0, 0, 0, 0, 0}"
     str =  "\t\tstatic JSPropertySpec properties[] = {\n"
     str << arr.join(",\n") << "\n"
@@ -289,22 +307,6 @@ class CppClass
       next if name =~ /^on/ || name =~ /^ccTouch/ || m.static || name == "update"
       arr << "\t\t\tJS_FN(\"#{name}\", S_#{@name}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
     end
-    # not needed!
-    # @parents.each do |parent|
-    #   only_names = @methods.map { |m| m[0] }
-    #   real_class = @generator.classes[parent[:record_id]]
-    #   if real_class[:generator].nil?
-    #     real_class[:generator] = CppClass.new(real_class[:xml], @generator)
-    #   end
-    #   real_class[:generator].methods.each do |method|
-    #     name = method[0]
-    #     m = method[1].first
-    #     next if name =~ /^on/ || name =~ /^ccTouch/ || m.static || name == "update"
-    #     unless only_names.include?(name)
-    #       arr << "\t\t\tJS_FN(\"#{name}\", S_#{parent[:name]}::js#{name}, #{m.num_arguments}, JSPROP_PERMANENT | JSPROP_SHARED)"
-    #     end
-    #   end
-    # end
 
     arr << "\t\t\tJS_FS_END"
     str =  "\t\tstatic JSFunctionSpec funcs[] = {\n"
@@ -341,6 +343,9 @@ class CppClass
     end
     if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
       str << "\tvirtual void update(ccTime delta);\n"
+    end
+    if @name.match(/^CCMenuItem/)
+      str << "\tvoid menuAction(cocos2d::CCObject *o);\n"
     end
     str
   end
@@ -570,7 +575,11 @@ class CppClass
     end
     str << "\tjsObject = JS_InitClass(cx,globalObj,#{parent_proto},jsClass,S_#{@name}::jsConstructor,0,properties,funcs,NULL,st_funcs);\n"
     str << "}\n\n"
-    str << generate_funcs << "\n"
+    str << generate_funcs
+    if @name.match(/^CCMenuItem/)
+      str << "MENU_ITEM_ACTION(S_#{@name})\n"
+    end
+    str << "\n"
   end
 
   def to_s
@@ -775,6 +784,21 @@ typedef enum {
 \t\tcobj = NULL; \\
 \t} \\
 } while (0)
+
+#define MENU_ITEM_ACTION(klass) \\
+void klass::menuAction(cocos2d::CCObject *o) \\
+{ \\
+\tif (m_jsobj) { \\
+\t\tJSBool hasMethod; \\
+\t\tJSContext *cx = ScriptingCore::getInstance().getGlobalContext(); \\
+\t\tJS_HasProperty(cx, m_jsobj, "action", &hasMethod); \\
+\t\tif (hasMethod == JS_TRUE) { \\
+\t\t\tjsval callback, rval; \\
+\t\t\tJS_GetProperty(cx, m_jsobj, "action", &callback); \\
+\t\t\tJS_CallFunctionValue(cx, m_jsobj, callback, 0, 0, &rval); \\
+\t\t} \\
+\t} \\
+}
 
     EOS
 
@@ -1032,12 +1056,12 @@ private
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
                        CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence
-                       CCActionInterval CCFiniteTimeAction
+                       CCActionInterval CCFiniteTimeAction CCFileUtils
                        CCEaseBackInOut CCEaseBackOut CCEaseElasticIn CCEaseElastic CCEaseElasticOut CCEaseElasticInOut
                        CCEaseBounceIn CCEaseBounce CCEaseBounceInOut CCEaseBackIn CCEaseBounceOut CCEaseIn CCEaseOut
                        CCEaseExponentialIn CCEaseInOut CCEaseExponentialOut CCEaseExponentialInOut CCEaseSineIn
-                       CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction
-                       CCParticleSystem CCParticleSystemQuad CCParticleSystemPoint)
+                       CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction CCParticleSystem CCParticleSystemQuad
+                       CCParticleSystemPoint CCDelayTime)
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
@@ -1058,6 +1082,8 @@ private
   end
 
 end
+
+Debugger.start(:post_mortem => true)
 
 doc = Nokogiri::XML(File.read(ARGV[0]))
 BindingsGenerator.new(doc, ARGV[1])

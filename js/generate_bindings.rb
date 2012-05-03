@@ -197,7 +197,9 @@ class CppClass
 
     (node / "Field").each do |field|
       # avoid fields named texture (hack for cocos2d-x bindings)
-      next if field['name'].match(/texture|camera/i)
+      next if field['name'].match(/camera/i)
+      # disable spritebatch for CCSprite for now
+      next if field['name'] == "spriteBatchNode" && @name == "CCSprite"
 
       # puts field if @name == "CCPoint"
       md = field['name'].match(/m_(\w+)/)
@@ -230,19 +232,42 @@ class CppClass
       next if method['access'] != "public"
       # no support for "node" or "descrition" (yet)
       next if method['name'].match(/^(node|description|copyWithZone|mutableCopy)/)
-      next if method['name'].match(/step|update/) && (@name == "CCAction" || @parents.map { |n| n[:name] }.include?("CCAction"))
+      next if method['name'].match(/^(step|update)$/) && (@name == "CCAction" || @name == "CCParticleSystem" || @parents.map { |n| n[:name] }.include?("CCAction"))
       # do not override some methods of CCNode
       next if invalid_ccnode_methods.include?(method['name']) && (@name == "CCNode")
       # do not override addChild on subclasses of CCNode
       next if method['name'] == "addChild" && (@name != "CCNode")
       # do not override some methods of CCLabelTTF
-      next if method['name'].match(/^convertToLabelProtocol/) && (@name == "CCLabelTTF")
+      next if method['name'].match(/^(convertToLabelProtocol)/) && (@name == "CCLabelTTF")
       # do not override ccTouch(es) and onExit on CCMenu
       next if method['name'].match(/^(ccTouch|onExit)/) && (@name == "CCMenu")
       # do not add the initWithDictionary or (xxxWithDictionary)
       next if method['name'].match(/([wW]ithDictionary|[fF]romDictionary)/)
       # only whitelisted methods for CCFileUtils
       next if (@name == "CCFileUtils") && !whitelisted_ccfileutil_methods.include?(method['name'])
+      # no initWithItems for CCMenu
+      next if (@name == "CCMenu") && method['name'] == "initWithItems"
+      # no setDirectorType
+      next if (@name == "CCDirector") && method['name'] == "setDirectorType"
+      # no any object for the set
+      next if (@name == "CCSet") && method['name'] == "anyObject"
+      # no "name" for CCAnimation
+      next if (@name == "CCAnimation") && method['name'] == "getName"
+      # no "children" for CCNode
+      next if (@name == "CCNode") && method['name'] == "getChildren"
+      # no "spriteBatchNode" for CCSprite
+      next if (@name == "CCSprite") && method['name'].match(/^(get|set)(TextureAtlas|SpriteBatchNode)/)
+      # fix "initWithTarget" for CCMenuItem
+      next if (@name == "CCMenuItem") && (method['name'] == "initWithTarget" || method['name'] == "itemWithTarget")
+      if @name == "CCTexture2D"
+        next if method['name'] == "initWithData"
+        next if method['name'] == "initWithString"
+        next if method['name'] == "initWithPVRTCData"
+        next if method['name'] == "releaseData"
+        next if method['name'] == "keepData"
+        next if method['name'] == "setDefaultAlphaPixelFormat"
+      end
+      next if @name == "CCTextureCache" && method['name'] == "addImageAsync"
 
       # mark as singleton (produce no constructor code)
       @singleton = true if method['name'].match(/^shared.*#{prefixless_name}/i)
@@ -260,6 +285,11 @@ class CppClass
           @properties[field_name] = {:type => method['type'],
                                      :getter => CppMethod.new(method, self, bindings_generator),
                                      :requires_accessor => true}
+        elsif action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i)
+          # special case for CCTexture2D
+          m = CppMethod.new(method, self, bindings_generator)
+          @methods[m.name] ||= []
+          @methods[m.name] << m
         end
       # everything else but operator overloading
       elsif method['name'] !~ /^operator/
@@ -300,6 +330,10 @@ class CppClass
 
   def generate_funcs_array
     arr = []
+    # manuall add "init" to CCMenuItem
+    if @name == "CCMenuItem"
+      arr << "\t\t\tJS_FN(\"init\", S_CCMenuItem::jsinit, 2, JSPROP_PERMANENT | JSPROP_SHARED)"
+    end
     @methods.each do |method|
       name = method[0]
       m = method[1].first
@@ -330,6 +364,10 @@ class CppClass
   def generate_funcs_declarations
     str = ""
     needs_update = false
+    # manuall add "init" to CCMenuItem
+    if @name == "CCMenuItem"
+      str << "\tstatic JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);\n"
+    end
     @methods.each do |method|
       name = method[0]
       m = method[1].first
@@ -341,7 +379,7 @@ class CppClass
         str << "\tstatic JSBool js#{name}(JSContext *cx, uint32_t argc, jsval *vp);\n"
       end
     end
-    if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
+    if (needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")) && @name != "CCParticleSystem"
       str << "\tvirtual void update(ccTime delta);\n"
     end
     if @name.match(/^CCMenuItem/)
@@ -357,6 +395,21 @@ class CppClass
       name = method[0]
       m = method[1].first
       needs_update = true if name =~ /^scheduleUpdate/
+      # do not output implementations if the method is manually created
+      next if @name == "CCNode" && name == "addChild"
+      next if @name == "CCMenuItemSprite" && name == "initFromNormalSprite"
+      next if @name == "CCMenuItemImage" && name == "initFromNormalImage"
+      next if @name == "CCSequence" && name == "actions"
+      next if @name == "CCParticleSystem" && name == "particleWithFile"
+      next if @name == "CCFileUtils"
+      next if @name == "CCLabelTTF" && name == "initWithString"
+      next if @name == "CCLabelTTF" && name == "labelWithString"
+      next if @name == "CCMenuItem" && name == "init"
+      next if @name == "CCRenderTexture" && name == "renderTextureWithWidthAndHeight"
+      next if @name == "CCRenderTexture" && name == "initWithWidthAndHeight"
+      next if @name == "CCMenuItemLabel" && name == "itemWithLabel"
+      next if @name == "CCMenuItemLabel" && name == "initWithLabel"
+
       # event
       if name =~ /^(on|ccTouch)/
         # override the instance method
@@ -428,7 +481,7 @@ class CppClass
       str << "}\n"
     end
     # add "update" if needed
-    if needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")
+    if (needs_update || @parents.map{ |p| p[:name] }.include?("CCNode")) && @name != "CCParticleSystem"
       str << "void S_#{@name}::update(ccTime delta) {\n"
       str << "\tif (m_jsobj) {\n"
       str << "\t\tJSContext* cx = ScriptingCore::getInstance().getGlobalContext();\n"
@@ -512,11 +565,44 @@ class CppClass
     str << "\tswitch(propId) {\n"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:setter].nil?
-      convert_code = convert_value_from_js(val, "val", prop, 2)
-      next if convert_code.nil?
-      str << "\tcase k#{prop.capitalize}:\n"
-      str << "\t\t#{convert_code}\n"
-      str << "\t\tbreak;\n"
+      if prop.match(/color/i)
+        # special case for color, it assume it's an array
+        str << "\tcase k#{prop.capitalize}:\n"
+        str << "\t\tdo {\n"
+        str << "\t\t\tJSObject *arr = JSVAL_TO_OBJECT(*val);\n"
+
+        if @name == "CCParticleSystem" && prop.match(/^(start|end)color/i)
+          str << "\t\t\tjsval jr, jg, jb, ja;\n"
+          str << "\t\t\tdouble r, g, b, a;\n"
+        else
+          str << "\t\t\tjsval jr, jg, jb;\n"
+          str << "\t\t\tint32_t r, g, b;\n"
+        end
+        str << "\t\t\tJS_GetElement(cx, arr, 0, &jr);\n"
+        str << "\t\t\tJS_GetElement(cx, arr, 1, &jg);\n"
+        str << "\t\t\tJS_GetElement(cx, arr, 2, &jb);\n"
+        if @name == "CCParticleSystem" && prop.match(/^(start|end)color/i)
+          str << "\t\t\tJS_GetElement(cx, arr, 3, &ja);\n"
+          str << "\t\t\tJS_ValueToNumber(cx, jr, &r); JS_ValueToNumber(cx, jg, &g); JS_ValueToNumber(cx, jb, &b); JS_ValueToNumber(cx, ja, &a);\n"
+          str << "\t\t\tccColor4F color = {r, g, b, a};\n"
+        else
+          str << "\t\t\tJS_ValueToInt32(cx, jr, &r); JS_ValueToInt32(cx, jg, &g); JS_ValueToInt32(cx, jb, &b);\n"
+          str << "\t\t\tccColor3B color = ccc3(r, g, b);\n"
+        end
+        if val[:requires_accessor]
+          str << "\t\t\tcobj->set#{prop.capitalize}(color);\n"
+        else
+          str << "\t\t\tcobj->#{prop} = color;\n"
+        end
+        str << "\t\t} while (0);\n"
+        str << "\t\tbreak;\n"
+      else
+        convert_code = convert_value_from_js(val, "val", prop, 2)
+        next if convert_code.nil?
+        str << "\tcase k#{prop.capitalize}:\n"
+        str << "\t\t#{convert_code}\n"
+        str << "\t\tbreak;\n"
+      end
     end
     str << "\tdefault:\n"
     str << "\t\tbreak;\n"
@@ -654,7 +740,7 @@ class CppClass
         str << "#{indent}} while (0);"
       end
     else
-      str << "#{indent}// don't know what this is (js ~> c, #{prop})"
+      str << "#{indent}// don't know what this is (js ~> c)"
     end
     str
   end
@@ -712,7 +798,7 @@ class CppClass
         str << "#{indent}} while (0);"
       end
     else
-      str << "#{indent}// don't know what this is (c ~> js, #{val.inspect})"
+      str << "#{indent}// don't know what this is (c ~> js)"
     end # if find_type
     str
   end
@@ -1061,7 +1147,7 @@ private
                        CCEaseBounceIn CCEaseBounce CCEaseBounceInOut CCEaseBackIn CCEaseBounceOut CCEaseIn CCEaseOut
                        CCEaseExponentialIn CCEaseInOut CCEaseExponentialOut CCEaseExponentialInOut CCEaseSineIn
                        CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction CCParticleSystem CCParticleSystemQuad
-                       CCParticleSystemPoint CCDelayTime)
+                       CCParticleSystemPoint CCDelayTime CCTexture2D CCTextureCache)
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created

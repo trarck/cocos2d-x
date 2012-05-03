@@ -1960,6 +1960,293 @@ JSBool S_CCSequence::jsactionOneTwo(JSContext *cx, uint32_t argc, jsval *vp) {
 	return JS_TRUE;
 }
 
+JSClass* S_CCTexture2D::jsClass = NULL;
+JSObject* S_CCTexture2D::jsObject = NULL;
+
+JSBool S_CCTexture2D::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+	S_CCTexture2D *cobj = new S_CCTexture2D(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_CCTexture2D::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCTexture2D *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCTexture2D::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCTexture2D *cobj; JSGET_PTRSHELL(S_CCTexture2D, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kPixelsWide:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getPixelsWide(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kPixelsHigh:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getPixelsHigh(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kName:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getName(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kContentSize:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCSize::jsClass, S_CCSize::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			CCSize* ctmp = new CCSize(cobj->getContentSize());
+			pt->flags = 0;
+			pt->data = (void *)ctmp;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
+	case kMaxS:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getMaxS(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kMaxT:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getMaxT(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kHasPremultipliedAlpha:
+		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getHasPremultipliedAlpha()));
+		break;
+	case kPixelFormat:
+				// don't know what this is (c ~> js)
+		break;
+	case kContentSizeInPixels:
+		do {
+			JSObject *tmp = JS_NewObject(cx, NULL, NULL, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			CCSize* ctmp = new CCSize(cobj->getContentSizeInPixels());
+			pt->flags = 0;
+			pt->data = (void *)ctmp;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+JSBool S_CCTexture2D::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCTexture2D *cobj; JSGET_PTRSHELL(S_CCTexture2D, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kMaxS:
+		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setMaxS(tmp); } while (0);
+		break;
+	case kMaxT:
+		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setMaxT(tmp); } while (0);
+		break;
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+void S_CCTexture2D::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"ePixelFormat", kEPixelFormat, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"pixelsWide", kPixelsWide, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"pixelsHigh", kPixelsHigh, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"name", kName, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"contentSize", kContentSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"maxS", kMaxS, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"maxT", kMaxT, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"hasPremultipliedAlpha", kHasPremultipliedAlpha, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"pVRHaveAlphaPremultiplied", kPVRHaveAlphaPremultiplied, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"pixelFormat", kPixelFormat, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"contentSizeInPixels", kContentSizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("drawAtPoint", S_CCTexture2D::jsdrawAtPoint, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("drawInRect", S_CCTexture2D::jsdrawInRect, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("initWithImage", S_CCTexture2D::jsinitWithImage, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("initWithPVRFile", S_CCTexture2D::jsinitWithPVRFile, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("setAntiAliasTexParameters", S_CCTexture2D::jssetAntiAliasTexParameters, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("setAliasTexParameters", S_CCTexture2D::jssetAliasTexParameters, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("generateMipmap", S_CCTexture2D::jsgenerateMipmap, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("bitsPerPixelForFormat", S_CCTexture2D::jsbitsPerPixelForFormat, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("defaultAlphaPixelFormat", S_CCTexture2D::jsdefaultAlphaPixelFormat, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("PVRImagesHavePremultipliedAlpha", S_CCTexture2D::jsPVRImagesHavePremultipliedAlpha, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCTexture2D::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCTexture2D::jsdrawAtPoint(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		self->drawAtPoint(*narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsdrawInRect(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
+		self->drawInRect(*narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsinitWithImage(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCImage* narg0; JSGET_PTRSHELL(CCImage, narg0, arg0);
+		bool ret = self->initWithImage(narg0);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsinitWithPVRFile(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSString *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		bool ret = self->initWithPVRFile(narg0);
+		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jssetAntiAliasTexParameters(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->setAntiAliasTexParameters();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jssetAliasTexParameters(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->setAliasTexParameters();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsgenerateMipmap(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->generateMipmap();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsbitsPerPixelForFormat(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		unsigned int ret = self->bitsPerPixelForFormat();
+		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsdefaultAlphaPixelFormat(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		//INVALID RETURN TYPE _1FEE
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTexture2D::jsPVRImagesHavePremultipliedAlpha(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 1) {
+		bool arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		CCTexture2D::PVRImagesHavePremultipliedAlpha(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
 JSClass* S_CCSpriteFrame::jsClass = NULL;
 JSObject* S_CCSpriteFrame::jsObject = NULL;
 
@@ -2033,6 +2320,16 @@ JSBool S_CCSpriteFrame::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, js
 			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
 		} while (0);
 		break;
+	case kTexture:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getTexture();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
 	default:
 		break;
 	}
@@ -2072,6 +2369,12 @@ JSBool S_CCSpriteFrame::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JS
 			if (tmp) { cobj->setOriginalSizeInPixels(*tmp); }
 		} while (0);
 		break;
+	case kTexture:
+		do {
+			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setTexture(tmp); }
+		} while (0);
+		break;
 	default:
 		break;
 	}
@@ -2097,6 +2400,7 @@ void S_CCSpriteFrame::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 			{"rect", kRect, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{"offsetInPixels", kOffsetInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{"originalSizeInPixels", kOriginalSizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
+			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSpriteFrame::jsPropertyGet, S_CCSpriteFrame::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -2610,6 +2914,16 @@ JSBool S_CCParticleSystem::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 	case kTotalParticles:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getTotalParticles(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
+	case kTexture:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getTexture();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
 	case kBlendFunc:
 				// don't know what this is (c ~> js)
 		break;
@@ -2753,6 +3067,12 @@ JSBool S_CCParticleSystem::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id,
 	case kTotalParticles:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setTotalParticles(tmp); } while (0);
 		break;
+	case kTexture:
+		do {
+			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setTexture(tmp); }
+		} while (0);
+		break;
 	case kBlendFunc:
 				// don't know what this is (js ~> c)
 		break;
@@ -2858,6 +3178,7 @@ void S_CCParticleSystem::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 			{"endSpinVar", kEndSpinVar, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"emissionRate", kEmissionRate, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"totalParticles", kTotalParticles, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
+			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"blendFunc", kBlendFunc, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"isBlendAdditive", kIsBlendAdditive, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
 			{"type", kType, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystem::jsPropertyGet, S_CCParticleSystem::jsPropertySet},
@@ -3020,33 +3341,6 @@ JSBool S_CCParticleSystem::jspostStep(JSContext *cx, uint32_t argc, jsval *vp) {
 	}
 	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
 	return JS_TRUE;
-}
-JSBool S_CCParticleSystem::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
-	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
-	if (self == NULL) return JS_FALSE;
-	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
-		self->update(arg0);
-		
-		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-void S_CCParticleSystem::update(ccTime delta) {
-	if (m_jsobj) {
-		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
-		JSBool found; JS_HasProperty(cx, m_jsobj, "update", &found);
-		if (found == JS_TRUE) {
-			jsval rval, fval;
-			JS_GetProperty(cx, m_jsobj, "update", &fval);
-			jsval jsdelta; JS_NewNumberValue(cx, delta, &jsdelta);
-			JS_CallFunctionValue(cx, m_jsobj, fval, 1, &jsdelta, &rval);
-		}
-	}
 }
 
 JSClass* S_CCEaseElasticIn::jsClass = NULL;
@@ -9424,6 +9718,348 @@ JSBool S_CCActionInterval::jsactionWithDuration(JSContext *cx, uint32_t argc, js
 	return JS_TRUE;
 }
 
+JSClass* S_CCTextureCache::jsClass = NULL;
+JSObject* S_CCTextureCache::jsObject = NULL;
+
+JSBool S_CCTextureCache::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	return JS_FALSE;
+};
+
+void S_CCTextureCache::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_CCTextureCache *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_CCTextureCache::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCTextureCache *cobj; JSGET_PTRSHELL(S_CCTextureCache, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+JSBool S_CCTextureCache::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_CCTextureCache *cobj; JSGET_PTRSHELL(S_CCTextureCache, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+void S_CCTextureCache::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"textures", kTextures, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTextureCache::jsPropertyGet, S_CCTextureCache::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("addImage", S_CCTextureCache::jsaddImage, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("addUIImage", S_CCTextureCache::jsaddUIImage, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("textureForKey", S_CCTextureCache::jstextureForKey, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("removeAllTextures", S_CCTextureCache::jsremoveAllTextures, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("removeUnusedTextures", S_CCTextureCache::jsremoveUnusedTextures, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("removeTexture", S_CCTextureCache::jsremoveTexture, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("removeTextureForKey", S_CCTextureCache::jsremoveTextureForKey, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("dumpCachedTextureInfo", S_CCTextureCache::jsdumpCachedTextureInfo, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("addPVRTCImage", S_CCTextureCache::jsaddPVRTCImage, 4, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("addPVRImage", S_CCTextureCache::jsaddPVRImage, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FN("sharedTextureCache", S_CCTextureCache::jssharedTextureCache, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("purgeSharedTextureCache", S_CCTextureCache::jspurgeSharedTextureCache, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("reloadAllTextures", S_CCTextureCache::jsreloadAllTextures, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCTextureCache::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_CCTextureCache::jssharedTextureCache(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCTextureCache* ret = CCTextureCache::sharedTextureCache();
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTextureCache::jsClass, S_CCTextureCache::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jspurgeSharedTextureCache(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCTextureCache::purgeSharedTextureCache();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsaddImage(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSString *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		CCTexture2D* ret = self->addImage(narg0);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsaddUIImage(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 2) {
+		JSObject *arg0;
+		JSString *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oS", &arg0, &arg1);
+		CCImage* narg0; JSGET_PTRSHELL(CCImage, narg0, arg0);
+		char *narg1 = JS_EncodeString(cx, arg1);
+		CCTexture2D* ret = self->addUIImage(narg0, narg1);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jstextureForKey(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSString *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		CCTexture2D* ret = self->textureForKey(narg0);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsremoveAllTextures(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->removeAllTextures();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsremoveUnusedTextures(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->removeUnusedTextures();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsremoveTexture(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSObject *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		self->removeTexture(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsremoveTextureForKey(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSString *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		self->removeTextureForKey(narg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsdumpCachedTextureInfo(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		self->dumpCachedTextureInfo();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsaddPVRTCImage(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 4) {
+		JSString *arg0;
+		int arg1;
+		bool arg2;
+		int arg3;
+		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "Sibi", &arg0, &arg1, &arg2, &arg3);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		CCTexture2D* ret = self->addPVRTCImage(narg0, arg1, arg2, arg3);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsaddPVRImage(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		JSString *arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
+		char *narg0 = JS_EncodeString(cx, arg0);
+		CCTexture2D* ret = self->addPVRImage(narg0);
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)ret;
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_CCTextureCache::jsreloadAllTextures(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 0) {
+		JS_ConvertArguments(cx, 0, JS_ARGV(cx, vp), "");
+		CCTextureCache::reloadAllTextures();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
 JSClass* S_CCRepeatForever::jsClass = NULL;
 JSObject* S_CCRepeatForever::jsObject = NULL;
 
@@ -9829,6 +10465,8 @@ void S_CCRenderTexture::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 			{"sprite", kSprite, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"fBO", kFBO, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"oldFBO", kOldFBO, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
+			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
+			{"uITextureImage", kUITextureImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{"ePixelFormat", kEPixelFormat, JSPROP_PERMANENT | JSPROP_SHARED, S_CCRenderTexture::jsPropertyGet, S_CCRenderTexture::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
@@ -10701,6 +11339,16 @@ JSBool S_CCSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *
 	case kBlendFunc:
 				// don't know what this is (c ~> js)
 		break;
+	case kTexture:
+		do {
+			JSObject *tmp = JS_NewObject(cx, S_CCTexture2D::jsClass, S_CCTexture2D::jsObject, NULL);
+			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+			pt->flags = kPointerTemporary;
+			pt->data = (void *)cobj->getTexture();
+			JS_SetPrivate(tmp, pt);
+			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+		} while (0);
+		break;
 	case kOffsetPositionInPixels:
 		do {
 			JSObject *tmp = JS_NewObject(cx, S_CCPoint::jsClass, S_CCPoint::jsObject, NULL);
@@ -10748,6 +11396,12 @@ JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	case kBlendFunc:
 				// don't know what this is (js ~> c)
 		break;
+	case kTexture:
+		do {
+			CCTexture2D* tmp; JSGET_PTRSHELL(CCTexture2D, tmp, JSVAL_TO_OBJECT(*val));
+			if (tmp) { cobj->setTexture(tmp); }
+		} while (0);
+		break;
 	case kFlipX:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setFlipX(tmp); } while (0);
 		break;
@@ -10786,6 +11440,7 @@ void S_CCSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 			{"recursiveDirty", kRecursiveDirty, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"hasChildren", kHasChildren, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"blendFunc", kBlendFunc, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"texture", kTexture, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"usesBatchNode", kUsesBatchNode, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"rect", kRect, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"rectInPixels", kRectInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},

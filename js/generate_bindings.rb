@@ -25,10 +25,10 @@ class CppMethod
     @static = node['static'] == "1" ? true : false
     @num_arguments = node['num_args'].to_i
     @arguments = []
+    @klass = klass
     v = {:type => node['type']}
     bindings_generator.real_type(v)
     @type = v[:type]
-    @klass = klass
     (node / "ParmVar").each do |par|
       @arguments << {
         :name => par['name'],

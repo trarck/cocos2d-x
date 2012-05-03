@@ -542,11 +542,32 @@ class CppClass
     # debugger if @name == "CCTouch"
     @properties.each do |prop, val|
       next if val[:requires_accessor] && val[:getter].nil?
-      convert_code = convert_value_to_js(val, prop, "val", 2)
-      next if convert_code.nil?
-      str << "\tcase k#{prop.capitalize}:\n"
-      str << "\t\t#{convert_code}\n"
-      str << "\t\tbreak;\n"
+      if prop == "runningScene" && @name == "CCDirector"
+        # yet another border case
+        str << "\tcase k#{prop.capitalize}:\n"
+        str << <<-EOS
+\t\tdo {
+\t\t\tCCScene *scene = cobj->getRunningScene();
+\t\t\tif (scene) {
+\t\t\t\tJSObject *tmp = JS_NewObject(cx, S_CCScene::jsClass, S_CCScene::jsObject, NULL);
+\t\t\t\tpointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+\t\t\t\tpt->flags = kPointerTemporary;
+\t\t\t\tpt->data = (void *)scene;
+\t\t\t\tJS_SetPrivate(tmp, pt);
+\t\t\t\tJS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
+\t\t\t} else {
+\t\t\t\tJS_SET_RVAL(cx, val, JSVAL_NULL);
+\t\t\t}
+\t\t} while (0);
+        EOS
+        str << "\t\tbreak;\n"
+      else
+        convert_code = convert_value_to_js(val, prop, "val", 2)
+        next if convert_code.nil?
+        str << "\tcase k#{prop.capitalize}:\n"
+        str << "\t\t#{convert_code}\n"
+        str << "\t\tbreak;\n"
+      end
     end
     str << "\tdefault:\n"
     str << "\t\tbreak;\n"
@@ -613,13 +634,13 @@ class CppClass
 
   def generate_declaration
     str =  ""
-    str << "class S_#{@name} : public #{@name}\n"
+    str << "class S_#{@name} : public #{@name == "CCParticleSystem" ? "ARCH_OPTIMAL_PARTICLE_SYSTEM" : @name}\n"
     str << "{\n"
     str << "\tJSObject *m_jsobj;\n"
     str << "public:\n"
     str << "\tstatic JSClass *jsClass;\n"
     str << "\tstatic JSObject *jsObject;\n\n"
-    str << "\tS_#{@name}(JSObject *obj) : #{@name}(), m_jsobj(obj) {};\n" unless @singleton
+    str << "\tS_#{@name}(JSObject *obj) : #{@name == "CCParticleSystem" ? "ARCH_OPTIMAL_PARTICLE_SYSTEM" : @name}(), m_jsobj(obj) {};\n" unless @singleton
     str << generate_properties_enum << "\n"
     str << "\tstatic JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);\n"
     str << "\tstatic void jsFinalize(JSContext *cx, JSObject *obj);\n"

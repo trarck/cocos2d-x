@@ -174,7 +174,6 @@ public:
 	static JSBool jsmenuWithItems(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsmenuWithItem(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsinitWithItems(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsVertically(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsVerticallyWithPadding(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsHorizontally(JSContext *cx, uint32_t argc, jsval *vp);
@@ -182,6 +181,7 @@ public:
 	static JSBool jsalignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsalignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsregisterWithTouchDispatcher(JSContext *cx, uint32_t argc, jsval *vp);
+
 };
 
 class S_CCAction : public CCAction
@@ -237,6 +237,7 @@ public:
 	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
 	void menuAction(cocos2d::CCObject *o);
+
 };
 
 class S_CCDelayTime : public CCDelayTime
@@ -362,6 +363,7 @@ public:
 	static JSBool jsitemFromNormalImage(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinitFromNormalImage(JSContext *cx, uint32_t argc, jsval *vp);
 	void menuAction(cocos2d::CCObject *o);
+
 };
 
 class S_CCParticleSystem : public ARCH_OPTIMAL_PARTICLE_SYSTEM
@@ -1270,7 +1272,6 @@ public:
 	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
-	static JSBool jsitemWithTarget(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsrect(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsactivate(JSContext *cx, uint32_t argc, jsval *vp);
@@ -1484,6 +1485,7 @@ public:
 	static JSBool jsselected(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsunselected(JSContext *cx, uint32_t argc, jsval *vp);
 	void menuAction(cocos2d::CCObject *o);
+
 };
 
 class S_CCSet : public CCSet
@@ -1510,7 +1512,6 @@ public:
 	static JSBool jscontainsObject(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsbegin(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsend(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsanyObject(JSContext *cx, uint32_t argc, jsval *vp);
 
 };
 
@@ -1567,7 +1568,6 @@ public:
 		kOpacityModifyRGB,
 		kFlipX,
 		kFlipY,
-		kSpriteBatchNode,
 		kHonorParentTransform,
 		kIsOpacityModifyRGB
 	};

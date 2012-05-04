@@ -255,6 +255,8 @@ class CppClass
       next if (@name == "CCAnimation") && method['name'] == "getName"
       # no "children" for CCNode
       next if (@name == "CCNode") && method['name'] == "getChildren"
+      # no "descendants" for CCSpriteBatchNode
+      next if (@name == "CCSpriteBatchNode") && method['name'] == "getDescendants"
       # no "spriteBatchNode" for CCSprite
       next if (@name == "CCSprite") && method['name'].match(/^(get|set)(TextureAtlas|SpriteBatchNode)/)
       # fix "initWithTarget" for CCMenuItem
@@ -1168,7 +1170,8 @@ private
                        CCEaseBounceIn CCEaseBounce CCEaseBounceInOut CCEaseBackIn CCEaseBounceOut CCEaseIn CCEaseOut
                        CCEaseExponentialIn CCEaseInOut CCEaseExponentialOut CCEaseExponentialInOut CCEaseSineIn
                        CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction CCParticleSystem CCParticleSystemQuad
-                       CCParticleSystemPoint CCDelayTime CCTexture2D CCTextureCache)
+                       CCParticleSystemPoint CCDelayTime CCTexture2D CCTextureCache CCSpriteBatchNode CCTextureAtlas
+                       )
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created

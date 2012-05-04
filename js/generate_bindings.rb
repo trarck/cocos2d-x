@@ -5,7 +5,7 @@
 require 'rubygems'
 require 'nokogiri'
 require 'fileutils'
-require 'ruby-debug'
+# require 'ruby-debug'
 
 class String
   def uncapitalize
@@ -1052,7 +1052,7 @@ private
   def find_classes
     (@reference_section / "Record[@kind=class]").each do |record|
       # find the record on the translation unit and create the class
-      (@translation_unit / "*/CXXRecord[@type=#{record['id']}]").each do |cxx_record|
+      @translation_unit.xpath(".//CXXRecord").select { |n| n['type'] == record['id'] }.each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"
@@ -1206,7 +1206,7 @@ private
 
 end
 
-Debugger.start(:post_mortem => true)
+# Debugger.start(:post_mortem => true)
 
 doc = Nokogiri::XML(File.read(ARGV[0]))
 BindingsGenerator.new(doc, ARGV[1])

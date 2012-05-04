@@ -87,8 +87,9 @@ class CppMethod
       args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
       if type[:fundamental] && !type[:pointer]
-        # fix for JS_ConvertArguments (it only accepts doubles)
+        # fix for JS_ConvertArguments (it only accepts doubles and JSBool for booleans)
         type[:name] = "double" if type[:name] == "float"
+        type[:name] = "JSBool" if type[:name] == "bool"
         str << "#{indent}\t#{type[:name]} arg#{i};\n"
         call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
@@ -274,7 +275,7 @@ class CppClass
       next if @name == "CCTextureCache" && method['name'] == "addImageAsync"
 
       # mark as singleton (produce no constructor code)
-      @singleton = true if method['name'].match(/^shared.*#{prefixless_name}/i)
+      @singleton = true if method['name'].match(/^shared.*/i)
 
       # the accessors
       if method['static'] != "1" && md = method['name'].match(/(get|set)(\w+)/)
@@ -868,6 +869,7 @@ class BindingsGenerator
     @const_volatile = {}
     @typedefs = {}
 
+    extra_include = (!ARGV[0].match(/cocos2d\.h/) ? "#include \"#{File.basename(ARGV[0], ".xml")}.h\"\n#include \"cocos2d_generated.hpp\"" : "")
     @out_header.puts <<-EOS
 
 #ifndef __#{out_prefix}__h
@@ -875,9 +877,14 @@ class BindingsGenerator
 
 #include "ScriptingCore.h"
 #include "cocos2d.h"
+#{extra_include}
 
 using namespace cocos2d;
 
+    EOS
+    # only print this for cocos2d header
+    if ARGV[0].match(/cocos2d\.h/)
+      @out_header.puts <<-EOS
 typedef struct {
 \tuint32_t flags;
 \tvoid* data;
@@ -886,7 +893,9 @@ typedef struct {
 typedef enum {
 \tkPointerTemporary = 1
 } pointerShellFlags;
-
+      EOS
+    end
+    @out_header.puts <<-EOS
 #define JSGET_PTRSHELL(type, cobj, jsobj) do { \\
 \tpointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(jsobj); \\
 \tif (pt) { \\
@@ -1163,7 +1172,8 @@ private
   end
 
   def instantiate_class_generators
-    green_lighted = %w(CCPoint CCSize _ccGridSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
+    green_lighted = ENV['CCX_CLASSES'] ? ENV['CCX_CLASSES'].split(':') :
+                    %w(CCPoint CCSize _ccGridSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
                        CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence

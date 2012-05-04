@@ -261,6 +261,8 @@ class CppClass
       next if (@name == "CCSprite") && method['name'].match(/^(get|set)(TextureAtlas|SpriteBatchNode)/)
       # fix "initWithTarget" for CCMenuItem
       next if (@name == "CCMenuItem") && (method['name'] == "initWithTarget" || method['name'] == "itemWithTarget")
+      # we don't need this - it's specific for every subclass
+      next if (@name == "CCGrid3DAction") && method['name'] == "actionWithSize"
       if @name == "CCTexture2D"
         next if method['name'] == "initWithData"
         next if method['name'] == "initWithString"
@@ -1161,7 +1163,7 @@ private
   end
 
   def instantiate_class_generators
-    green_lighted = %w(CCPoint CCSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
+    green_lighted = %w(CCPoint CCSize _ccGridSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem
                        CCMenuItemLabel CCMenuItemSprite CCMenuItemImage CCLabelTTF CCSequence
@@ -1171,6 +1173,7 @@ private
                        CCEaseExponentialIn CCEaseInOut CCEaseExponentialOut CCEaseExponentialInOut CCEaseSineIn
                        CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction CCParticleSystem CCParticleSystemQuad
                        CCParticleSystemPoint CCDelayTime CCTexture2D CCTextureCache CCSpriteBatchNode CCTextureAtlas
+                       CCParallaxNode CCTintTo CCTintBy CCLayerColor CCBlink CCSpeed CCWaves3D CCGridAction CCGrid3DAction
                        )
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|

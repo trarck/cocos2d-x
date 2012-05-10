@@ -883,7 +883,7 @@ class BindingsGenerator
     @const_volatile = {}
     @typedefs = {}
 
-    extra_include = (!ARGV[0].match(/cocos2d\.h/) ? "#include \"#{File.basename(ARGV[0], ".xml")}.h\"\n#include \"cocos2d_generated.hpp\"" : "")
+    extra_include = (!ARGV[0].match(/cocos2d\.xml/) ? "#include \"#{File.basename(ARGV[0], ".xml")}.h\"\n#include \"cocos2d_generated.hpp\"" : "")
     @out_header.puts <<-EOS
 
 #ifndef __#{out_prefix}__h
@@ -897,7 +897,7 @@ using namespace cocos2d;
 
     EOS
     # only print this for cocos2d header
-    if ARGV[0].match(/cocos2d\.h/)
+    if ARGV[0].match(/cocos2d\.xml/)
       @out_header.puts <<-EOS
 typedef struct {
 \tuint32_t flags;
@@ -907,6 +907,7 @@ typedef struct {
 typedef enum {
 \tkPointerTemporary = 1
 } pointerShellFlags;
+
       EOS
     end
     @out_header.puts <<-EOS

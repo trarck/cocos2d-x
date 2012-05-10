@@ -125,7 +125,7 @@ class CppMethod
       end
     end
     convert_str = (convert_params.size > 0 ? ", #{convert_params.join(', ')}" : "")
-    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, JS_ARGV(cx, vp), \"#{args_str}\"#{convert_str});\n"
+    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, JS_ARGV(cx, vp), \"#{args_str}\"#{convert_str});\n" if @num_arguments > 0
     # conver the JSObjects to the proper native object
     args_str.split(//).each_with_index do |type, i|
       if type == "o"
@@ -187,7 +187,11 @@ class CppClass
     @singleton = false
 
     @name = node['name']
-    prefixless_name = @name.gsub(/^CC/, '').downcase
+    @namespace = nil
+    if node.parent.name == "Namespace"
+      @namespace = node.parent['name']
+    end
+    # prefixless_name = @name.gsub(/^CC/, '').downcase
     # puts node if @name == "CCPoint"
 
     # test for super classes
@@ -638,8 +642,9 @@ class CppClass
   end
 
   def generate_declaration
+    namespace = @namespace ? "#{@namespace}::" : ""
     str =  ""
-    str << "class S_#{@name} : public #{@name == "CCParticleSystem" ? "ARCH_OPTIMAL_PARTICLE_SYSTEM" : @name}\n"
+    str << "class S_#{@name} : public #{namespace}#{@name == "CCParticleSystem" ? "ARCH_OPTIMAL_PARTICLE_SYSTEM" : @name}\n"
     str << "{\n"
     str << "\tJSObject *m_jsobj;\n"
     str << "public:\n"
@@ -793,7 +798,11 @@ class CppClass
       if type[:fundamental] && !val[:pointer]
         case type[:name]
         when /int|long|float|double|short|char/
-          str << "do { jsval tmp; JS_NewNumberValue(cx, #{inval_str}, &tmp); JS_SET_RVAL(cx, #{outvalue}, tmp); } while (0);"
+          if type[:pointer] && type[:name] == "char"
+            str << "do { JSString *tmp = JS_NewStringCopyZ(cx, #{inval_str}); JS_SET_RVAL(cx, #{outvalue}, STRING_TO_JSVAL(tmp)); } while (0);"
+          else
+            str << "do { jsval tmp; JS_NewNumberValue(cx, #{inval_str}, &tmp); JS_SET_RVAL(cx, #{outvalue}, tmp); } while (0);"
+          end
         when /bool/
           str << "JS_SET_RVAL(cx, #{outvalue}, BOOLEAN_TO_JSVAL(#{inval_str}));"
         end
@@ -1063,7 +1072,7 @@ private
     end # each Record(class)
     (@reference_section / "Record[@kind=struct]").each do |record|
       # find the record on the translation unit and create the class
-      (@translation_unit / "*/CXXRecord[@type=#{record['id']}]").each do |cxx_record|
+      @translation_unit.xpath(".//CXXRecord").select { |n| n['type'] == record['id'] }.each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"
@@ -1172,7 +1181,7 @@ private
   end
 
   def instantiate_class_generators
-    green_lighted = ENV['CCX_CLASSES'] ? ENV['CCX_CLASSES'].split(':') :
+    green_lighted = ENV['CXX_CLASSES'] ? ENV['CXX_CLASSES'].split(':') :
                     %w(CCPoint CCSize _ccGridSize CCRect CCDirector CCNode CCSprite CCScene CCSpriteFrameCache
                        CCSpriteFrame CCAction CCAnimate CCAnimation CCRepeatForever CCLayer CCTouch
                        CCSet CCMoveBy CCMoveTo CCRotateTo CCRotateBy CCRenderTexture CCMenu CCMenuItem

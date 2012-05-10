@@ -21,3 +21,22 @@ public:
 	// std::string not working yet!
 	int doSomeProcessing(std::string arg1, std::string arg2);
 };
+
+namespace SomeNamespace {
+class AnotherClass {
+protected:
+	int justOneField;
+
+public:
+	int aPublicField;
+
+	AnotherClass();
+	~AnotherClass();
+
+	int getJustOneField();
+	// wrong setter - won't work (needs ONLY one parameter in order to work)
+	void setJustOneField();
+
+	void doSomethingSimple();
+};
+};

@@ -1,5 +1,106 @@
 #include "simple_native_generated.hpp"
 
+JSClass* S_AnotherClass::jsClass = NULL;
+JSObject* S_AnotherClass::jsObject = NULL;
+
+JSBool S_AnotherClass::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JSObject *obj = JS_NewObject(cx, S_AnotherClass::jsClass, S_AnotherClass::jsObject, NULL);
+	S_AnotherClass *cobj = new S_AnotherClass(obj);
+	pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
+	pt->flags = 0; pt->data = cobj;
+	JS_SetPrivate(obj, pt);
+	JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
+	return JS_TRUE;
+}
+
+void S_AnotherClass::jsFinalize(JSContext *cx, JSObject *obj)
+{
+	pointerShell_t *pt = (pointerShell_t *)JS_GetPrivate(obj);
+	if (pt) {
+		if (!(pt->flags & kPointerTemporary) && pt->data) delete (S_AnotherClass *)pt->data;
+		JS_free(cx, pt);
+	}
+}
+
+JSBool S_AnotherClass::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_AnotherClass *cobj; JSGET_PTRSHELL(S_AnotherClass, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kAPublicField:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->aPublicField, &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	case kJustOneField:
+		do { jsval tmp; JS_NewNumberValue(cx, cobj->getJustOneField(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		break;
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+JSBool S_AnotherClass::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	int32_t propId = JSID_TO_INT(_id);
+	S_AnotherClass *cobj; JSGET_PTRSHELL(S_AnotherClass, cobj, obj);
+	if (!cobj) return JS_FALSE;
+	switch(propId) {
+	case kAPublicField:
+		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->aPublicField = tmp; } while (0);
+		break;
+	default:
+		break;
+	}
+	return JS_TRUE;
+}
+
+void S_AnotherClass::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+		static JSPropertySpec properties[] = {
+			{"aPublicField", kAPublicField, JSPROP_PERMANENT | JSPROP_SHARED, S_AnotherClass::jsPropertyGet, S_AnotherClass::jsPropertySet},
+			{"justOneField", kJustOneField, JSPROP_PERMANENT | JSPROP_SHARED, S_AnotherClass::jsPropertyGet, S_AnotherClass::jsPropertySet},
+			{0, 0, 0, 0, 0}
+		};
+
+		static JSFunctionSpec funcs[] = {
+			JS_FN("doSomethingSimple", S_AnotherClass::jsdoSomethingSimple, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FS_END
+		};
+
+		static JSFunctionSpec st_funcs[] = {
+			JS_FS_END
+		};
+
+	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_AnotherClass::jsConstructor,0,properties,funcs,NULL,st_funcs);
+}
+
+JSBool S_AnotherClass::jsdoSomethingSimple(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_AnotherClass* self = NULL; JSGET_PTRSHELL(S_AnotherClass, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		self->doSomethingSimple();
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+
 JSClass* S_SimpleNativeClass::jsClass = NULL;
 JSObject* S_SimpleNativeClass::jsObject = NULL;
 
@@ -36,7 +137,7 @@ JSBool S_SimpleNativeClass::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getSomeOtherField(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
 	case kAnotherMoreComplexField:
-		do { jsval tmp; JS_NewNumberValue(cx, cobj->getAnotherMoreComplexField(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
+		do { JSString *tmp = JS_NewStringCopyZ(cx, cobj->getAnotherMoreComplexField()); JS_SET_RVAL(cx, val, STRING_TO_JSVAL(tmp)); } while (0);
 		break;
 	default:
 		break;

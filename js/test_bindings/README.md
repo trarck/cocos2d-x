@@ -39,7 +39,7 @@ should modify the header search paths (`-I` in the script).
 That will create the XML for the AST in the current working directory, in this case `simple_class.xml`. Now you need
 to pass this to the ruby script that will parse the tree and then generate the proper bindings:
 
-    CCX_CLASSES=SimpleNativeClass ruby generate_bindings.rb simple_class.xml simple_native_generated
+    CXX_CLASSES=SimpleNativeClass ruby generate_bindings.rb simple_class.xml simple_native_generated
 
 What this is doing, is specifying what classes are going to be binded (`CXX_CLASSES` is a colon separated string, and
 is being passed as a environmental variable to the script), the two arguments for the script specify the XML file and

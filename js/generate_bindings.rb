@@ -81,7 +81,7 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
-    # debugger if @name == "didAccelerate"
+    # debugger if @name == "doSomeProcessing"
     @arguments.each_with_index do |arg, i|
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
@@ -98,9 +98,9 @@ class CppMethod
           type = @klass.generator.pointer_types[arg[:type]]
           deref = false
         else
-          deref = true
+          deref = true unless type[:name] == "std::string"
         end
-        if type[:name] =~ /char/
+        if type[:name] =~ /(char|std::string)/
           str << "#{indent}\tJSString *arg#{i};\n"
         else
           str << "#{indent}\tJSObject *arg#{i};\n"
@@ -132,7 +132,11 @@ class CppMethod
         ntype = call_params[i][0]
         str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype}, narg#{i}, arg#{i});\n"
       elsif type == "S"
-        str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
+        if call_params[i][0] == "std::string"
+          str << "#{indent}\tstd::string narg#{i} = JS_EncodeString(cx, arg#{i});\n"
+        else
+          str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
+        end
       end
     end
     # do the call
@@ -840,7 +844,7 @@ class CppClass
 end
 
 class BindingsGenerator
-  attr_reader :classes, :fundamental_types, :pointer_types, :out_header, :out_impl
+  attr_reader :classes, :fundamental_types, :pointer_types, :out_header, :out_impl, :doc
   CCRETAIN_METHODS = %w(
     addChild
     runAction
@@ -865,6 +869,7 @@ class BindingsGenerator
     @out_impl   = File.open(ifile_name, "w+")
 
     raise "Invalid XML file" if doc.root.name != "CLANG_XML"
+    @doc = doc
     @translation_unit = (doc.root / "TranslationUnit").first rescue nil
     test_xml(@translation_unit && @translation_unit.name == "TranslationUnit")
 
@@ -975,6 +980,15 @@ void klass::menuAction(cocos2d::CCObject *o) \\
       return "o"
     else
       # $stderr.puts "no type for #{arg[:type]}"
+      # one final chance, it might be a std::string
+      elt = @doc.xpath("//*[@id='#{arg[:type]}']").first
+      if elt && elt.name == "ElaboratedType"
+        elt = @doc.xpath("//*[@id='#{elt['type']}']").first
+        if elt && elt.name == "Typedef" && elt['name'] == "string"
+          type[:name] = "std::string"
+          return "S"
+        end
+      end
       return "*"
     end
   end
@@ -1061,7 +1075,7 @@ private
   def find_classes
     (@reference_section / "Record[@kind=class]").each do |record|
       # find the record on the translation unit and create the class
-      @translation_unit.xpath(".//CXXRecord").select { |n| n['type'] == record['id'] }.each do |cxx_record|
+      @translation_unit.xpath(".//CXXRecord[@type='#{record['id']}']").each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"
@@ -1072,7 +1086,7 @@ private
     end # each Record(class)
     (@reference_section / "Record[@kind=struct]").each do |record|
       # find the record on the translation unit and create the class
-      @translation_unit.xpath(".//CXXRecord").select { |n| n['type'] == record['id'] }.each do |cxx_record|
+      @translation_unit.xpath(".//CXXRecord[@type='#{record['id']}']").each do |cxx_record|
         if cxx_record['forward'].nil?
           # just store the xml, we will instantiate them later
           # $stderr.puts "found class #{record['name']} - #{record['id']}"

@@ -206,10 +206,12 @@ JSBool S_SimpleNativeClass::jsdoSomeProcessing(JSContext *cx, uint32_t argc, jsv
 	S_SimpleNativeClass* self = NULL; JSGET_PTRSHELL(S_SimpleNativeClass, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "**", &arg0, &arg1);
-		int ret = self->doSomeProcessing(*narg0, *narg1);
+		JSString *arg0;
+		JSString *arg1;
+		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "SS", &arg0, &arg1);
+		std::string narg0 = JS_EncodeString(cx, arg0);
+		std::string narg1 = JS_EncodeString(cx, arg1);
+		int ret = self->doSomeProcessing(narg0, narg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
 		return JS_TRUE;

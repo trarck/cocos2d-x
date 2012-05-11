@@ -761,7 +761,7 @@ class CppClass
         str << "do {\n"
         # special case for char *
         if type[:fundamental] && type[:name] =~ /char/
-          str << "#{indent}\tchar *tmp = JS_EncodeString(cx, *#{invalue});\n"
+          str << "#{indent}\tchar *tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*#{invalue}));\n"
           ref = false
         else
           str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"

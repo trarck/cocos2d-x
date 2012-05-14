@@ -140,11 +140,11 @@ class CppMethod
     end
     # do the call
     type = {}
+    # debugger if @name == "initWithAnimation"
     if @klass.generator.find_type(@type, type)
       ret = ""
       void_ret = ""
       ref = false
-      # debugger if @name == "initWithAnimation"
       unless type[:fundamental] && type[:name] == "void"
         ret = type[:name]
         ref = type[:pointer].nil? && type[:fundamental].nil?
@@ -292,6 +292,22 @@ class CppClass
       end
       next if @name == "CCLabelAtlas" && method['name'] == "convertToLabelProtocol"
       next if @name == "CCTiledGrid3DAction" && method['name'] == "actionWithSize"
+      next if @name == "CCTMXTiledMap" && method['name'] == "propertiesForGID"
+      if @name == "CCTMXTiledMap"
+        next if method['name'] == "objectGroupNamed"
+        next if method['name'] == "update"
+        next if method['name'] == "propertyNamed"
+      end
+      if @name == "CCTMXLayer"
+        next if method['name'] == "getTiles"
+        next if method['name'] == "getTileSet"
+        next if method['name'] == "getProperties"
+        next if method['name'] == "layerWithTilesetInfo"
+        next if method['name'] == "releaseMap"
+        next if method['name'] == "propertyNamed"
+        next if method['name'] == "removeChild"
+        next if method['name'] == "draw"
+      end
 
       # mark as singleton (produce no constructor code)
       @singleton = true if method['name'].match(/^shared.*/i)
@@ -1240,7 +1256,7 @@ private
                        CCPageTurn3D CCLens3D CCRipple3D CCApplication CCFlipX3D CCJumpTo CCTransitionPageTurn CCFlipY3D
                        CCLiquid CCTiledGrid3DAction CCJumpBy CCFollow CCSkewBy CCAccelDeccelAmplitude CCLabelAtlas CCAccelAmplitude
                        CCSkewTo CCShaky3D CCSplitCols CCFadeOut CCTileMapAtlas CCFadeTo CCJumpTiles3D CCFadeIn CCSplitRows
-                       CCScaleBy CCScaleTo CCBezierTo
+                       CCScaleBy CCScaleTo CCBezierTo CCTMXTiledMap CCTMXLayer
                        )
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
@@ -1251,7 +1267,8 @@ private
     end
 
     # output which ones are not greenlighted
-    @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
+    # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
+    # puts @classes.select { |k,v| v[:xml]['name'] =~ /^CC/ }.size
   end
 
   def complete_deps(v)

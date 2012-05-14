@@ -81,8 +81,8 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
-    # debugger if @name == "doSomeProcessing"
     @arguments.each_with_index do |arg, i|
+      # debugger if @name == "transitionWithDuration" && arg[:name] == "o"
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
@@ -981,13 +981,20 @@ void klass::menuAction(cocos2d::CCObject *o) \\
       return "o"
     else
       # $stderr.puts "no type for #{arg[:type]}"
-      # one final chance, it might be a std::string
+      # one final chance, it might be a std::string or an enum
       elt = @doc.xpath("//*[@id='#{arg[:type]}']").first
       if elt && elt.name == "ElaboratedType"
-        elt = @doc.xpath("//*[@id='#{elt['type']}']").first
-        if elt && elt.name == "Typedef" && elt['name'] == "string"
+        selt = @doc.xpath("//*[@id='#{elt['type']}']").first
+        if selt && selt.name == "Typedef" && selt['name'] == "string"
           type[:name] = "std::string"
           return "S"
+        end
+        # let's check if it's an enum
+        selt = @doc.xpath("//*[@id='#{elt['type']}']").first
+        if selt && selt.name == "Enum"
+          type[:fundamental] = true
+          type[:name] = arg[:name] || "uint32_t"
+          return "i"
         end
       end
       return "*"
@@ -1208,6 +1215,12 @@ private
                        CCEaseSineOut CCEaseSineInOut CCActionEase CCEaseRateAction CCParticleSystem CCParticleSystemQuad
                        CCParticleSystemPoint CCDelayTime CCTexture2D CCTextureCache CCSpriteBatchNode CCTextureAtlas
                        CCParallaxNode CCTintTo CCTintBy CCLayerColor CCBlink CCSpeed CCWaves3D CCGridAction CCGrid3DAction
+                       CCTransitionScene CCTransitionSceneOriented CCTransitionRotoZoom CCTransitionFadeDown
+                       CCTransitionJumpZoom CCTransitionMoveInL CCTransitionMoveInR CCTransitionMoveInT CCTransitionMoveInB
+                       CCTransitionSlideInL CCTransitionSlideInR CCTransitionSlideInB CCTransitionSlideInT CCTransitionShrinkGrow
+                       CCTransitionFlipX CCTransitionFlipY CCTransitionFlipAngular CCTransitionZoomFlipX CCTransitionZoomFlipY
+                       CCTransitionZoomFlipAngular CCTransitionFade CCTransitionCrossFade CCTransitionTurnOffTiles
+                       CCTransitionSplitCols CCTransitionSplitRows CCTransitionFadeTR CCTransitionFadeBL CCTransitionFadeUp
                        )
     # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|

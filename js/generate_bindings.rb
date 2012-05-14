@@ -82,7 +82,6 @@ class CppMethod
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
     @arguments.each_with_index do |arg, i|
-      # debugger if @name == "transitionWithDuration" && arg[:name] == "o"
       type = {}
       args_str << @klass.generator.arg_format(arg, type)
       # fundamental type
@@ -281,6 +280,18 @@ class CppClass
         next if method['name'] == "setDefaultAlphaPixelFormat"
       end
       next if @name == "CCTextureCache" && method['name'] == "addImageAsync"
+      if @name == "CCShuffleTiles"
+        next if method['name'] == "placeTile"
+        next if method['name'] == "shuffle"
+      end
+      next if @name == "CCTurnOffTiles" && method['name'] == "shuffle"
+      next if @name == "CCOrbitCamera" && method['name'] == "sphericalRadius"
+      if @name == "CCApplication"
+        @singleton = true
+        next if method['name'] == "sharedApplication"
+      end
+      next if @name == "CCLabelAtlas" && method['name'] == "convertToLabelProtocol"
+      next if @name == "CCTiledGrid3DAction" && method['name'] == "actionWithSize"
 
       # mark as singleton (produce no constructor code)
       @singleton = true if method['name'].match(/^shared.*/i)
@@ -1221,8 +1232,16 @@ private
                        CCTransitionFlipX CCTransitionFlipY CCTransitionFlipAngular CCTransitionZoomFlipX CCTransitionZoomFlipY
                        CCTransitionZoomFlipAngular CCTransitionFade CCTransitionCrossFade CCTransitionTurnOffTiles
                        CCTransitionSplitCols CCTransitionSplitRows CCTransitionFadeTR CCTransitionFadeBL CCTransitionFadeUp
+                       CCFadeOutBLTiles CCProgressFromTo CCFadeOutUpTiles CCAnimationCache CCPlace CCLabelBMFont CCReverseTime
+                       CCFadeOutTRTiles CCCamera CCProgressTo CCWavesTiles3D CCMotionStreak CCTransitionRadialCCW CCFadeOutDownTiles
+                       CCTurnOffTiles CCDeccelAmplitude CCProgressTimer CCActionInstant CCReuseGrid CCStopGrid CCTwirl
+                       CCShakyTiles3D CCTransitionRadialCW CCAtlasNode CCWaves CCShow CCOrbitCamera CCShatteredTiles3D CCHide
+                       CCToggleVisibility CCActionCamera CCShuffleTiles CCLayerGradient CCFlipX CCRepeat CCFlipY CCBezierBy
+                       CCPageTurn3D CCLens3D CCRipple3D CCApplication CCFlipX3D CCJumpTo CCTransitionPageTurn CCFlipY3D
+                       CCLiquid CCTiledGrid3DAction CCJumpBy CCFollow CCSkewBy CCAccelDeccelAmplitude CCLabelAtlas CCAccelAmplitude
+                       CCSkewTo CCShaky3D CCSplitCols CCFadeOut CCTileMapAtlas CCFadeTo CCJumpTiles3D CCFadeIn CCSplitRows
+                       CCScaleBy CCScaleTo CCBezierTo
                        )
-    # @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
       # by a subclass
@@ -1232,6 +1251,7 @@ private
     end
 
     # output which ones are not greenlighted
+    @classes.each { |k,v| puts v[:xml]['name'] unless green_lighted.include?(v[:xml]['name']) || v[:xml]['name'] !~ /^CC/ }
   end
 
   def complete_deps(v)

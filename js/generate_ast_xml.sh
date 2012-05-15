@@ -10,14 +10,25 @@
 # The default invocation will create a file named my_header.xml and if some other
 # file named like that exists, it will overwrite that, so be careful
 #
-# You might also need to set the CLANG_28 path, but since that's something that will
-# probably not change too much, ideally you just want to replace that bit
-#
-# NOTE: you can download clang-2.8 from here:
-# http://llvm.org/releases/download.html
+# By default it will try to download clang_28 from the default repository and use
+# the precompiled binary (only works of Mac OS X). It will store the clang binary
+# in the clang_28 in the current $PWD. If you are on another platform, or don't
+# want to download again the binary, place a copy of the clang 2.8 in the same
+# directory as this script and rename it as "clang_28" (basically the script tests
+# that there's a directory named like that)
 
-CLANG_28="$HOME/Downloads/clang+llvm-2.8-x86_64-apple-darwin10/"
+CLANG_28="./clang_28"
+CLANG_28_URL="http://llvm.org/releases/2.8/clang+llvm-2.8-x86_64-apple-darwin10.tar.gz"
 SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator5.1.sdk
+
+if [ ! -d "clang_28" ]; then
+	echo "No clang_28 found on ${PWD}, downloading a new copy..."
+	curl -LO "${CLANG_28_URL}"
+	tar xzf clang+llvm-2.8-x86_64-apple-darwin10.tar.gz
+	rm -f clang+llvm-2.8-x86_64-apple-darwin10.tar.gz
+	mv clang+llvm-2.8-x86_64-apple-darwin10 clang_28
+fi
+
 if [ -z "$INCLUDE_SEARCH_PATH" ]; then
 	INCLUDE_SEARCH_PATH="-I../cocos2dx/include -I../cocos2dx -I../cocos2dx/platform"
 fi

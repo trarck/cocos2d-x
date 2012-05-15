@@ -9,23 +9,16 @@ work.
 Please note that this script is a preliminary effort and it won't work in all cases. Here's what is
 **not** working:
 
-* `std::string` - plain c strings works ok though (`char *`). We're working to add support for this
-  but a workaround would be to either switch to c strings (not really an option for many of us) or
-  create a simple wrapper function that will receive c strings.
-* namespaces - It's not that they're not working, but if you're wrapping a class `C` that lives in `A::B::C`
-  the scripting interface generated will inherit from `C` and you would have to manually set the namespace
-  of the parent class to `A::B`.
 * variable number of arguments - This is not working yet
 
 ## Required tools
 
-* clang 2.8 - You can get it from the (download section)[http://llvm.org/releases/download.html] of clang. Please
-  note that it **has** to be version 2.8 and not a newer version. Newer versions have the xml output for the AST
-  broken.
+* clang 2.8 - the script will download it for you if you don't have it. Check the script for more
+  info on this.
 * ruby 1.9 and nokogiri gem
     * You can download ruby from http://www.ruby-lang.org
     * After you have ruby installed, you can install nokogiri: `sudo gem install nokogiri`
-    * Alternatively you can use (rvm)[https://rvm.io/]
+    * Alternatively you can use (rvm)[https://rvm.io/] - Highly suggested!
 
 ## Making it work
 
@@ -35,6 +28,11 @@ point the script to the `cocos2d.h` header file. Take into account though, that 
 should modify the header search paths (`-I` in the script).
 
     ./generate_ast_xml.sh test_bindings/simple_class.h
+
+This process is the exact same process as if you were "compiling" your code, so if you need to pass special search
+paths for the headers, you can do so:
+
+    INCLUDE_SEARCH_PATH="-IsomeDir -Isome/other/dir" ./generate_ast_xml.sh test_bindings/simple_class.h
 
 That will create the XML for the AST in the current working directory, in this case `simple_class.xml`. Now you need
 to pass this to the ruby script that will parse the tree and then generate the proper bindings:

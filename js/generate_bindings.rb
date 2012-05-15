@@ -1282,5 +1282,14 @@ end
 
 # Debugger.start(:post_mortem => true)
 
+if ARGV.size == 0
+  puts "usage: CXX_CLASSES=\"LIST_OF_CLASSES\" ruby #{__FILE__} generated_ast.xml [output_prefix]"
+  puts ""
+  puts "  Will read and parse the XML with the AST for your classes and generate the binding code."
+  puts "  The generated classes will only be the ones specified in the CXX_CLASSES env variable. You"
+  puts "  can specify a colon separated list: \"CXX_CLASSES=MyClass:SomeOtherClass:ClassB\""
+  exit
+end
+
 doc = Nokogiri::XML(File.read(ARGV[0]))
 BindingsGenerator.new(doc, ARGV[1])

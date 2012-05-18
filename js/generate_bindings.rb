@@ -1177,6 +1177,7 @@ private
       parent = enum.parent
       if parent.name == "Enum" && !parent['name'].empty?
         @enums[parent['name']] ||= {}
+        @enums[parent['name']]['__ns'] = parent.parent['name'] if parent.parent.name == "Namespace"
         @enums[parent['name']][enum['name']] = enum['value']
       end
     end

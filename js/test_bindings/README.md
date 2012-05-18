@@ -10,6 +10,8 @@ Please note that this script is a preliminary effort and it won't work in all ca
 **not** working:
 
 * variable number of arguments - This is not working yet
+* overloaded methods - It will call only the last method defined
+* enums - they will only work if added outside a class
 
 ## Required tools
 

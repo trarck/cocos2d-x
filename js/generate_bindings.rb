@@ -909,6 +909,7 @@ class BindingsGenerator
     @classes = {}
     @const_volatile = {}
     @typedefs = {}
+    @enums = {}
 
     extra_include = (!ARGV[0].match(/cocos2d\.xml/) ? "#include \"#{File.basename(ARGV[0], ".xml")}.h\"\n#include \"cocos2d_generated.hpp\"" : "")
     @out_header.puts <<-EOS
@@ -972,12 +973,36 @@ void klass::menuAction(cocos2d::CCObject *o) \\
     find_classes
     find_const_volatile_type
     find_typedefs
+    find_enums
     # iterate over all collections finding incomplete dependencies
     # this is very expensive
     find_missing_dependencies
     instantiate_class_generators
 
+    # add the entry point for enums
+    @out_header.puts <<-EOS
+void register_enums_#{out_prefix}(JSObject *global);
+
+    EOS
     @out_header.puts "#endif\n\n"
+    @out_impl.puts "void register_enums_#{out_prefix}(JSObject *global) {"
+    green_lighted = ENV['CXX_CLASSES'].split(":")
+    @out_impl.puts "\tJSContext *cx = ScriptingCore::getInstance().getGlobalContext();"
+    @enums.each do |k, values|
+      if green_lighted.include?(k)
+        @out_impl.puts "\tJSObject *_#{k}_enum = JS_NewObject(cx, NULL, NULL, NULL);"
+        @out_impl.puts "\tdo {"
+        values.each do |vname, val|
+          @out_impl.puts "\t\tjsval _v_#{vname}; JS_NewNumberValue(cx, #{val}, &_v_#{vname});"
+          @out_impl.puts "\t\tJS_SetProperty(cx, _#{k}_enum, \"#{vname}\", &_v_#{vname});"
+        end
+        @out_impl.puts "\t}while (0);"
+        @out_impl.puts "\tjsval _#{k}_enum_val = OBJECT_TO_JSVAL(_#{k}_enum);"
+        @out_impl.puts "\tJS_SetProperty(cx, global, \"#{k}\", &_#{k}_enum_val);"
+      end
+    end
+    @out_impl.puts "}\n"
+
     @out_header.close
     @out_impl.close
   end
@@ -1144,6 +1169,16 @@ private
     (@reference_section / "*/Typedef").each do |td|
       # $stderr.puts "typedef from #{td['id']} -> #{td['type']}"
       @typedefs[td['id']] = {:name => td['name'], :type => td['type']}
+    end
+  end
+
+  def find_enums
+    (@doc / "//EnumConstant").each do |enum|
+      parent = enum.parent
+      if parent.name == "Enum" && !parent['name'].empty?
+        @enums[parent['name']] ||= {}
+        @enums[parent['name']][enum['name']] = enum['value']
+      end
     end
   end
 

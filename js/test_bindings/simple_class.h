@@ -3,6 +3,13 @@
 
 #include <string>
 
+enum someThingEnumerated {
+	kValue1 = 1,
+	kValue2,
+	kValue3,
+	kValue4
+};
+
 class SimpleNativeClass
 {
 protected:

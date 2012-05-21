@@ -140,7 +140,6 @@ class CppMethod
     end
     # do the call
     type = {}
-    # debugger if @name == "initWithAnimation"
     if @klass.generator.find_type(@type, type)
       ret = ""
       void_ret = ""
@@ -308,6 +307,12 @@ class CppClass
         next if method['name'] == "removeChild"
         next if method['name'] == "draw"
       end
+      if @name == "CCApplication"
+        next if method['name'].match(/^application/)
+        next if method['name'] == "run"
+        next if method['name'] == "initInstance"
+      end
+      next if method['name'] == "getXMLFilePath" && @name == "CCUserDefault"
 
       # mark as singleton (produce no constructor code)
       @singleton = true if method['name'].match(/^shared.*/i)
@@ -325,7 +330,7 @@ class CppClass
           @properties[field_name] = {:type => method['type'],
                                      :getter => CppMethod.new(method, self, bindings_generator),
                                      :requires_accessor => true}
-        elsif action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i)
+        elsif (@name == "CCApplication" || @name == "CCUserDefault") || (action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i))
           # special case for CCTexture2D
           m = CppMethod.new(method, self, bindings_generator)
           @methods[m.name] ||= []
@@ -449,6 +454,8 @@ class CppClass
       next if @name == "CCRenderTexture" && name == "initWithWidthAndHeight"
       next if @name == "CCMenuItemLabel" && name == "itemWithLabel"
       next if @name == "CCMenuItemLabel" && name == "initWithLabel"
+      next if @name == "CCApplication" && name == "getCurrentLanguage"
+      next if @name == "CCUserDefault" && (name == "getStringForKey" || name == "setStringForKey")
 
       # event
       if name =~ /^(on|ccTouch)/
@@ -986,7 +993,7 @@ void register_enums_#{out_prefix}(JSObject *global);
     EOS
     @out_header.puts "#endif\n\n"
     @out_impl.puts "void register_enums_#{out_prefix}(JSObject *global) {"
-    green_lighted = ENV['CXX_CLASSES'].split(":")
+    green_lighted = (ENV['CXX_CLASSES'] || "").split(":")
     @out_impl.puts "\tJSContext *cx = ScriptingCore::getInstance().getGlobalContext();"
     @enums.each do |k, values|
       if green_lighted.include?(k)
@@ -1292,7 +1299,7 @@ private
                        CCPageTurn3D CCLens3D CCRipple3D CCApplication CCFlipX3D CCJumpTo CCTransitionPageTurn CCFlipY3D
                        CCLiquid CCTiledGrid3DAction CCJumpBy CCFollow CCSkewBy CCAccelDeccelAmplitude CCLabelAtlas CCAccelAmplitude
                        CCSkewTo CCShaky3D CCSplitCols CCFadeOut CCTileMapAtlas CCFadeTo CCJumpTiles3D CCFadeIn CCSplitRows
-                       CCScaleBy CCScaleTo CCBezierTo CCTMXTiledMap CCTMXLayer
+                       CCScaleBy CCScaleTo CCBezierTo CCTMXTiledMap CCTMXLayer CCApplication CCUserDefault
                        )
     @classes.select { |k,v| green_lighted.include?(v[:name]) }.each do |k,v|
       # do not always create the generator, it might have already being created
@@ -1316,8 +1323,6 @@ private
 
 end
 
-# Debugger.start(:post_mortem => true)
-
 if ARGV.size == 0
   puts "usage: CXX_CLASSES=\"LIST_OF_CLASSES\" ruby #{__FILE__} generated_ast.xml [output_prefix]"
   puts ""
@@ -1326,6 +1331,8 @@ if ARGV.size == 0
   puts "  can specify a colon separated list: \"CXX_CLASSES=MyClass:SomeOtherClass:ClassB\""
   exit
 end
+
+# Debugger.start(:post_mortem => true)
 
 doc = Nokogiri::XML(File.read(ARGV[0]))
 BindingsGenerator.new(doc, ARGV[1])

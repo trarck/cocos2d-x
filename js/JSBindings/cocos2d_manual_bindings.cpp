@@ -1,4 +1,119 @@
 #include "cocos2d_generated.hpp"
+#include "cocos2d_manual_bindings.hpp"
+
+// will fetch the scheduled functions for that object and execute them
+// void S_runScheduledFunctions(JSObjectRef object, cocos2d::ccTime delta);
+std::map<int, JSScheduleCallback *, cmp_objects> _globalCallback;
+
+JSClass* S_CCScheduler::jsClass = NULL;
+JSObject* S_CCScheduler::jsObject = NULL;
+
+JSBool S_CCScheduler::jsConstructor(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	return JS_FALSE;
+}
+
+void S_CCScheduler::jsFinalize(JSContext *cx, JSObject *obj)
+{
+}
+
+JSBool S_CCScheduler::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val)
+{
+	return JS_TRUE;
+}
+
+JSBool S_CCScheduler::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)
+{
+	return JS_TRUE;
+}
+
+void S_CCScheduler::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name)
+{
+	jsClass = (JSClass *)calloc(1, sizeof(JSClass));
+	jsClass->name = name;
+	jsClass->addProperty = JS_PropertyStub;
+	jsClass->delProperty = JS_PropertyStub;
+	jsClass->getProperty = JS_PropertyStub;
+	jsClass->setProperty = JS_StrictPropertyStub;
+	jsClass->enumerate = JS_EnumerateStub;
+	jsClass->resolve = JS_ResolveStub;
+	jsClass->convert = JS_ConvertStub;
+	jsClass->finalize = jsFinalize;
+	jsClass->flags = JSCLASS_HAS_PRIVATE;
+
+	static JSFunctionSpec st_funcs[] = {
+		JS_FN("schedule", S_CCScheduler::jsschedule, 2, JSPROP_PERMANENT | JSPROP_SHARED),
+		JS_FN("unschedule", S_CCScheduler::jsunschedule, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+		JS_FS_END
+	};
+	
+	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCScheduler::jsConstructor,0,NULL,NULL,NULL,st_funcs);
+}
+
+// ported from the old bindings
+JSBool S_CCScheduler::jsschedule(JSContext *cx, uint32_t argc, jsval *vp) {
+	static int nextTimerId = 1;
+	if (argc >= 2) {
+		// turn the scheduling arguments into a JSScheduleCallback
+		JSScheduleCallback *cb = new JSScheduleCallback();
+		double interval;
+		if (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "od/o", &cb->callback, &interval, &cb->thisObject)) {
+			JS_AddObjectRoot(cx, &cb->callback);
+			if (cb->thisObject) {
+				JS_AddObjectRoot(cx, &cb->thisObject);
+			}
+			cb->id = nextTimerId++;
+			// save the timer callback in our list of global timer callbacks
+			_globalCallback[cb->id] = cb;
+			
+			// schedule the event
+			interval = interval / 1000.0f; // convert ms to seconds
+			CCScheduler::sharedScheduler()->scheduleSelector(schedule_selector(JSScheduleCallback::timerCallBack), cb, interval, false);
+			jsval ret; JS_NewNumberValue(cx, cb->id, &ret);
+			JS_SET_RVAL(cx, vp, ret);
+		}
+	}
+	return JS_TRUE;
+}
+
+JSBool S_CCScheduler::jsunschedule(JSContext *cx, uint32_t argc, jsval *vp) {
+	if (argc == 1) {
+		/**
+		 * what this should do: remove the key from the list of scheduled methods for that object
+		 * if there are no more scheduled objects, unschedule this object
+		 */
+		int32_t timerIdToRemove;
+		if (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "i", &timerIdToRemove)) {
+			callback_map::iterator it = _globalCallback.find(timerIdToRemove);
+			if (it != _globalCallback.end()) {
+				JSScheduleCallback* cb = (*it).second;
+				// unschedule the callback
+				CCScheduler::sharedScheduler()->unscheduleSelector(schedule_selector(JSScheduleCallback::timerCallBack), cb);
+				_globalCallback.erase(it);
+				JS_RemoveObjectRoot(cx, &cb->callback);
+				cb->callback = NULL;
+				if (cb->thisObject) JS_RemoveObjectRoot(cx, &cb->thisObject);
+				cb->release(); // we created it, we need to release our reference
+			}
+		}
+	}
+	return JS_TRUE;
+}
+
+JSScheduleCallback::~JSScheduleCallback()
+{
+}
+
+void JSScheduleCallback::timerCallBack(ccTime dt)
+{
+	if (this->callback) {
+		JSContext* cx = ScriptingCore::getInstance().getGlobalContext();
+		// convert delta to milliseconds
+		jsval delta, rval; JS_NewNumberValue(cx, dt * 1000.0f, &delta);
+		jsval callback = OBJECT_TO_JSVAL(this->callback);
+		JS_CallFunctionValue(cx, this->thisObject, callback, 1, &delta, &rval);
+	}
+}
 
 JSBool S_CCNode::jsaddChild(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);

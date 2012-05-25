@@ -9,7 +9,9 @@
 #include <iostream>
 #include "cocos2d.h"
 #include "ScriptingCore.h"
-#include "out.hpp"
+#include "cocos2d_generated.hpp"
+#include "cocos_denshion_generated.hpp"
+#include "cocos2d_manual_bindings.hpp"
 
 using namespace cocos2d;
 
@@ -63,6 +65,7 @@ ScriptingCore::ScriptingCore()
 	S_CCAction::jsCreateClass(this->cx, cocos, "Action");
 	S_CCActionInterval::jsCreateClass(this->cx, cocos, "ActionInterval");
 	S_CCFiniteTimeAction::jsCreateClass(this->cx, cocos, "FiniteTimeAction");
+	S_CCActionInstant::jsCreateClass(this->cx, cocos, "ActionInstant");
 	S_CCDelayTime::jsCreateClass(this->cx, cocos, "DelayTime");
 	S_CCAnimate::jsCreateClass(this->cx, cocos, "Animate");
 	S_CCMoveTo::jsCreateClass(this->cx, cocos, "MoveTo");
@@ -107,8 +110,106 @@ ScriptingCore::ScriptingCore()
 	S_CCGridAction::jsCreateClass(this->cx, cocos, "GridAction");
 	S_CCGrid3DAction::jsCreateClass(this->cx, cocos, "Grid3DAction");
 	S_CCWaves3D::jsCreateClass(this->cx, cocos, "Waves3D");
+	S_CCTransitionScene::jsCreateClass(this->cx, cocos, "TransitionScene");
+	S_CCTransitionSceneOriented::jsCreateClass(this->cx, cocos, "TransitionSceneOriented");
+	S_CCTransitionRotoZoom::jsCreateClass(this->cx, cocos, "TransitionRotoZoom");
+	S_CCTransitionFadeDown::jsCreateClass(this->cx, cocos, "TransitionFadeDown");
+	S_CCTransitionJumpZoom::jsCreateClass(this->cx, cocos, "TransitionJumpZoom");
+	S_CCTransitionMoveInL::jsCreateClass(this->cx, cocos, "TransitionMoveInL");
+	S_CCTransitionMoveInR::jsCreateClass(this->cx, cocos, "TransitionMoveInR");
+	S_CCTransitionMoveInT::jsCreateClass(this->cx, cocos, "TransitionMoveInT");
+	S_CCTransitionMoveInB::jsCreateClass(this->cx, cocos, "TransitionMoveInB");
+	S_CCTransitionSlideInL::jsCreateClass(this->cx, cocos, "TransitionSlideInL");
+	S_CCTransitionSlideInR::jsCreateClass(this->cx, cocos, "TransitionSlideInR");
+	S_CCTransitionSlideInB::jsCreateClass(this->cx, cocos, "TransitionSlideInB");
+	S_CCTransitionSlideInT::jsCreateClass(this->cx, cocos, "TransitionSlideInT");
+	S_CCTransitionShrinkGrow::jsCreateClass(this->cx, cocos, "TransitionShrinkGrow");
+	S_CCTransitionFlipX::jsCreateClass(this->cx, cocos, "TransitionFlipX");
+	S_CCTransitionFlipY::jsCreateClass(this->cx, cocos, "TransitionFlipY");
+	S_CCTransitionFlipAngular::jsCreateClass(this->cx, cocos, "TransitionFlipAngular");
+	S_CCTransitionZoomFlipX::jsCreateClass(this->cx, cocos, "TransitionZoomFlipX");
+	S_CCTransitionZoomFlipY::jsCreateClass(this->cx, cocos, "TransitionZoomFlipY");
+	S_CCTransitionZoomFlipAngular::jsCreateClass(this->cx, cocos, "TransitionZoomFlipAngular");
+	S_CCTransitionFade::jsCreateClass(this->cx, cocos, "TransitionFade");
+	S_CCTransitionCrossFade::jsCreateClass(this->cx, cocos, "TransitionCrossFade");
+	S_CCTransitionTurnOffTiles::jsCreateClass(this->cx, cocos, "TransitionTurnOffTiles");
+	S_CCTransitionSplitCols::jsCreateClass(this->cx, cocos, "TransitionSplitCols");
+	S_CCTransitionSplitRows::jsCreateClass(this->cx, cocos, "TransitionSplitRows");
+	S_CCTransitionFadeTR::jsCreateClass(this->cx, cocos, "TransitionFadeTR");
+	S_CCTransitionFadeBL::jsCreateClass(this->cx, cocos, "TransitionFadeBL");
+	S_CCTransitionFadeUp::jsCreateClass(this->cx, cocos, "TransitionFadeUp");
+	S_CCFadeOutBLTiles::jsCreateClass(this->cx, cocos, "FadeOutBLTiles");
+	S_CCProgressFromTo::jsCreateClass(this->cx, cocos, "ProgressFromTo");
+	S_CCFadeOutUpTiles::jsCreateClass(this->cx, cocos, "FadeOutUpTiles");
+	S_CCAnimationCache::jsCreateClass(this->cx, cocos, "AnimationCache");
+	S_CCPlace::jsCreateClass(this->cx, cocos, "Place");
+	S_CCLabelBMFont::jsCreateClass(this->cx, cocos, "LabelBMFont");
+	S_CCReverseTime::jsCreateClass(this->cx, cocos, "ReverseTime");
+	S_CCFadeOutTRTiles::jsCreateClass(this->cx, cocos, "FadeOutTRTiles");
+	S_CCCamera::jsCreateClass(this->cx, cocos, "Camera");
+	S_CCProgressTo::jsCreateClass(this->cx, cocos, "ProgressTo");
+	S_CCWavesTiles3D::jsCreateClass(this->cx, cocos, "WavesTiles3D");
+	S_CCMotionStreak::jsCreateClass(this->cx, cocos, "MotionStreak");
+	S_CCTransitionRadialCCW::jsCreateClass(this->cx, cocos, "TransitionRadialCCW");
+	S_CCFadeOutDownTiles::jsCreateClass(this->cx, cocos, "FadeOutDownTiles");
+	S_CCTurnOffTiles::jsCreateClass(this->cx, cocos, "TurnOffTiles");
+	S_CCDeccelAmplitude::jsCreateClass(this->cx, cocos, "DeccelAmplitude");
+	S_CCProgressTimer::jsCreateClass(this->cx, cocos, "ProgressTimer");
+	S_CCReuseGrid::jsCreateClass(this->cx, cocos, "ReuseGrid");
+	S_CCStopGrid::jsCreateClass(this->cx, cocos, "StopGrid");
+	S_CCTwirl::jsCreateClass(this->cx, cocos, "Twirl");
+	S_CCShakyTiles3D::jsCreateClass(this->cx, cocos, "ShakyTiles3D");
+	S_CCTransitionRadialCW::jsCreateClass(this->cx, cocos, "TransitionRadialCW");
+	S_CCAtlasNode::jsCreateClass(this->cx, cocos, "AtlasNode");
+	S_CCWaves::jsCreateClass(this->cx, cocos, "Waves");
+	S_CCShow::jsCreateClass(this->cx, cocos, "Show");
+	S_CCOrbitCamera::jsCreateClass(this->cx, cocos, "OrbitCamera");
+	S_CCShatteredTiles3D::jsCreateClass(this->cx, cocos, "ShatteredTiles3D");
+	S_CCHide::jsCreateClass(this->cx, cocos, "Hide");
+	S_CCToggleVisibility::jsCreateClass(this->cx, cocos, "ToggleVisibility");
+	S_CCActionCamera::jsCreateClass(this->cx, cocos, "ActionCamera");
+	S_CCShuffleTiles::jsCreateClass(this->cx, cocos, "ShuffleTiles");
+	S_CCLayerGradient::jsCreateClass(this->cx, cocos, "LayerGradient");
+	S_CCFlipX::jsCreateClass(this->cx, cocos, "FlipX");
+	S_CCRepeat::jsCreateClass(this->cx, cocos, "Repeat");
+	S_CCFlipY::jsCreateClass(this->cx, cocos, "FlipY");
+	S_CCBezierBy::jsCreateClass(this->cx, cocos, "BezierBy");
+	S_CCPageTurn3D::jsCreateClass(this->cx, cocos, "PageTurn3D");
+	S_CCLens3D::jsCreateClass(this->cx, cocos, "Lens3D");
+	S_CCRipple3D::jsCreateClass(this->cx, cocos, "Ripple3D");
+	S_CCApplication::jsCreateClass(this->cx, cocos, "Application");
+	S_CCFlipX3D::jsCreateClass(this->cx, cocos, "FlipX3D");
+	S_CCJumpTo::jsCreateClass(this->cx, cocos, "JumpTo");
+	S_CCTransitionPageTurn::jsCreateClass(this->cx, cocos, "TransitionPageTurn");
+	S_CCFlipY3D::jsCreateClass(this->cx, cocos, "FlipY3D");
+	S_CCLiquid::jsCreateClass(this->cx, cocos, "Liquid");
+	S_CCTiledGrid3DAction::jsCreateClass(this->cx, cocos, "TiledGrid3DAction");
+	S_CCJumpBy::jsCreateClass(this->cx, cocos, "JumpBy");
+	S_CCFollow::jsCreateClass(this->cx, cocos, "Follow");
+	S_CCSkewBy::jsCreateClass(this->cx, cocos, "SkewBy");
+	S_CCAccelDeccelAmplitude::jsCreateClass(this->cx, cocos, "AccelDeccelAmplitude");
+	S_CCLabelAtlas::jsCreateClass(this->cx, cocos, "LabelAtlas");
+	S_CCAccelAmplitude::jsCreateClass(this->cx, cocos, "AccelAmplitude");
+	S_CCSkewTo::jsCreateClass(this->cx, cocos, "SkewTo");
+	S_CCShaky3D::jsCreateClass(this->cx, cocos, "Shaky3D");
+	S_CCSplitCols::jsCreateClass(this->cx, cocos, "SplitCols");
+	S_CCFadeOut::jsCreateClass(this->cx, cocos, "FadeOut");
+	S_CCTileMapAtlas::jsCreateClass(this->cx, cocos, "TileMapAtlas");
+	S_CCFadeTo::jsCreateClass(this->cx, cocos, "FadeTo");
+	S_CCJumpTiles3D::jsCreateClass(this->cx, cocos, "JumpTiles3D");
+	S_CCFadeIn::jsCreateClass(this->cx, cocos, "FadeIn");
+	S_CCSplitRows::jsCreateClass(this->cx, cocos, "SplitRows");
+	S_CCScaleBy::jsCreateClass(this->cx, cocos, "ScaleBy");
+	S_CCScaleTo::jsCreateClass(this->cx, cocos, "ScaleTo");
+	S_CCBezierTo::jsCreateClass(this->cx, cocos, "BezierTo");
+	S_CCTMXTiledMap::jsCreateClass(this->cx, cocos, "TMXTiledMap");
+	S_CCTMXLayer::jsCreateClass(this->cx, cocos, "TMXLayer");
+	S_CCScheduler::jsCreateClass(this->cx, cocos, "Scheduler");
+
+	S_SimpleAudioEngine::jsCreateClass(this->cx, cocos, "SimpleAudioEngine");
 
 	// register some global functions
+	JS_DefineFunction(this->cx, global, "require", ScriptingCore::executeScript, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(this->cx, cocos, "log", ScriptingCore::log, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(this->cx, cocos, "executeScript", ScriptingCore::executeScript, 1, JSPROP_READONLY | JSPROP_PERMANENT);
 	JS_DefineFunction(this->cx, cocos, "addGCRootObject", ScriptingCore::addRootJS, 1, JSPROP_READONLY | JSPROP_PERMANENT);
@@ -116,19 +217,22 @@ ScriptingCore::ScriptingCore()
 	JS_DefineFunction(this->cx, cocos, "forceGC", ScriptingCore::forceGC, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 }
 
-void ScriptingCore::evalString(const char *string)
+bool ScriptingCore::evalString(const char *string, jsval *outVal)
 {
 	jsval rval;
 	JSString *str;
 	JSBool ok;
 	const char *filename = "noname";
 	uint32_t lineno = 0;
-	ok = JS_EvaluateScript(cx, global, string, strlen(string), filename, lineno, &rval);
-	if (JSVAL_IS_NULL(rval) || rval == JSVAL_FALSE) {
+	if (outVal == NULL) {
+		outVal = &rval;
+	}
+	ok = JS_EvaluateScript(cx, global, string, strlen(string), filename, lineno, outVal);
+	if (ok == JS_FALSE) {
 		CCLog("error evaluating script:\n%s", string);
 	}
 	str = JS_ValueToString(cx, rval);
-	printf("js result: %s\n", JS_EncodeString(cx, str));
+	return ok;
 }
 
 void ScriptingCore::runScript(const char *path)
@@ -154,7 +258,7 @@ void ScriptingCore::runScript(const char *path)
 		JSBool ok;
 		jsval rval;
 		ok = JS_EvaluateScript(this->cx, this->global, (char *)content, contentSize, path, 1, &rval);
-		if (JSVAL_IS_NULL(rval) || rval == JSVAL_FALSE) {
+		if (ok == JS_FALSE) {
 			CCLog("error evaluating script:\n%s", content);
 		}
 		free(content);

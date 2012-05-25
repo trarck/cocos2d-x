@@ -843,6 +843,8 @@ class CppClass
           else
             str << "do { jsval tmp; JS_NewNumberValue(cx, #{inval_str}, &tmp); JS_SET_RVAL(cx, #{outvalue}, tmp); } while (0);"
           end
+        when /std::string/
+          str << "do { JSString *tmp = JS_NewStringCopyZ(cx, #{inval_str}.c_str()); JS_SET_RVAL(cx, #{outvalue}, STRING_TO_JSVAL(tmp)); } while (0);"
         when /bool/
           str << "JS_SET_RVAL(cx, #{outvalue}, BOOLEAN_TO_JSVAL(#{inval_str}));"
         end
@@ -1031,6 +1033,8 @@ void register_enums_#{out_prefix}(JSObject *global);
           else
             return "c"
           end
+        when /std::string/
+          return "S"
         when /int|long|short/
           return "i"
         when /float|double/
@@ -1096,6 +1100,16 @@ void register_enums_#{out_prefix}(JSObject *global);
       result[:name] = ftype
       result[:fundamental] = true
       return true
+    end
+    # last chance, try to see if it's a std::string
+    elt = @doc.xpath("//*[@id='#{type_id}']").first
+    if elt && elt.name == "ElaboratedType"
+      selt = @doc.xpath("//*[@id='#{elt['type']}']").first
+      if self && selt.name == "Typedef" && selt['name'] == "string"
+        result[:name] = "std::string"
+        result[:fundamental] = true
+        return true
+      end
     end
     result[:name] = "INVALID"
     return false

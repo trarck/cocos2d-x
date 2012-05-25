@@ -330,7 +330,9 @@ class CppClass
           @properties[field_name] = {:type => method['type'],
                                      :getter => CppMethod.new(method, self, bindings_generator),
                                      :requires_accessor => true}
-        elsif (@name == "CCApplication" || @name == "CCUserDefault") || (action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i))
+        elsif (@name == "CCApplication" || @name == "CCUserDefault") ||
+              (action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i)) ||
+              (action == "get" && @name == "CCNode" && field_name == "childByTag")
           # special case for CCTexture2D
           m = CppMethod.new(method, self, bindings_generator)
           @methods[m.name] ||= []

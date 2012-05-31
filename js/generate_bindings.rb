@@ -810,7 +810,11 @@ class CppClass
         else
           set_str << " = #{ref ? "*" : ""}tmp"
         end
-        str << "#{indent}\tif (tmp) { #{set_str}; }\n"
+        if type[:name] != "std::string"
+          str << "#{indent}\tif (tmp) { #{set_str}; }\n"
+        else
+          str << "#{indent}\t#{set_str};\n"
+        end
         str << "#{indent}} while (0);"
       end
     else

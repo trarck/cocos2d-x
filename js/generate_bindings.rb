@@ -93,7 +93,7 @@ class CppMethod
         call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
       else
-        if type[:pointer]
+        if type[:name] != "std::string" && type[:pointer]
           type = @klass.generator.pointer_types[arg[:type]]
           deref = false
         else
@@ -157,7 +157,7 @@ class CppMethod
       else
         str << "#{indent}\t#{ret}#{self_str}#{@name}(#{call_params.map {|p| p[1]}.join(', ')});\n"
         # test for null pointers
-        if type[:pointer]
+        if type[:pointer] && type[:name] != "std::string"
           str << "#{indent}\tif (ret == NULL) {\n"
           str << "#{indent}\t\tJS_SET_RVAL(cx, vp, JSVAL_NULL);\n"
           str << "#{indent}\t\treturn JS_TRUE;\n"
@@ -799,6 +799,9 @@ class CppClass
         if type[:fundamental] && type[:name] =~ /char/
           str << "#{indent}\tchar *tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*#{invalue}));\n"
           ref = false
+        elsif type[:fundamental] && type[:name] == "std::string"
+          str << "#{indent}\tstd::string tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*#{invalue}));\n"
+          ref = false
         else
           str << "#{indent}\t#{type[:name]}* tmp; JSGET_PTRSHELL(#{type[:name]}, tmp, JSVAL_TO_OBJECT(*#{invalue}));\n"
         end
@@ -835,7 +838,7 @@ class CppClass
       else
         inval_str << invalue
       end
-      if type[:fundamental] && !val[:pointer]
+      if type[:fundamental]
         case type[:name]
         when /int|long|float|double|short|char/
           if type[:pointer] && type[:name] == "char"
@@ -1035,9 +1038,9 @@ void register_enums_#{out_prefix}(JSObject *global);
           end
         when /std::string/
           return "S"
-        when /int|long|short/
+        when /int|short/
           return "i"
-        when /float|double/
+        when /long|float|double/
           return "d"
         else
           return "*"
@@ -1108,6 +1111,7 @@ void register_enums_#{out_prefix}(JSObject *global);
       if self && selt.name == "Typedef" && selt['name'] == "string"
         result[:name] = "std::string"
         result[:fundamental] = true
+        result[:pointer] = true
         return true
       end
     end

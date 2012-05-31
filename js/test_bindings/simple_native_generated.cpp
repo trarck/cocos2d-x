@@ -190,6 +190,9 @@ void S_SimpleNativeClass::jsCreateClass(JSContext *cx, JSObject *globalObj, cons
 		};
 
 		static JSFunctionSpec funcs[] = {
+			JS_FN("receivesLongLong", S_SimpleNativeClass::jsreceivesLongLong, 1, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("returnsAString", S_SimpleNativeClass::jsreturnsAString, 0, JSPROP_PERMANENT | JSPROP_SHARED),
+			JS_FN("returnsACString", S_SimpleNativeClass::jsreturnsACString, 0, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("doSomeProcessing", S_SimpleNativeClass::jsdoSomeProcessing, 2, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
 		};
@@ -201,6 +204,51 @@ void S_SimpleNativeClass::jsCreateClass(JSContext *cx, JSObject *globalObj, cons
 	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_SimpleNativeClass::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
+JSBool S_SimpleNativeClass::jsreceivesLongLong(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_SimpleNativeClass* self = NULL; JSGET_PTRSHELL(S_SimpleNativeClass, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 1) {
+		long long arg0;
+		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		self->receivesLongLong(arg0);
+		
+		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_SimpleNativeClass::jsreturnsAString(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_SimpleNativeClass* self = NULL; JSGET_PTRSHELL(S_SimpleNativeClass, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		std::string ret = self->returnsAString();
+		do { JSString *tmp = JS_NewStringCopyZ(cx, ret.c_str()); JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(tmp)); } while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
+JSBool S_SimpleNativeClass::jsreturnsACString(JSContext *cx, uint32_t argc, jsval *vp) {
+	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
+	S_SimpleNativeClass* self = NULL; JSGET_PTRSHELL(S_SimpleNativeClass, self, obj);
+	if (self == NULL) return JS_FALSE;
+	if (argc == 0) {
+		char ret = self->returnsACString();
+		if (ret == NULL) {
+			JS_SET_RVAL(cx, vp, JSVAL_NULL);
+			return JS_TRUE;
+		}
+		do { JSString *tmp = JS_NewStringCopyZ(cx, ret); JS_SET_RVAL(cx, vp, STRING_TO_JSVAL(tmp)); } while (0);
+		
+		return JS_TRUE;
+	}
+	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
+	return JS_TRUE;
+}
 JSBool S_SimpleNativeClass::jsdoSomeProcessing(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_SimpleNativeClass* self = NULL; JSGET_PTRSHELL(S_SimpleNativeClass, self, obj);

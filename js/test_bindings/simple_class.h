@@ -39,11 +39,12 @@ public:
 	}
 	void setAnotherMoreComplexField(const char *str);
 
+	long long thisReturnsALongLong();
+
 	void receivesLongLong(long long someId);
 	std::string returnsAString();
 	char *returnsACString();
 
-	// std::string not working yet!
 	int doSomeProcessing(std::string arg1, std::string arg2);
 };
 

@@ -81,15 +81,22 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
+    str << "#{indent}\tjsval *argv = JS_ARGV(cx, vp);\n"
     @arguments.each_with_index do |arg, i|
       type = {}
-      args_str << @klass.generator.arg_format(arg, type)
+      @klass.generator.arg_format(arg, type)
       # fundamental type
       if type[:fundamental] && !type[:pointer]
         # fix for JS_ConvertArguments (it only accepts doubles and JSBool for booleans)
-        type[:name] = "double" if type[:name] == "float"
-        type[:name] = "JSBool" if type[:name] == "bool"
-        str << "#{indent}\t#{type[:name]} arg#{i};\n"
+        if type[:name].match(/long|int|short|double/)
+          str << "#{indent}\t#{type[:name]} arg#{i} = argv[#{i}].toNumber();\n"
+        elsif type[:name].match(/bool|BOOL/)
+          str << "#{indent}\t#{type[:name]} arg#{i} = argv[#{i}].toBoolean();\n"
+        end
+
+        # type[:name] = "double" if type[:name] == "float"
+        # type[:name] = "JSBool" if type[:name] == "bool"
+        # str << "#{indent}\t#{type[:name]} arg#{i};\n"
         call_params << [type[:name], "arg#{i}"]
         convert_params << "&arg#{i}"
       else
@@ -100,54 +107,58 @@ class CppMethod
           deref = true unless type[:name] == "std::string"
         end
         if type[:name] =~ /(char|std::string)/
-          str << "#{indent}\tJSString *arg#{i};\n"
+          ntype = type[:name] == "std::string" ? "std::string" : "char *"
+          str << "#{indent}\tJSString *arg#{i} = JSVAL_TO_STRING(argv[#{i}]);\n"
+          str << "#{indent}\t#{ntype} narg#{i} = JS_EncodeString(cx, arg#{i});\n"
         else
-          str << "#{indent}\tJSObject *arg#{i};\n"
+          str << "#{indent}\tJSObject *arg#{i} = JSVAL_TO_OBJECT(argv[#{i}]);\n"
+          str << "#{indent}\t#{type[:name]}* narg#{i}; JSGET_PTRSHELL(#{type[:name]}, narg#{i}, arg#{i});\n"
         end
-        if type[:name].nil? && !deref
-          if arg[:name] =~ /dictionary/i
-            if @name.downcase =~ /spriteframe/i
-              type[:name] = "CCDictionary<std::string,CCSpriteFrame*>"
-            else
-              type[:name] = "CCDictionary<std::string,CCObject*>"
-            end
-          elsif arg[:name] =~ /array/i
-            type[:name] = "CCMutableArray<CCObject*>"
-          elsif arg[:name] =~ /frames/i
-            type[:name] = "CCMutableArray<CCSpriteFrame*>"
-          else
-            raise "unknown pointer, please check - might be a weird template (in #{@name}, #{@klass.name})"
-          end
-        end
+        # if type[:name].nil? && !deref
+        #   if arg[:name] =~ /dictionary/i
+        #     if @name.downcase =~ /spriteframe/i
+        #       type[:name] = "CCDictionary<std::string,CCSpriteFrame*>"
+        #     else
+        #       type[:name] = "CCDictionary<std::string,CCObject*>"
+        #     end
+        #   elsif arg[:name] =~ /array/i
+        #     type[:name] = "CCMutableArray<CCObject*>"
+        #   elsif arg[:name] =~ /frames/i
+        #     type[:name] = "CCMutableArray<CCSpriteFrame*>"
+        #   else
+        #     raise "unknown pointer, please check - might be a weird template (in #{@name}, #{@klass.name})"
+        #   end
+        # end
         call_params << [type[:name], ((deref ? "*" : "") + "narg#{i}")]
-        convert_params << "&arg#{i}"
+        # convert_params << "&arg#{i}"
       end
     end
-    convert_str = (convert_params.size > 0 ? ", #{convert_params.join(', ')}" : "")
-    str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, JS_ARGV(cx, vp), \"#{args_str}\"#{convert_str});\n" if @num_arguments > 0
+    # convert_str = (convert_params.size > 0 ? ", #{convert_params.join(', ')}" : "")
+    # str << "#{indent}\tJS_ConvertArguments(cx, #{@num_arguments}, JS_ARGV(cx, vp), \"#{args_str}\"#{convert_str});\n" if @num_arguments > 0
     # conver the JSObjects to the proper native object
-    args_str.split(//).each_with_index do |type, i|
-      if type == "o"
-        ntype = call_params[i][0]
-        str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype}, narg#{i}, arg#{i});\n"
-      elsif type == "S"
-        if call_params[i][0] == "std::string"
-          str << "#{indent}\tstd::string narg#{i} = JS_EncodeString(cx, arg#{i});\n"
-        else
-          str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
-        end
-      end
-    end
+    # args_str.split(//).each_with_index do |type, i|
+    #   if type == "o"
+    #     ntype = call_params[i][0]
+    #     str << "#{indent}\t#{ntype}* narg#{i}; JSGET_PTRSHELL(#{ntype}, narg#{i}, arg#{i});\n"
+    #   elsif type == "S"
+    #     if call_params[i][0] == "std::string"
+    #       str << "#{indent}\tstd::string narg#{i} = JS_EncodeString(cx, arg#{i});\n"
+    #     else
+    #       str << "#{indent}\tchar *narg#{i} = JS_EncodeString(cx, arg#{i});\n"
+    #     end
+    #   end
+    # end
     # do the call
     type = {}
     if @klass.generator.find_type(@type, type)
       ret = ""
       void_ret = ""
       ref = false
+      type[:pointer] = false if type[:name] == "std::string"
       unless type[:fundamental] && type[:name] == "void"
         ret = type[:name]
         ref = type[:pointer].nil? && type[:fundamental].nil?
-        ret += "#{type[:fundamental] ? "" : "*"} ret = "
+        ret += "#{!type[:pointer] ? "" : "*"} ret = "
       else
         void_ret = "JS_SET_RVAL(cx, vp, JSVAL_TRUE);"
       end
@@ -1042,9 +1053,12 @@ void register_enums_#{out_prefix}(JSObject *global);
           end
         when /std::string/
           return "S"
+        when /long/
+          # ignore, because we're going to get it in other way
+          return "*"
         when /int|short/
           return "i"
-        when /long|float|double/
+        when /float|double/
           return "d"
         else
           return "*"

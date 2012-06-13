@@ -121,8 +121,8 @@ JSBool S_CCTransitionMoveInL::jseaseActionWithAction(JSContext *cx, uint32_t arg
 	S_CCTransitionMoveInL* self = NULL; JSGET_PTRSHELL(S_CCTransitionMoveInL, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -157,9 +157,9 @@ void S_CCTransitionMoveInL::onEnter() {
 }
 JSBool S_CCTransitionMoveInL::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionMoveInL* ret = CCTransitionMoveInL::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -287,8 +287,8 @@ JSBool S_CCAnimate::jsinitWithAnimation(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCAnimate* self = NULL; JSGET_PTRSHELL(S_CCAnimate, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAnimation* narg0; JSGET_PTRSHELL(CCAnimation, narg0, arg0);
 		bool ret = self->initWithAnimation(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -303,11 +303,11 @@ JSBool S_CCAnimate::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCAnimate* self = NULL; JSGET_PTRSHELL(S_CCAnimate, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSBool arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "dob", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCAnimation* narg1; JSGET_PTRSHELL(CCAnimation, narg1, arg1);
+		bool arg2 = argv[2].toBoolean();
 		bool ret = self->initWithDuration(arg0, narg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -321,8 +321,8 @@ JSBool S_CCAnimate::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCAnimate* self = NULL; JSGET_PTRSHELL(S_CCAnimate, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -350,8 +350,8 @@ JSBool S_CCAnimate::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCAnimate* self = NULL; JSGET_PTRSHELL(S_CCAnimate, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -386,8 +386,8 @@ JSBool S_CCAnimate::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCAnimate::jsactionWithAnimation(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAnimation* narg0; JSGET_PTRSHELL(CCAnimation, narg0, arg0);
 		CCAnimate* ret = CCAnimate::actionWithAnimation(narg0);
 		if (ret == NULL) {
@@ -410,11 +410,11 @@ JSBool S_CCAnimate::jsactionWithAnimation(JSContext *cx, uint32_t argc, jsval *v
 }
 JSBool S_CCAnimate::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSBool arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "dob", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCAnimation* narg1; JSGET_PTRSHELL(CCAnimation, narg1, arg1);
+		bool arg2 = argv[2].toBoolean();
 		CCAnimate* ret = CCAnimate::actionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -517,10 +517,10 @@ JSBool S_CCFadeOutBLTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeOutBLTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutBLTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		float ret = self->testFunc(*narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -531,10 +531,10 @@ JSBool S_CCFadeOutBLTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFadeOutBLTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCFadeOutBLTiles* ret = CCFadeOutBLTiles::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -641,10 +641,10 @@ JSBool S_CCProgressFromTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsva
 	S_CCProgressFromTo* self = NULL; JSGET_PTRSHELL(S_CCProgressFromTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -682,8 +682,8 @@ JSBool S_CCProgressFromTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval
 	S_CCProgressFromTo* self = NULL; JSGET_PTRSHELL(S_CCProgressFromTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -698,8 +698,8 @@ JSBool S_CCProgressFromTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCProgressFromTo* self = NULL; JSGET_PTRSHELL(S_CCProgressFromTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -710,10 +710,10 @@ JSBool S_CCProgressFromTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCProgressFromTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		CCProgressFromTo* ret = CCProgressFromTo::actionWithDuration(arg0, arg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -1078,8 +1078,8 @@ JSBool S_CCLayer::jsdidAccelerate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLayer* self = NULL; JSGET_PTRSHELL(S_CCLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAcceleration* narg0; JSGET_PTRSHELL(CCAcceleration, narg0, arg0);
 		self->didAccelerate(narg0);
 		
@@ -1107,11 +1107,11 @@ JSBool S_CCLayer::jsregisterScriptTouchHandler(JSContext *cx, uint32_t argc, jsv
 	S_CCLayer* self = NULL; JSGET_PTRSHELL(S_CCLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		int arg2;
-		JSBool arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibib", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		int arg2 = (int)argv[2].toNumber();
+		bool arg3 = argv[3].toBoolean();
 		self->registerScriptTouchHandler(arg0, arg1, arg2, arg3);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1227,8 +1227,8 @@ JSBool S_CCEaseBackInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBackInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseBackInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1239,8 +1239,8 @@ JSBool S_CCEaseBackInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBackInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBackInOut* ret = CCEaseBackInOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -1345,10 +1345,10 @@ JSBool S_CCFadeOutUpTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeOutUpTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutUpTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		float ret = self->testFunc(*narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -1362,10 +1362,10 @@ JSBool S_CCFadeOutUpTiles::jstransformTile(JSContext *cx, uint32_t argc, jsval *
 	S_CCFadeOutUpTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutUpTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		self->transformTile(*narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1376,10 +1376,10 @@ JSBool S_CCFadeOutUpTiles::jstransformTile(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCFadeOutUpTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCFadeOutUpTiles* ret = CCFadeOutUpTiles::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -1512,11 +1512,11 @@ JSBool S_CCAnimationCache::jsaddAnimation(JSContext *cx, uint32_t argc, jsval *v
 	S_CCAnimationCache* self = NULL; JSGET_PTRSHELL(S_CCAnimationCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oS", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAnimation* narg0; JSGET_PTRSHELL(CCAnimation, narg0, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		self->addAnimation(narg0, narg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1530,9 +1530,9 @@ JSBool S_CCAnimationCache::jsremoveAnimationByName(JSContext *cx, uint32_t argc,
 	S_CCAnimationCache* self = NULL; JSGET_PTRSHELL(S_CCAnimationCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->removeAnimationByName(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1546,9 +1546,9 @@ JSBool S_CCAnimationCache::jsanimationByName(JSContext *cx, uint32_t argc, jsval
 	S_CCAnimationCache* self = NULL; JSGET_PTRSHELL(S_CCAnimationCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCAnimation* ret = self->animationByName(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -1663,8 +1663,8 @@ void S_CCPlace::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *na
 
 JSBool S_CCPlace::jsactionWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPlace* ret = CCPlace::actionWithPosition(*narg0);
 		if (ret == NULL) {
@@ -1690,8 +1690,8 @@ JSBool S_CCPlace::jsinitWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCPlace* self = NULL; JSGET_PTRSHELL(S_CCPlace, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		bool ret = self->initWithPosition(*narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -1706,8 +1706,8 @@ JSBool S_CCPlace::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCPlace* self = NULL; JSGET_PTRSHELL(S_CCPlace, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -1800,8 +1800,8 @@ JSBool S_CCEaseBackOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBackOut* self = NULL; JSGET_PTRSHELL(S_CCEaseBackOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -1836,8 +1836,8 @@ JSBool S_CCEaseBackOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBackOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBackOut* ret = CCEaseBackOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -1929,13 +1929,16 @@ JSBool S_CCLabelBMFont::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JS
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setIsOpacityModifyRGB(tmp); } while (0);
 		break;
 	case kString:
-		do {
-			std::string tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*val));
-			cobj->setString(tmp);
-		} while (0);
+		do { cobj->setString(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);
 		break;
 	case kOpacity:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setOpacity(tmp); } while (0);
+		break;
+	case kCString:
+		
+		break;
+	case kAnchorPoint:
+		
 		break;
 	default:
 		break;
@@ -1963,6 +1966,8 @@ void S_CCLabelBMFont::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 			{"string", kString, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelBMFont::jsPropertyGet, S_CCLabelBMFont::jsPropertySet},
 			{"configuration", kConfiguration, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelBMFont::jsPropertyGet, S_CCLabelBMFont::jsPropertySet},
 			{"opacity", kOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelBMFont::jsPropertyGet, S_CCLabelBMFont::jsPropertySet},
+			{"cString", kCString, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelBMFont::jsPropertyGet, S_CCLabelBMFont::jsPropertySet},
+			{"anchorPoint", kAnchorPoint, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLabelBMFont::jsPropertyGet, S_CCLabelBMFont::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -1993,11 +1998,11 @@ JSBool S_CCLabelBMFont::jspurgeCachedData(JSContext *cx, uint32_t argc, jsval *v
 }
 JSBool S_CCLabelBMFont::jslabelWithString(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSString *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "SS", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		CCLabelBMFont* ret = CCLabelBMFont::labelWithString(narg0, narg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -2022,11 +2027,11 @@ JSBool S_CCLabelBMFont::jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCLabelBMFont* self = NULL; JSGET_PTRSHELL(S_CCLabelBMFont, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "SS", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		bool ret = self->initWithString(narg0, narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -2135,8 +2140,8 @@ JSBool S_CCReverseTime::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCReverseTime* self = NULL; JSGET_PTRSHELL(S_CCReverseTime, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
 		bool ret = self->initWithAction(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -2151,8 +2156,8 @@ JSBool S_CCReverseTime::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *v
 	S_CCReverseTime* self = NULL; JSGET_PTRSHELL(S_CCReverseTime, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -2180,8 +2185,8 @@ JSBool S_CCReverseTime::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCReverseTime* self = NULL; JSGET_PTRSHELL(S_CCReverseTime, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2216,8 +2221,8 @@ JSBool S_CCReverseTime::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCReverseTime::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
 		CCReverseTime* ret = CCReverseTime::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -2324,10 +2329,10 @@ JSBool S_CCFadeOutTRTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeOutTRTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutTRTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		float ret = self->testFunc(*narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -2341,8 +2346,8 @@ JSBool S_CCFadeOutTRTiles::jsturnOnTile(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCFadeOutTRTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutTRTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		self->turnOnTile(*narg0);
 		
@@ -2357,8 +2362,8 @@ JSBool S_CCFadeOutTRTiles::jsturnOffTile(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCFadeOutTRTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutTRTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		self->turnOffTile(*narg0);
 		
@@ -2373,10 +2378,10 @@ JSBool S_CCFadeOutTRTiles::jstransformTile(JSContext *cx, uint32_t argc, jsval *
 	S_CCFadeOutTRTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutTRTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		self->transformTile(*narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2390,8 +2395,8 @@ JSBool S_CCFadeOutTRTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeOutTRTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutTRTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2402,10 +2407,10 @@ JSBool S_CCFadeOutTRTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFadeOutTRTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCFadeOutTRTiles* ret = CCFadeOutTRTiles::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -2637,6 +2642,9 @@ JSBool S_CCMenu::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool st
 	case kOpacity:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setOpacity(tmp); } while (0);
 		break;
+	case kIsOpacityModifyRGB:
+		
+		break;
 	default:
 		break;
 	}
@@ -2689,8 +2697,8 @@ void S_CCMenu::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *nam
 
 JSBool S_CCMenu::jsmenuWithItems(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCMenuItem* narg0; JSGET_PTRSHELL(CCMenuItem, narg0, arg0);
 		CCMenu* ret = CCMenu::menuWithItems(narg0);
 		if (ret == NULL) {
@@ -2713,8 +2721,8 @@ JSBool S_CCMenu::jsmenuWithItems(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCMenu::jsmenuWithItem(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCMenuItem* narg0; JSGET_PTRSHELL(CCMenuItem, narg0, arg0);
 		CCMenu* ret = CCMenu::menuWithItem(narg0);
 		if (ret == NULL) {
@@ -2766,8 +2774,8 @@ JSBool S_CCMenu::jsalignItemsVerticallyWithPadding(JSContext *cx, uint32_t argc,
 	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->alignItemsVerticallyWithPadding(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2794,8 +2802,8 @@ JSBool S_CCMenu::jsalignItemsHorizontallyWithPadding(JSContext *cx, uint32_t arg
 	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->alignItemsHorizontallyWithPadding(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2809,8 +2817,8 @@ JSBool S_CCMenu::jsalignItemsInColumns(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		self->alignItemsInColumns(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2824,8 +2832,8 @@ JSBool S_CCMenu::jsalignItemsInRows(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMenu* self = NULL; JSGET_PTRSHELL(S_CCMenu, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		self->alignItemsInRows(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -2986,8 +2994,8 @@ JSBool S_CCAction::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCAction* self = NULL; JSGET_PTRSHELL(S_CCAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -3166,10 +3174,10 @@ void S_CCTextureAtlas::jsCreateClass(JSContext *cx, JSObject *globalObj, const c
 
 JSBool S_CCTextureAtlas::jstextureAtlasWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSString *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Si", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		CCTextureAtlas* ret = CCTextureAtlas::textureAtlasWithFile(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -3194,10 +3202,10 @@ JSBool S_CCTextureAtlas::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Si", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithFile(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -3208,10 +3216,10 @@ JSBool S_CCTextureAtlas::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCTextureAtlas::jstextureAtlasWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		CCTextureAtlas* ret = CCTextureAtlas::textureAtlasWithTexture(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -3236,10 +3244,10 @@ JSBool S_CCTextureAtlas::jsinitWithTexture(JSContext *cx, uint32_t argc, jsval *
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithTexture(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -3253,10 +3261,10 @@ JSBool S_CCTextureAtlas::jsupdateQuad(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccV3F_C4B_T2F_Quad* narg0; JSGET_PTRSHELL(ccV3F_C4B_T2F_Quad, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		self->updateQuad(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3270,10 +3278,10 @@ JSBool S_CCTextureAtlas::jsinsertQuad(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccV3F_C4B_T2F_Quad* narg0; JSGET_PTRSHELL(ccV3F_C4B_T2F_Quad, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		self->insertQuad(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3287,9 +3295,9 @@ JSBool S_CCTextureAtlas::jsinsertQuadFromIndex(JSContext *cx, uint32_t argc, jsv
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		unsigned int arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ii", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		self->insertQuadFromIndex(arg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3303,8 +3311,8 @@ JSBool S_CCTextureAtlas::jsremoveQuadAtIndex(JSContext *cx, uint32_t argc, jsval
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		self->removeQuadAtIndex(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3331,8 +3339,8 @@ JSBool S_CCTextureAtlas::jsresizeCapacity(JSContext *cx, uint32_t argc, jsval *v
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		bool ret = self->resizeCapacity(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -3346,8 +3354,8 @@ JSBool S_CCTextureAtlas::jsdrawNumberOfQuads(JSContext *cx, uint32_t argc, jsval
 	S_CCTextureAtlas* self = NULL; JSGET_PTRSHELL(S_CCTextureAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		self->drawNumberOfQuads(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3430,15 +3438,7 @@ JSBool S_CCMenuItemSprite::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id,
 		} while (0);
 		break;
 	case kColor:
-		do {
-			JSObject *tmp = JS_NewObject(cx, NULL, NULL, NULL);
-			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-			ccColor3B* ctmp = new ccColor3B(cobj->getColor());
-			pt->flags = 0;
-			pt->data = (void *)ctmp;
-			JS_SetPrivate(tmp, pt);
-			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-		} while (0);
+		
 		break;
 	case kOpacity:
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getOpacity(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
@@ -3476,6 +3476,28 @@ JSBool S_CCMenuItemSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id,
 			if (tmp) { cobj->setDisabledImage(tmp); }
 		} while (0);
 		break;
+	case kColor:
+		do {
+			JSObject *arr = JSVAL_TO_OBJECT(*val);
+			jsval jr, jg, jb;
+			int32_t r, g, b;
+			JS_GetElement(cx, arr, 0, &jr);
+			JS_GetElement(cx, arr, 1, &jg);
+			JS_GetElement(cx, arr, 2, &jb);
+			JS_ValueToInt32(cx, jr, &r); JS_ValueToInt32(cx, jg, &g); JS_ValueToInt32(cx, jb, &b);
+			ccColor3B color = ccc3(r, g, b);
+			cobj->setColor(color);
+		} while (0);
+		break;
+	case kOpacity:
+		
+		break;
+	case kIsEnabled:
+		
+		break;
+	case kIsOpacityModifyRGB:
+		
+		break;
 	default:
 		break;
 	}
@@ -3501,6 +3523,7 @@ void S_CCMenuItemSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 			{"disabledImage", kDisabledImage, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
 			{"color", kColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
 			{"opacity", kOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
+			{"isEnabled", kIsEnabled, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
 			{"isOpacityModifyRGB", kIsOpacityModifyRGB, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemSprite::jsPropertyGet, S_CCMenuItemSprite::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
@@ -3522,12 +3545,12 @@ void S_CCMenuItemSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 
 JSBool S_CCMenuItemSprite::jsitemFromNormalSprite(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ooo", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCNode* narg1; JSGET_PTRSHELL(CCNode, narg1, arg1);
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		CCNode* narg2; JSGET_PTRSHELL(CCNode, narg2, arg2);
 		CCMenuItemSprite* ret = CCMenuItemSprite::itemFromNormalSprite(narg0, narg1, narg2);
 		if (ret == NULL) {
@@ -3661,9 +3684,9 @@ JSBool S_CCProgressTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *v
 	S_CCProgressTo* self = NULL; JSGET_PTRSHELL(S_CCProgressTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -3677,8 +3700,8 @@ JSBool S_CCProgressTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCProgressTo* self = NULL; JSGET_PTRSHELL(S_CCProgressTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -3693,8 +3716,8 @@ JSBool S_CCProgressTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCProgressTo* self = NULL; JSGET_PTRSHELL(S_CCProgressTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3705,9 +3728,9 @@ JSBool S_CCProgressTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCProgressTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCProgressTo* ret = CCProgressTo::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -3810,8 +3833,8 @@ JSBool S_CCDelayTime::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDelayTime* self = NULL; JSGET_PTRSHELL(S_CCDelayTime, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -3846,8 +3869,8 @@ JSBool S_CCDelayTime::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCDelayTime::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCDelayTime* ret = CCDelayTime::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -3958,10 +3981,10 @@ JSBool S_CCSequence::jsinitOneTwo(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSequence* self = NULL; JSGET_PTRSHELL(S_CCSequence, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCFiniteTimeAction* narg1; JSGET_PTRSHELL(CCFiniteTimeAction, narg1, arg1);
 		bool ret = self->initOneTwo(narg0, narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -3976,8 +3999,8 @@ JSBool S_CCSequence::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCSequence* self = NULL; JSGET_PTRSHELL(S_CCSequence, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -4005,8 +4028,8 @@ JSBool S_CCSequence::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSequence* self = NULL; JSGET_PTRSHELL(S_CCSequence, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4041,8 +4064,8 @@ JSBool S_CCSequence::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSequence::jsactionsWithArray(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCArray* narg0; JSGET_PTRSHELL(CCArray, narg0, arg0);
 		CCFiniteTimeAction* ret = CCSequence::actionsWithArray(narg0);
 		if (ret == NULL) {
@@ -4065,10 +4088,10 @@ JSBool S_CCSequence::jsactionsWithArray(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCSequence::jsactionOneTwo(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCFiniteTimeAction* narg1; JSGET_PTRSHELL(CCFiniteTimeAction, narg1, arg1);
 		CCSequence* ret = CCSequence::actionOneTwo(narg0, narg1);
 		if (ret == NULL) {
@@ -4187,12 +4210,12 @@ JSBool S_CCWavesTiles3D::jsinitWithWaves(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCWavesTiles3D* self = NULL; JSGET_PTRSHELL(S_CCWavesTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithWaves(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -4206,8 +4229,8 @@ JSBool S_CCWavesTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCWavesTiles3D* self = NULL; JSGET_PTRSHELL(S_CCWavesTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4218,12 +4241,12 @@ JSBool S_CCWavesTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCWavesTiles3D::jsactionWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCWavesTiles3D* ret = CCWavesTiles3D::actionWithWaves(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -4329,10 +4352,10 @@ JSBool S_CCParallaxNode::jsremoveChild(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCParallaxNode* self = NULL; JSGET_PTRSHELL(S_CCParallaxNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ob", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		bool arg1 = argv[1].toBoolean();
 		self->removeChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4346,8 +4369,8 @@ JSBool S_CCParallaxNode::jsremoveAllChildrenWithCleanup(JSContext *cx, uint32_t 
 	S_CCParallaxNode* self = NULL; JSGET_PTRSHELL(S_CCParallaxNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->removeAllChildrenWithCleanup(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4485,9 +4508,9 @@ JSBool S_CCTransitionSplitRows::jsaction(JSContext *cx, uint32_t argc, jsval *vp
 }
 JSBool S_CCTransitionSplitRows::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSplitRows* ret = CCTransitionSplitRows::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -4599,11 +4622,11 @@ JSBool S_CCTintBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintBy* self = NULL; JSGET_PTRSHELL(S_CCTintBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		double arg0;
-		short arg1;
-		short arg2;
-		short arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "diii", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		short arg1 = (short)argv[1].toNumber();
+		short arg2 = (short)argv[2].toNumber();
+		short arg3 = (short)argv[3].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -4617,8 +4640,8 @@ JSBool S_CCTintBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintBy* self = NULL; JSGET_PTRSHELL(S_CCTintBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -4633,8 +4656,8 @@ JSBool S_CCTintBy::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintBy* self = NULL; JSGET_PTRSHELL(S_CCTintBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4669,11 +4692,11 @@ JSBool S_CCTintBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCTintBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		double arg0;
-		short arg1;
-		short arg2;
-		short arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "diii", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		short arg1 = (short)argv[1].toNumber();
+		short arg2 = (short)argv[2].toNumber();
+		short arg3 = (short)argv[3].toNumber();
 		CCTintBy* ret = CCTintBy::actionWithDuration(arg0, arg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -4801,14 +4824,14 @@ void S_CCMotionStreak::jsCreateClass(JSContext *cx, JSObject *globalObj, const c
 
 JSBool S_CCMotionStreak::jsstreakWithFade(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 6) {
-		double arg0;
-		double arg1;
-		JSString *arg2;
-		double arg3;
-		double arg4;
-		JSObject *arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "ddSddo", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
-		char *narg2 = JS_EncodeString(cx, arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSString *arg2 = JSVAL_TO_STRING(argv[2]);
+		char * narg2 = JS_EncodeString(cx, arg2);
+		float arg3 = (float)argv[3].toNumber();
+		float arg4 = (float)argv[4].toNumber();
+		JSObject *arg5 = JSVAL_TO_OBJECT(argv[5]);
 		ccColor4B* narg5; JSGET_PTRSHELL(ccColor4B, narg5, arg5);
 		CCMotionStreak* ret = CCMotionStreak::streakWithFade(arg0, arg1, narg2, arg3, arg4, *narg5);
 		if (ret == NULL) {
@@ -4834,14 +4857,14 @@ JSBool S_CCMotionStreak::jsinitWithFade(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCMotionStreak* self = NULL; JSGET_PTRSHELL(S_CCMotionStreak, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 6) {
-		double arg0;
-		double arg1;
-		JSString *arg2;
-		double arg3;
-		double arg4;
-		JSObject *arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "ddSddo", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
-		char *narg2 = JS_EncodeString(cx, arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSString *arg2 = JSVAL_TO_STRING(argv[2]);
+		char * narg2 = JS_EncodeString(cx, arg2);
+		float arg3 = (float)argv[3].toNumber();
+		float arg4 = (float)argv[4].toNumber();
+		JSObject *arg5 = JSVAL_TO_OBJECT(argv[5]);
 		ccColor4B* narg5; JSGET_PTRSHELL(ccColor4B, narg5, arg5);
 		bool ret = self->initWithFade(arg0, arg1, narg2, arg3, arg4, *narg5);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -4856,8 +4879,8 @@ JSBool S_CCMotionStreak::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMotionStreak* self = NULL; JSGET_PTRSHELL(S_CCMotionStreak, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -4981,9 +5004,9 @@ void S_CCTransitionRadialCCW::onExit() {
 }
 JSBool S_CCTransitionRadialCCW::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionRadialCCW* ret = CCTransitionRadialCCW::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -5074,8 +5097,14 @@ JSBool S_CCLayerColor::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSB
 	case kBlendFunc:
 				// don't know what this is (js ~> c)
 		break;
+	case kContentSize:
+		
+		break;
 	case kOpacity:
 		do { uint32_t tmp; JS_ValueToECMAUint32(cx, *val, &tmp); cobj->setOpacity(tmp); } while (0);
+		break;
+	case kIsOpacityModifyRGB:
+		
 		break;
 	default:
 		break;
@@ -5102,6 +5131,7 @@ void S_CCLayerColor::jsCreateClass(JSContext *cx, JSObject *globalObj, const cha
 			{"cOpacity", kCOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
 			{"color", kColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
 			{"blendFunc", kBlendFunc, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
+			{"contentSize", kContentSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
 			{"opacity", kOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
 			{"isOpacityModifyRGB", kIsOpacityModifyRGB, JSPROP_PERMANENT | JSPROP_SHARED, S_CCLayerColor::jsPropertyGet, S_CCLayerColor::jsPropertySet},
 			{0, 0, 0, 0, 0}
@@ -5141,11 +5171,11 @@ JSBool S_CCLayerColor::jsdraw(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCLayerColor::jslayerWithColorWidthHeight(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		JSObject *arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "odd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		CCLayerColor* ret = CCLayerColor::layerWithColorWidthHeight(*narg0, arg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -5167,8 +5197,8 @@ JSBool S_CCLayerColor::jslayerWithColorWidthHeight(JSContext *cx, uint32_t argc,
 }
 JSBool S_CCLayerColor::jslayerWithColor(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
 		CCLayerColor* ret = CCLayerColor::layerWithColor(*narg0);
 		if (ret == NULL) {
@@ -5194,11 +5224,11 @@ JSBool S_CCLayerColor::jsinitWithColorWidthHeight(JSContext *cx, uint32_t argc, 
 	S_CCLayerColor* self = NULL; JSGET_PTRSHELL(S_CCLayerColor, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		JSObject *arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "odd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithColorWidthHeight(*narg0, arg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -5212,8 +5242,8 @@ JSBool S_CCLayerColor::jsinitWithColor(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCLayerColor* self = NULL; JSGET_PTRSHELL(S_CCLayerColor, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
 		bool ret = self->initWithColor(*narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -5228,8 +5258,8 @@ JSBool S_CCLayerColor::jschangeWidth(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLayerColor* self = NULL; JSGET_PTRSHELL(S_CCLayerColor, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->changeWidth(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -5243,8 +5273,8 @@ JSBool S_CCLayerColor::jschangeHeight(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLayerColor* self = NULL; JSGET_PTRSHELL(S_CCLayerColor, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->changeHeight(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -5258,9 +5288,9 @@ JSBool S_CCLayerColor::jschangeWidthAndHeight(JSContext *cx, uint32_t argc, jsva
 	S_CCLayerColor* self = NULL; JSGET_PTRSHELL(S_CCLayerColor, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		self->changeWidthAndHeight(arg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -5360,6 +5390,9 @@ JSBool S_CCTexture2D::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBo
 	case kMaxT:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setMaxT(tmp); } while (0);
 		break;
+	case kTexParameters:
+		
+		break;
 	default:
 		break;
 	}
@@ -5391,6 +5424,7 @@ void S_CCTexture2D::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 			{"pVRHaveAlphaPremultiplied", kPVRHaveAlphaPremultiplied, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
 			{"pixelFormat", kPixelFormat, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
 			{"contentSizeInPixels", kContentSizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
+			{"texParameters", kTexParameters, JSPROP_PERMANENT | JSPROP_SHARED, S_CCTexture2D::jsPropertyGet, S_CCTexture2D::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -5420,8 +5454,8 @@ JSBool S_CCTexture2D::jsdrawAtPoint(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		self->drawAtPoint(*narg0);
 		
@@ -5436,8 +5470,8 @@ JSBool S_CCTexture2D::jsdrawInRect(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		self->drawInRect(*narg0);
 		
@@ -5452,8 +5486,8 @@ JSBool S_CCTexture2D::jsinitWithImage(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCImage* narg0; JSGET_PTRSHELL(CCImage, narg0, arg0);
 		bool ret = self->initWithImage(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -5468,9 +5502,9 @@ JSBool S_CCTexture2D::jsinitWithPVRFile(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCTexture2D* self = NULL; JSGET_PTRSHELL(S_CCTexture2D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithPVRFile(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -5541,8 +5575,8 @@ JSBool S_CCTexture2D::jsdefaultAlphaPixelFormat(JSContext *cx, uint32_t argc, js
 }
 JSBool S_CCTexture2D::jsPVRImagesHavePremultipliedAlpha(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		CCTexture2D::PVRImagesHavePremultipliedAlpha(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -5738,10 +5772,10 @@ JSBool S_CCSpriteFrame::jsisRotated(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSpriteFrame::jsframeWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		CCSpriteFrame* ret = CCSpriteFrame::frameWithTexture(narg0, *narg1);
 		if (ret == NULL) {
@@ -5767,10 +5801,10 @@ JSBool S_CCSpriteFrame::jsinitWithTexture(JSContext *cx, uint32_t argc, jsval *v
 	S_CCSpriteFrame* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrame, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = self->initWithTexture(narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -5828,6 +5862,9 @@ JSBool S_CCAnimation::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBo
 	case kDelay:
 		do { double tmp; JS_ValueToNumber(cx, *val, &tmp); cobj->setDelay(tmp); } while (0);
 		break;
+	case kName:
+		
+		break;
 	default:
 		break;
 	}
@@ -5851,11 +5888,11 @@ void S_CCAnimation::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 			{"nameStr", kNameStr, JSPROP_PERMANENT | JSPROP_SHARED, S_CCAnimation::jsPropertyGet, S_CCAnimation::jsPropertySet},
 			{"delay", kDelay, JSPROP_PERMANENT | JSPROP_SHARED, S_CCAnimation::jsPropertyGet, S_CCAnimation::jsPropertySet},
 			{"frames", kFrames, JSPROP_PERMANENT | JSPROP_SHARED, S_CCAnimation::jsPropertyGet, S_CCAnimation::jsPropertySet},
+			{"name", kName, JSPROP_PERMANENT | JSPROP_SHARED, S_CCAnimation::jsPropertyGet, S_CCAnimation::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
 		static JSFunctionSpec funcs[] = {
-			JS_FN("initWithFrames", S_CCAnimation::jsinitWithFrames, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addFrame", S_CCAnimation::jsaddFrame, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addFrameWithFileName", S_CCAnimation::jsaddFrameWithFileName, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("addFrameWithTexture", S_CCAnimation::jsaddFrameWithTexture, 2, JSPROP_PERMANENT | JSPROP_SHARED),
@@ -5865,36 +5902,19 @@ void S_CCAnimation::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 
 		static JSFunctionSpec st_funcs[] = {
 			JS_FN("animation", S_CCAnimation::jsanimation, 0, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("animationWithFrames", S_CCAnimation::jsanimationWithFrames, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
 		};
 
 	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCAnimation::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
-JSBool S_CCAnimation::jsinitWithFrames(JSContext *cx, uint32_t argc, jsval *vp) {
-	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-	S_CCAnimation* self = NULL; JSGET_PTRSHELL(S_CCAnimation, self, obj);
-	if (self == NULL) return JS_FALSE;
-	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
-		CCMutableArray<CCSpriteFrame*>* narg0; JSGET_PTRSHELL(CCMutableArray<CCSpriteFrame*>, narg0, arg0);
-		bool ret = self->initWithFrames(narg0);
-		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
-		
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
 JSBool S_CCAnimation::jsaddFrame(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCAnimation* self = NULL; JSGET_PTRSHELL(S_CCAnimation, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteFrame* narg0; JSGET_PTRSHELL(CCSpriteFrame, narg0, arg0);
 		self->addFrame(narg0);
 		
@@ -5909,9 +5929,9 @@ JSBool S_CCAnimation::jsaddFrameWithFileName(JSContext *cx, uint32_t argc, jsval
 	S_CCAnimation* self = NULL; JSGET_PTRSHELL(S_CCAnimation, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->addFrameWithFileName(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -5925,10 +5945,10 @@ JSBool S_CCAnimation::jsaddFrameWithTexture(JSContext *cx, uint32_t argc, jsval 
 	S_CCAnimation* self = NULL; JSGET_PTRSHELL(S_CCAnimation, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		self->addFrameWithTexture(narg0, *narg1);
 		
@@ -5954,30 +5974,6 @@ JSBool S_CCAnimation::jsinit(JSContext *cx, uint32_t argc, jsval *vp) {
 JSBool S_CCAnimation::jsanimation(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 0) {
 		CCAnimation* ret = CCAnimation::animation();
-		if (ret == NULL) {
-			JS_SET_RVAL(cx, vp, JSVAL_NULL);
-			return JS_TRUE;
-		}
-		do {
-			JSObject *tmp = JS_NewObject(cx, S_CCAnimation::jsClass, S_CCAnimation::jsObject, NULL);
-			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-			pt->flags = kPointerTemporary;
-			pt->data = (void *)ret;
-			JS_SetPrivate(tmp, pt);
-			JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(tmp));
-		} while (0);
-		
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCAnimation::jsanimationWithFrames(JSContext *cx, uint32_t argc, jsval *vp) {
-	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
-		CCMutableArray<CCSpriteFrame*>* narg0; JSGET_PTRSHELL(CCMutableArray<CCSpriteFrame*>, narg0, arg0);
-		CCAnimation* ret = CCAnimation::animationWithFrames(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
 			return JS_TRUE;
@@ -6079,8 +6075,8 @@ JSBool S_CCTransitionFadeBL::jsactionWithSize(JSContext *cx, uint32_t argc, jsva
 	S_CCTransitionFadeBL* self = NULL; JSGET_PTRSHELL(S_CCTransitionFadeBL, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		CCActionInterval* ret = self->actionWithSize(*narg0);
 		if (ret == NULL) {
@@ -6103,9 +6099,9 @@ JSBool S_CCTransitionFadeBL::jsactionWithSize(JSContext *cx, uint32_t argc, jsva
 }
 JSBool S_CCTransitionFadeBL::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionFadeBL* ret = CCTransitionFadeBL::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -6209,10 +6205,10 @@ JSBool S_CCFadeOutDownTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCFadeOutDownTiles* self = NULL; JSGET_PTRSHELL(S_CCFadeOutDownTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		float ret = self->testFunc(*narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -6223,10 +6219,10 @@ JSBool S_CCFadeOutDownTiles::jstestFunc(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCFadeOutDownTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCFadeOutDownTiles* ret = CCFadeOutDownTiles::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -6336,11 +6332,11 @@ JSBool S_CCTurnOffTiles::jsinitWithSeed(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		int arg0;
-		JSObject *arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "iod", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccGridSize* narg1; JSGET_PTRSHELL(ccGridSize, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithSeed(arg0, *narg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -6354,8 +6350,8 @@ JSBool S_CCTurnOffTiles::jsturnOnTile(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		self->turnOnTile(*narg0);
 		
@@ -6370,8 +6366,8 @@ JSBool S_CCTurnOffTiles::jsturnOffTile(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		self->turnOffTile(*narg0);
 		
@@ -6386,8 +6382,8 @@ JSBool S_CCTurnOffTiles::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *
 	S_CCTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -6402,8 +6398,8 @@ JSBool S_CCTurnOffTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -6414,10 +6410,10 @@ JSBool S_CCTurnOffTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCTurnOffTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCTurnOffTiles* ret = CCTurnOffTiles::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -6439,11 +6435,11 @@ JSBool S_CCTurnOffTiles::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *v
 }
 JSBool S_CCTurnOffTiles::jsactionWithSeed(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		int arg0;
-		JSObject *arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "iod", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccGridSize* narg1; JSGET_PTRSHELL(ccGridSize, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
 		CCTurnOffTiles* ret = CCTurnOffTiles::actionWithSeed(arg0, *narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -6546,8 +6542,8 @@ JSBool S_CCTransitionFadeUp::jsactionWithSize(JSContext *cx, uint32_t argc, jsva
 	S_CCTransitionFadeUp* self = NULL; JSGET_PTRSHELL(S_CCTransitionFadeUp, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		CCActionInterval* ret = self->actionWithSize(*narg0);
 		if (ret == NULL) {
@@ -6570,9 +6566,9 @@ JSBool S_CCTransitionFadeUp::jsactionWithSize(JSContext *cx, uint32_t argc, jsva
 }
 JSBool S_CCTransitionFadeUp::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionFadeUp* ret = CCTransitionFadeUp::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -6673,11 +6669,11 @@ void S_CCMenuItemImage::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 
 JSBool S_CCMenuItemImage::jsitemFromNormalImage(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSString *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "SS", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		CCMenuItemImage* ret = CCMenuItemImage::itemFromNormalImage(narg0, narg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -6784,11 +6780,11 @@ JSBool S_CCTintTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintTo* self = NULL; JSGET_PTRSHELL(S_CCTintTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		double arg0;
-		unsigned char arg1;
-		unsigned char arg2;
-		unsigned char arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dccc", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned char arg1 = (unsigned char)argv[1].toNumber();
+		unsigned char arg2 = (unsigned char)argv[2].toNumber();
+		unsigned char arg3 = (unsigned char)argv[3].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -6802,8 +6798,8 @@ JSBool S_CCTintTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintTo* self = NULL; JSGET_PTRSHELL(S_CCTintTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -6818,8 +6814,8 @@ JSBool S_CCTintTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTintTo* self = NULL; JSGET_PTRSHELL(S_CCTintTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -6830,11 +6826,11 @@ JSBool S_CCTintTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCTintTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		double arg0;
-		unsigned char arg1;
-		unsigned char arg2;
-		unsigned char arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dccc", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned char arg1 = (unsigned char)argv[1].toNumber();
+		unsigned char arg2 = (unsigned char)argv[2].toNumber();
+		unsigned char arg3 = (unsigned char)argv[3].toNumber();
 		CCTintTo* ret = CCTintTo::actionWithDuration(arg0, arg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -7325,9 +7321,9 @@ JSBool S_CCParticleSystem::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *v
 	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithFile(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -7341,8 +7337,8 @@ JSBool S_CCParticleSystem::jsinitWithTotalParticles(JSContext *cx, uint32_t argc
 	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		bool ret = self->initWithTotalParticles(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -7369,8 +7365,8 @@ JSBool S_CCParticleSystem::jsinitParticle(JSContext *cx, uint32_t argc, jsval *v
 	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		tCCParticle* narg0; JSGET_PTRSHELL(tCCParticle, narg0, arg0);
 		self->initParticle(narg0);
 		
@@ -7411,10 +7407,10 @@ JSBool S_CCParticleSystem::jsupdateQuadWithParticle(JSContext *cx, uint32_t argc
 	S_CCParticleSystem* self = NULL; JSGET_PTRSHELL(S_CCParticleSystem, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		tCCParticle* narg0; JSGET_PTRSHELL(tCCParticle, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		self->updateQuadWithParticle(narg0, *narg1);
 		
@@ -7518,11 +7514,11 @@ void S_CCTransitionFade::jsCreateClass(JSContext *cx, JSObject *globalObj, const
 
 JSBool S_CCTransitionFade::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doo", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccColor3B* narg2; JSGET_PTRSHELL(ccColor3B, narg2, arg2);
 		CCTransitionFade* ret = CCTransitionFade::transitionWithDuration(arg0, narg1, *narg2);
 		if (ret == NULL) {
@@ -7548,11 +7544,11 @@ JSBool S_CCTransitionFade::jsinitWithDuration(JSContext *cx, uint32_t argc, jsva
 	S_CCTransitionFade* self = NULL; JSGET_PTRSHELL(S_CCTransitionFade, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSObject *arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doo", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccColor3B* narg2; JSGET_PTRSHELL(ccColor3B, narg2, arg2);
 		bool ret = self->initWithDuration(arg0, narg1, *narg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -7679,10 +7675,10 @@ JSBool S_CCDeccelAmplitude::jsinitWithAction(JSContext *cx, uint32_t argc, jsval
 	S_CCDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -7696,8 +7692,8 @@ JSBool S_CCDeccelAmplitude::jsstartWithTarget(JSContext *cx, uint32_t argc, jsva
 	S_CCDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -7712,8 +7708,8 @@ JSBool S_CCDeccelAmplitude::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -7748,10 +7744,10 @@ JSBool S_CCDeccelAmplitude::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCDeccelAmplitude::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCDeccelAmplitude* ret = CCDeccelAmplitude::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -7854,8 +7850,8 @@ JSBool S_CCEaseElasticIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseElasticIn* self = NULL; JSGET_PTRSHELL(S_CCEaseElasticIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -7890,8 +7886,8 @@ JSBool S_CCEaseElasticIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseElasticIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseElasticIn* ret = CCEaseElasticIn::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -8032,9 +8028,9 @@ JSBool S_CCProgressTimer::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCProgressTimer* self = NULL; JSGET_PTRSHELL(S_CCProgressTimer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithFile(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -8048,8 +8044,8 @@ JSBool S_CCProgressTimer::jsinitWithTexture(JSContext *cx, uint32_t argc, jsval 
 	S_CCProgressTimer* self = NULL; JSGET_PTRSHELL(S_CCProgressTimer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		bool ret = self->initWithTexture(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -8074,9 +8070,9 @@ JSBool S_CCProgressTimer::jsdraw(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCProgressTimer::jsprogressWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCProgressTimer* ret = CCProgressTimer::progressWithFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -8098,8 +8094,8 @@ JSBool S_CCProgressTimer::jsprogressWithFile(JSContext *cx, uint32_t argc, jsval
 }
 JSBool S_CCProgressTimer::jsprogressWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		CCProgressTimer* ret = CCProgressTimer::progressWithTexture(narg0);
 		if (ret == NULL) {
@@ -8219,9 +8215,9 @@ JSBool S_CCRotateBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -8235,8 +8231,8 @@ JSBool S_CCRotateBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -8251,8 +8247,8 @@ JSBool S_CCRotateBy::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRotateBy* self = NULL; JSGET_PTRSHELL(S_CCRotateBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -8287,9 +8283,9 @@ JSBool S_CCRotateBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRotateBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCRotateBy* ret = CCRotateBy::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -8402,10 +8398,10 @@ void S_CCPoint::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *na
 
 JSBool S_CCPoint::jsCCPointEqualToPoint(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		bool ret = CCPoint::CCPointEqualToPoint(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -8510,8 +8506,8 @@ JSBool S_CCTransitionTurnOffTiles::jseaseActionWithAction(JSContext *cx, uint32_
 	S_CCTransitionTurnOffTiles* self = NULL; JSGET_PTRSHELL(S_CCTransitionTurnOffTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -8534,9 +8530,9 @@ JSBool S_CCTransitionTurnOffTiles::jseaseActionWithAction(JSContext *cx, uint32_
 }
 JSBool S_CCTransitionTurnOffTiles::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionTurnOffTiles* ret = CCTransitionTurnOffTiles::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -8654,8 +8650,8 @@ JSBool S_CCActionInstant::jsstep(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCActionInstant* self = NULL; JSGET_PTRSHELL(S_CCActionInstant, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->step(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -8669,8 +8665,8 @@ JSBool S_CCActionInstant::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCActionInstant* self = NULL; JSGET_PTRSHELL(S_CCActionInstant, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -8794,11 +8790,11 @@ void S_CCTransitionZoomFlipAngular::onEnter() {
 }
 JSBool S_CCTransitionZoomFlipAngular::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionZoomFlipAngular* ret = CCTransitionZoomFlipAngular::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -8903,8 +8899,8 @@ JSBool S_CCReuseGrid::jsinitWithTimes(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCReuseGrid* self = NULL; JSGET_PTRSHELL(S_CCReuseGrid, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		bool ret = self->initWithTimes(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -8918,8 +8914,8 @@ JSBool S_CCReuseGrid::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCReuseGrid* self = NULL; JSGET_PTRSHELL(S_CCReuseGrid, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -8931,8 +8927,8 @@ JSBool S_CCReuseGrid::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCReuseGrid::jsactionWithTimes(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		CCReuseGrid* ret = CCReuseGrid::actionWithTimes(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -9043,10 +9039,10 @@ JSBool S_CCEaseElastic::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCEaseElastic* self = NULL; JSGET_PTRSHELL(S_CCEaseElastic, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -9081,8 +9077,8 @@ JSBool S_CCEaseElastic::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseElastic::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseElastic* ret = CCEaseElastic::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -9186,8 +9182,8 @@ JSBool S_CCTransitionFadeDown::jsactionWithSize(JSContext *cx, uint32_t argc, js
 	S_CCTransitionFadeDown* self = NULL; JSGET_PTRSHELL(S_CCTransitionFadeDown, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		CCActionInterval* ret = self->actionWithSize(*narg0);
 		if (ret == NULL) {
@@ -9210,9 +9206,9 @@ JSBool S_CCTransitionFadeDown::jsactionWithSize(JSContext *cx, uint32_t argc, js
 }
 JSBool S_CCTransitionFadeDown::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionFadeDown* ret = CCTransitionFadeDown::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -9324,11 +9320,11 @@ void S_CCTransitionFlipY::onEnter() {
 }
 JSBool S_CCTransitionFlipY::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionFlipY* ret = CCTransitionFlipY::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -9431,8 +9427,8 @@ JSBool S_CCStopGrid::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCStopGrid* self = NULL; JSGET_PTRSHELL(S_CCStopGrid, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -9556,10 +9552,10 @@ void S_CCSize::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *nam
 
 JSBool S_CCSize::jsCCSizeEqualToSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSize* narg0; JSGET_PTRSHELL(CCSize, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCSize* narg1; JSGET_PTRSHELL(CCSize, narg1, arg1);
 		bool ret = CCSize::CCSizeEqualToSize(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -9686,14 +9682,14 @@ JSBool S_CCTwirl::jsinitWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTwirl* self = NULL; JSGET_PTRSHELL(S_CCTwirl, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 5) {
-		JSObject *arg0;
-		int arg1;
-		double arg2;
-		JSObject *arg3;
-		double arg4;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "oidod", &arg0, &arg1, &arg2, &arg3, &arg4);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		JSObject *arg3 = JSVAL_TO_OBJECT(argv[3]);
 		ccGridSize* narg3; JSGET_PTRSHELL(ccGridSize, narg3, arg3);
+		float arg4 = (float)argv[4].toNumber();
 		bool ret = self->initWithPosition(*narg0, arg1, arg2, *narg3, arg4);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -9707,8 +9703,8 @@ JSBool S_CCTwirl::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTwirl* self = NULL; JSGET_PTRSHELL(S_CCTwirl, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -9719,14 +9715,14 @@ JSBool S_CCTwirl::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCTwirl::jsactionWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 5) {
-		JSObject *arg0;
-		int arg1;
-		double arg2;
-		JSObject *arg3;
-		double arg4;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "oidod", &arg0, &arg1, &arg2, &arg3, &arg4);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		JSObject *arg3 = JSVAL_TO_OBJECT(argv[3]);
 		ccGridSize* narg3; JSGET_PTRSHELL(ccGridSize, narg3, arg3);
+		float arg4 = (float)argv[4].toNumber();
 		CCTwirl* ret = CCTwirl::actionWithPosition(*narg0, arg1, arg2, *narg3, arg4);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -9833,9 +9829,9 @@ JSBool S_CCMoveTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		bool ret = self->initWithDuration(arg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -9850,8 +9846,8 @@ JSBool S_CCMoveTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -9866,8 +9862,8 @@ JSBool S_CCMoveTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMoveTo* self = NULL; JSGET_PTRSHELL(S_CCMoveTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -9878,9 +9874,9 @@ JSBool S_CCMoveTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCMoveTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		CCMoveTo* ret = CCMoveTo::actionWithDuration(arg0, *narg1);
 		if (ret == NULL) {
@@ -9992,11 +9988,11 @@ void S_CCTransitionFlipX::onEnter() {
 }
 JSBool S_CCTransitionFlipX::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionFlipX* ret = CCTransitionFlipX::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -10139,8 +10135,8 @@ void S_CCRect::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *nam
 
 JSBool S_CCRect::jsCCRectGetMinX(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMinX(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10152,8 +10148,8 @@ JSBool S_CCRect::jsCCRectGetMinX(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectGetMaxX(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMaxX(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10165,8 +10161,8 @@ JSBool S_CCRect::jsCCRectGetMaxX(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectGetMidX(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMidX(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10178,8 +10174,8 @@ JSBool S_CCRect::jsCCRectGetMidX(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectGetMinY(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMinY(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10191,8 +10187,8 @@ JSBool S_CCRect::jsCCRectGetMinY(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectGetMaxY(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMaxY(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10204,8 +10200,8 @@ JSBool S_CCRect::jsCCRectGetMaxY(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectGetMidY(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		float ret = CCRect::CCRectGetMidY(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -10217,10 +10213,10 @@ JSBool S_CCRect::jsCCRectGetMidY(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectEqualToRect(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = CCRect::CCRectEqualToRect(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -10232,10 +10228,10 @@ JSBool S_CCRect::jsCCRectEqualToRect(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRect::jsCCRectContainsPoint(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		bool ret = CCRect::CCRectContainsPoint(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -10247,10 +10243,10 @@ JSBool S_CCRect::jsCCRectContainsPoint(JSContext *cx, uint32_t argc, jsval *vp) 
 }
 JSBool S_CCRect::jsCCRectIntersectsRect(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = CCRect::CCRectIntersectsRect(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -10355,8 +10351,8 @@ JSBool S_CCTransitionShrinkGrow::jseaseActionWithAction(JSContext *cx, uint32_t 
 	S_CCTransitionShrinkGrow* self = NULL; JSGET_PTRSHELL(S_CCTransitionShrinkGrow, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -10379,9 +10375,9 @@ JSBool S_CCTransitionShrinkGrow::jseaseActionWithAction(JSContext *cx, uint32_t 
 }
 JSBool S_CCTransitionShrinkGrow::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionShrinkGrow* ret = CCTransitionShrinkGrow::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -10522,8 +10518,8 @@ JSBool S_CCTransitionSplitCols::jseaseActionWithAction(JSContext *cx, uint32_t a
 	S_CCTransitionSplitCols* self = NULL; JSGET_PTRSHELL(S_CCTransitionSplitCols, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -10546,9 +10542,9 @@ JSBool S_CCTransitionSplitCols::jseaseActionWithAction(JSContext *cx, uint32_t a
 }
 JSBool S_CCTransitionSplitCols::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSplitCols* ret = CCTransitionSplitCols::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -10654,12 +10650,12 @@ JSBool S_CCShakyTiles3D::jsinitWithRange(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCShakyTiles3D* self = NULL; JSGET_PTRSHELL(S_CCShakyTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithRange(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -10673,8 +10669,8 @@ JSBool S_CCShakyTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShakyTiles3D* self = NULL; JSGET_PTRSHELL(S_CCShakyTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -10685,12 +10681,12 @@ JSBool S_CCShakyTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCShakyTiles3D::jsactionWithRange(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCShakyTiles3D* ret = CCShakyTiles3D::actionWithRange(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -10793,8 +10789,8 @@ JSBool S_CCEaseElasticOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseElasticOut* self = NULL; JSGET_PTRSHELL(S_CCEaseElasticOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -10829,8 +10825,8 @@ JSBool S_CCEaseElasticOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseElasticOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseElasticOut* ret = CCEaseElasticOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -10938,9 +10934,9 @@ JSBool S_CCRotateTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -10954,8 +10950,8 @@ JSBool S_CCRotateTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -10970,8 +10966,8 @@ JSBool S_CCRotateTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRotateTo* self = NULL; JSGET_PTRSHELL(S_CCRotateTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -10982,9 +10978,9 @@ JSBool S_CCRotateTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRotateTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCRotateTo* ret = CCRotateTo::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -11083,9 +11079,9 @@ void S_CCTransitionRadialCW::jsCreateClass(JSContext *cx, JSObject *globalObj, c
 
 JSBool S_CCTransitionRadialCW::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionRadialCW* ret = CCTransitionRadialCW::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -11256,12 +11252,12 @@ void S_CCAtlasNode::jsCreateClass(JSContext *cx, JSObject *globalObj, const char
 
 JSBool S_CCAtlasNode::jsatlasWithTileFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		JSString *arg0;
-		unsigned int arg1;
-		unsigned int arg2;
-		unsigned int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "Siii", &arg0, &arg1, &arg2, &arg3);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
+		unsigned int arg2 = (unsigned int)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
 		CCAtlasNode* ret = CCAtlasNode::atlasWithTileFile(narg0, arg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -11286,12 +11282,12 @@ JSBool S_CCAtlasNode::jsinitWithTileFile(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCAtlasNode* self = NULL; JSGET_PTRSHELL(S_CCAtlasNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		JSString *arg0;
-		unsigned int arg1;
-		unsigned int arg2;
-		unsigned int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "Siii", &arg0, &arg1, &arg2, &arg3);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
+		unsigned int arg2 = (unsigned int)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
 		bool ret = self->initWithTileFile(narg0, arg1, arg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -11438,14 +11434,14 @@ JSBool S_CCWaves::jsinitWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCWaves* self = NULL; JSGET_PTRSHELL(S_CCWaves, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 6) {
-		int arg0;
-		double arg1;
-		JSBool arg2;
-		JSBool arg3;
-		JSObject *arg4;
-		double arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "idbbod", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		bool arg2 = argv[2].toBoolean();
+		bool arg3 = argv[3].toBoolean();
+		JSObject *arg4 = JSVAL_TO_OBJECT(argv[4]);
 		ccGridSize* narg4; JSGET_PTRSHELL(ccGridSize, narg4, arg4);
+		float arg5 = (float)argv[5].toNumber();
 		bool ret = self->initWithWaves(arg0, arg1, arg2, arg3, *narg4, arg5);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -11459,8 +11455,8 @@ JSBool S_CCWaves::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCWaves* self = NULL; JSGET_PTRSHELL(S_CCWaves, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -11471,14 +11467,14 @@ JSBool S_CCWaves::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCWaves::jsactionWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 6) {
-		int arg0;
-		double arg1;
-		JSBool arg2;
-		JSBool arg3;
-		JSObject *arg4;
-		double arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "idbbod", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		bool arg2 = argv[2].toBoolean();
+		bool arg3 = argv[3].toBoolean();
+		JSObject *arg4 = JSVAL_TO_OBJECT(argv[4]);
 		ccGridSize* narg4; JSGET_PTRSHELL(ccGridSize, narg4, arg4);
+		float arg5 = (float)argv[5].toNumber();
 		CCWaves* ret = CCWaves::actionWithWaves(arg0, arg1, arg2, arg3, *narg4, arg5);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -11582,8 +11578,8 @@ JSBool S_CCShow::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShow* self = NULL; JSGET_PTRSHELL(S_CCShow, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -11721,8 +11717,8 @@ JSBool S_CCEaseElasticInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseElasticInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseElasticInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -11757,8 +11753,8 @@ JSBool S_CCEaseElasticInOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) 
 }
 JSBool S_CCEaseElasticInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseElasticInOut* ret = CCEaseElasticInOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -11870,14 +11866,14 @@ void S_CCOrbitCamera::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 
 JSBool S_CCOrbitCamera::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 7) {
-		double arg0;
-		double arg1;
-		double arg2;
-		double arg3;
-		double arg4;
-		double arg5;
-		double arg6;
-		JS_ConvertArguments(cx, 7, JS_ARGV(cx, vp), "ddddddd", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
+		float arg4 = (float)argv[4].toNumber();
+		float arg5 = (float)argv[5].toNumber();
+		float arg6 = (float)argv[6].toNumber();
 		CCOrbitCamera* ret = CCOrbitCamera::actionWithDuration(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -11902,14 +11898,14 @@ JSBool S_CCOrbitCamera::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *
 	S_CCOrbitCamera* self = NULL; JSGET_PTRSHELL(S_CCOrbitCamera, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 7) {
-		double arg0;
-		double arg1;
-		double arg2;
-		double arg3;
-		double arg4;
-		double arg5;
-		double arg6;
-		JS_ConvertArguments(cx, 7, JS_ARGV(cx, vp), "ddddddd", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
+		float arg4 = (float)argv[4].toNumber();
+		float arg5 = (float)argv[5].toNumber();
+		float arg6 = (float)argv[6].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -11923,8 +11919,8 @@ JSBool S_CCOrbitCamera::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *v
 	S_CCOrbitCamera* self = NULL; JSGET_PTRSHELL(S_CCOrbitCamera, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -11939,8 +11935,8 @@ JSBool S_CCOrbitCamera::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCOrbitCamera* self = NULL; JSGET_PTRSHELL(S_CCOrbitCamera, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -12083,8 +12079,8 @@ JSBool S_CCTransitionSlideInL::jseaseActionWithAction(JSContext *cx, uint32_t ar
 	S_CCTransitionSlideInL* self = NULL; JSGET_PTRSHELL(S_CCTransitionSlideInL, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -12107,9 +12103,9 @@ JSBool S_CCTransitionSlideInL::jseaseActionWithAction(JSContext *cx, uint32_t ar
 }
 JSBool S_CCTransitionSlideInL::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSlideInL* ret = CCTransitionSlideInL::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -12213,8 +12209,8 @@ JSBool S_CCEaseBounceIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBounceIn* self = NULL; JSGET_PTRSHELL(S_CCEaseBounceIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -12249,8 +12245,8 @@ JSBool S_CCEaseBounceIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBounceIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBounceIn* ret = CCEaseBounceIn::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -12357,12 +12353,12 @@ JSBool S_CCShatteredTiles3D::jsinitWithRange(JSContext *cx, uint32_t argc, jsval
 	S_CCShatteredTiles3D* self = NULL; JSGET_PTRSHELL(S_CCShatteredTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithRange(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -12376,8 +12372,8 @@ JSBool S_CCShatteredTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShatteredTiles3D* self = NULL; JSGET_PTRSHELL(S_CCShatteredTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -12388,12 +12384,12 @@ JSBool S_CCShatteredTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCShatteredTiles3D::jsactionWithRange(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCShatteredTiles3D* ret = CCShatteredTiles3D::actionWithRange(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -12497,8 +12493,8 @@ JSBool S_CCHide::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCHide* self = NULL; JSGET_PTRSHELL(S_CCHide, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -12671,9 +12667,9 @@ JSBool S_CCTransitionSlideInR::jsaction(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCTransitionSlideInR::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSlideInR* ret = CCTransitionSlideInR::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -12777,8 +12773,8 @@ JSBool S_CCToggleVisibility::jsstartWithTarget(JSContext *cx, uint32_t argc, jsv
 	S_CCToggleVisibility* self = NULL; JSGET_PTRSHELL(S_CCToggleVisibility, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -12901,8 +12897,8 @@ JSBool S_CCActionCamera::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *
 	S_CCActionCamera* self = NULL; JSGET_PTRSHELL(S_CCActionCamera, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -13037,9 +13033,9 @@ JSBool S_CCSpriteFrameCache::jsaddSpriteFramesWithFile(JSContext *cx, uint32_t a
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->addSpriteFramesWithFile(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13053,11 +13049,11 @@ JSBool S_CCSpriteFrameCache::jsaddSpriteFrame(JSContext *cx, uint32_t argc, jsva
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oS", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteFrame* narg0; JSGET_PTRSHELL(CCSpriteFrame, narg0, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		self->addSpriteFrame(narg0, narg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13097,9 +13093,9 @@ JSBool S_CCSpriteFrameCache::jsremoveSpriteFrameByName(JSContext *cx, uint32_t a
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->removeSpriteFrameByName(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13113,9 +13109,9 @@ JSBool S_CCSpriteFrameCache::jsremoveSpriteFramesFromFile(JSContext *cx, uint32_
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->removeSpriteFramesFromFile(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13129,8 +13125,8 @@ JSBool S_CCSpriteFrameCache::jsremoveSpriteFramesFromTexture(JSContext *cx, uint
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		self->removeSpriteFramesFromTexture(narg0);
 		
@@ -13145,9 +13141,9 @@ JSBool S_CCSpriteFrameCache::jsspriteFrameByName(JSContext *cx, uint32_t argc, j
 	S_CCSpriteFrameCache* self = NULL; JSGET_PTRSHELL(S_CCSpriteFrameCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCSpriteFrame* ret = self->spriteFrameByName(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -13286,11 +13282,11 @@ JSBool S_CCShuffleTiles::jsinitWithSeed(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCShuffleTiles* self = NULL; JSGET_PTRSHELL(S_CCShuffleTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		int arg0;
-		JSObject *arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "iod", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccGridSize* narg1; JSGET_PTRSHELL(ccGridSize, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithSeed(arg0, *narg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -13304,8 +13300,8 @@ JSBool S_CCShuffleTiles::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *
 	S_CCShuffleTiles* self = NULL; JSGET_PTRSHELL(S_CCShuffleTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -13320,8 +13316,8 @@ JSBool S_CCShuffleTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShuffleTiles* self = NULL; JSGET_PTRSHELL(S_CCShuffleTiles, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13332,11 +13328,11 @@ JSBool S_CCShuffleTiles::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCShuffleTiles::jsactionWithSeed(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		int arg0;
-		JSObject *arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "iod", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccGridSize* narg1; JSGET_PTRSHELL(ccGridSize, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
 		CCShuffleTiles* ret = CCShuffleTiles::actionWithSeed(arg0, *narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -13439,8 +13435,8 @@ JSBool S_CCEaseBounce::jsbounceTime(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBounce* self = NULL; JSGET_PTRSHELL(S_CCEaseBounce, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		float ret = self->bounceTime(arg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -13451,8 +13447,8 @@ JSBool S_CCEaseBounce::jsbounceTime(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBounce::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBounce* ret = CCEaseBounce::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -13639,10 +13635,10 @@ void S_CCLayerGradient::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 
 JSBool S_CCLayerGradient::jslayerWithColor(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccColor4B* narg1; JSGET_PTRSHELL(ccColor4B, narg1, arg1);
 		CCLayerGradient* ret = CCLayerGradient::layerWithColor(*narg0, *narg1);
 		if (ret == NULL) {
@@ -13668,10 +13664,10 @@ JSBool S_CCLayerGradient::jsinitWithColor(JSContext *cx, uint32_t argc, jsval *v
 	S_CCLayerGradient* self = NULL; JSGET_PTRSHELL(S_CCLayerGradient, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccColor4B* narg0; JSGET_PTRSHELL(ccColor4B, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccColor4B* narg1; JSGET_PTRSHELL(ccColor4B, narg1, arg1);
 		bool ret = self->initWithColor(*narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -13764,8 +13760,8 @@ void S_CCFlipX::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *na
 
 JSBool S_CCFlipX::jsactionWithFlipX(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		CCFlipX* ret = CCFlipX::actionWithFlipX(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -13790,8 +13786,8 @@ JSBool S_CCFlipX::jsinitWithFlipX(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipX* self = NULL; JSGET_PTRSHELL(S_CCFlipX, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		bool ret = self->initWithFlipX(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -13805,8 +13801,8 @@ JSBool S_CCFlipX::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipX* self = NULL; JSGET_PTRSHELL(S_CCFlipX, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -13922,8 +13918,8 @@ JSBool S_CCEaseBounceInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBounceInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseBounceInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -13934,8 +13930,8 @@ JSBool S_CCEaseBounceInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBounceInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBounceInOut* ret = CCEaseBounceInOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -14062,10 +14058,10 @@ JSBool S_CCRepeat::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRepeat* self = NULL; JSGET_PTRSHELL(S_CCRepeat, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -14079,8 +14075,8 @@ JSBool S_CCRepeat::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRepeat* self = NULL; JSGET_PTRSHELL(S_CCRepeat, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -14108,8 +14104,8 @@ JSBool S_CCRepeat::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRepeat* self = NULL; JSGET_PTRSHELL(S_CCRepeat, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -14157,10 +14153,10 @@ JSBool S_CCRepeat::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRepeat::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCFiniteTimeAction* narg0; JSGET_PTRSHELL(CCFiniteTimeAction, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		CCRepeat* ret = CCRepeat::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -14263,8 +14259,8 @@ void S_CCFlipY::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *na
 
 JSBool S_CCFlipY::jsactionWithFlipY(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		CCFlipY* ret = CCFlipY::actionWithFlipY(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -14289,8 +14285,8 @@ JSBool S_CCFlipY::jsinitWithFlipY(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipY* self = NULL; JSGET_PTRSHELL(S_CCFlipY, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		bool ret = self->initWithFlipY(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -14304,8 +14300,8 @@ JSBool S_CCFlipY::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipY* self = NULL; JSGET_PTRSHELL(S_CCFlipY, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -14422,8 +14418,8 @@ JSBool S_CCEaseBackIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBackIn* self = NULL; JSGET_PTRSHELL(S_CCEaseBackIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -14458,8 +14454,8 @@ JSBool S_CCEaseBackIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBackIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBackIn* ret = CCEaseBackIn::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -14573,9 +14569,9 @@ JSBool S_CCTransitionMoveInT::jsinitScenes(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCTransitionMoveInT::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionMoveInT* ret = CCTransitionMoveInT::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -14679,8 +14675,8 @@ JSBool S_CCEaseBounceOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseBounceOut* self = NULL; JSGET_PTRSHELL(S_CCEaseBounceOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -14715,8 +14711,8 @@ JSBool S_CCEaseBounceOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseBounceOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseBounceOut* ret = CCEaseBounceOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -14830,9 +14826,9 @@ JSBool S_CCTransitionMoveInR::jsinitScenes(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCTransitionMoveInR::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionMoveInR* ret = CCTransitionMoveInR::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -14946,9 +14942,9 @@ JSBool S_CCTransitionMoveInB::jsinitScenes(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCTransitionMoveInB::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionMoveInB* ret = CCTransitionMoveInB::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -15056,9 +15052,9 @@ JSBool S_CCBezierBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCBezierBy* self = NULL; JSGET_PTRSHELL(S_CCBezierBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccBezierConfig* narg1; JSGET_PTRSHELL(ccBezierConfig, narg1, arg1);
 		bool ret = self->initWithDuration(arg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -15073,8 +15069,8 @@ JSBool S_CCBezierBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCBezierBy* self = NULL; JSGET_PTRSHELL(S_CCBezierBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -15089,8 +15085,8 @@ JSBool S_CCBezierBy::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCBezierBy* self = NULL; JSGET_PTRSHELL(S_CCBezierBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -15125,9 +15121,9 @@ JSBool S_CCBezierBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCBezierBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccBezierConfig* narg1; JSGET_PTRSHELL(ccBezierConfig, narg1, arg1);
 		CCBezierBy* ret = CCBezierBy::actionWithDuration(arg0, *narg1);
 		if (ret == NULL) {
@@ -15230,8 +15226,8 @@ JSBool S_CCEaseIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseIn* self = NULL; JSGET_PTRSHELL(S_CCEaseIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -15242,10 +15238,10 @@ JSBool S_CCEaseIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCEaseIn* ret = CCEaseIn::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -15455,8 +15451,8 @@ JSBool S_CCPageTurn3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCPageTurn3D* self = NULL; JSGET_PTRSHELL(S_CCPageTurn3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -15467,10 +15463,10 @@ JSBool S_CCPageTurn3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCPageTurn3D::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCPageTurn3D* ret = CCPageTurn3D::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -15574,8 +15570,8 @@ JSBool S_CCTransitionFadeTR::jsactionWithSize(JSContext *cx, uint32_t argc, jsva
 	S_CCTransitionFadeTR* self = NULL; JSGET_PTRSHELL(S_CCTransitionFadeTR, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		CCActionInterval* ret = self->actionWithSize(*narg0);
 		if (ret == NULL) {
@@ -15613,8 +15609,8 @@ JSBool S_CCTransitionFadeTR::jseaseActionWithAction(JSContext *cx, uint32_t argc
 	S_CCTransitionFadeTR* self = NULL; JSGET_PTRSHELL(S_CCTransitionFadeTR, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionInterval* ret = self->easeActionWithAction(narg0);
 		if (ret == NULL) {
@@ -15637,9 +15633,9 @@ JSBool S_CCTransitionFadeTR::jseaseActionWithAction(JSContext *cx, uint32_t argc
 }
 JSBool S_CCTransitionFadeTR::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionFadeTR* ret = CCTransitionFadeTR::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -15771,13 +15767,13 @@ JSBool S_CCLens3D::jsinitWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLens3D* self = NULL; JSGET_PTRSHELL(S_CCLens3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		JSObject *arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "odod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithPosition(*narg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -15791,8 +15787,8 @@ JSBool S_CCLens3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLens3D* self = NULL; JSGET_PTRSHELL(S_CCLens3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -15803,13 +15799,13 @@ JSBool S_CCLens3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCLens3D::jsactionWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		JSObject *arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "odod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCLens3D* ret = CCLens3D::actionWithPosition(*narg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -15947,15 +15943,15 @@ JSBool S_CCRipple3D::jsinitWithPosition(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCRipple3D* self = NULL; JSGET_PTRSHELL(S_CCRipple3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 6) {
-		JSObject *arg0;
-		double arg1;
-		int arg2;
-		double arg3;
-		JSObject *arg4;
-		double arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "odidod", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		int arg2 = (int)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
+		JSObject *arg4 = JSVAL_TO_OBJECT(argv[4]);
 		ccGridSize* narg4; JSGET_PTRSHELL(ccGridSize, narg4, arg4);
+		float arg5 = (float)argv[5].toNumber();
 		bool ret = self->initWithPosition(*narg0, arg1, arg2, arg3, *narg4, arg5);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -15969,8 +15965,8 @@ JSBool S_CCRipple3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRipple3D* self = NULL; JSGET_PTRSHELL(S_CCRipple3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -15981,15 +15977,15 @@ JSBool S_CCRipple3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRipple3D::jsactionWithPosition(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 6) {
-		JSObject *arg0;
-		double arg1;
-		int arg2;
-		double arg3;
-		JSObject *arg4;
-		double arg5;
-		JS_ConvertArguments(cx, 6, JS_ARGV(cx, vp), "odidod", &arg0, &arg1, &arg2, &arg3, &arg4, &arg5);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
+		int arg2 = (int)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
+		JSObject *arg4 = JSVAL_TO_OBJECT(argv[4]);
 		ccGridSize* narg4; JSGET_PTRSHELL(ccGridSize, narg4, arg4);
+		float arg5 = (float)argv[5].toNumber();
 		CCRipple3D* ret = CCRipple3D::actionWithPosition(*narg0, arg1, arg2, arg3, *narg4, arg5);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -16045,6 +16041,12 @@ JSBool S_CCApplication::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JS
 	S_CCApplication *cobj; JSGET_PTRSHELL(S_CCApplication, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kAnimationInterval:
+		
+		break;
+	case kOrientation:
+				// don't know what this is (js ~> c)
+		break;
 	default:
 		break;
 	}
@@ -16065,12 +16067,12 @@ void S_CCApplication::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 	jsClass->finalize = jsFinalize;
 	jsClass->flags = JSCLASS_HAS_PRIVATE;
 		static JSPropertySpec properties[] = {
+			{"animationInterval", kAnimationInterval, JSPROP_PERMANENT | JSPROP_SHARED, S_CCApplication::jsPropertyGet, S_CCApplication::jsPropertySet},
+			{"orientation", kOrientation, JSPROP_PERMANENT | JSPROP_SHARED, S_CCApplication::jsPropertyGet, S_CCApplication::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
 		static JSFunctionSpec funcs[] = {
-			JS_FN("setAnimationInterval", S_CCApplication::jssetAnimationInterval, 1, JSPROP_PERMANENT | JSPROP_SHARED),
-			JS_FN("setOrientation", S_CCApplication::jssetOrientation, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FN("statusBarFrame", S_CCApplication::jsstatusBarFrame, 1, JSPROP_PERMANENT | JSPROP_SHARED),
 			JS_FS_END
 		};
@@ -16083,41 +16085,13 @@ void S_CCApplication::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 	jsObject = JS_InitClass(cx,globalObj,NULL,jsClass,S_CCApplication::jsConstructor,0,properties,funcs,NULL,st_funcs);
 }
 
-JSBool S_CCApplication::jssetAnimationInterval(JSContext *cx, uint32_t argc, jsval *vp) {
-	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-	S_CCApplication* self = NULL; JSGET_PTRSHELL(S_CCApplication, self, obj);
-	if (self == NULL) return JS_FALSE;
-	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
-		self->setAnimationInterval(arg0);
-		
-		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
-JSBool S_CCApplication::jssetOrientation(JSContext *cx, uint32_t argc, jsval *vp) {
-	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
-	S_CCApplication* self = NULL; JSGET_PTRSHELL(S_CCApplication, self, obj);
-	if (self == NULL) return JS_FALSE;
-	if (argc == 1) {
-		Orientation arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
-		//INVALID RETURN TYPE _41C5
-		return JS_TRUE;
-	}
-	JS_SET_RVAL(cx, vp, JSVAL_TRUE);
-	return JS_TRUE;
-}
 JSBool S_CCApplication::jsstatusBarFrame(JSContext *cx, uint32_t argc, jsval *vp) {
 	JSObject* obj = (JSObject *)JS_THIS_OBJECT(cx, vp);
 	S_CCApplication* self = NULL; JSGET_PTRSHELL(S_CCApplication, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		self->statusBarFrame(narg0);
 		
@@ -16209,8 +16183,8 @@ JSBool S_CCEaseOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseOut* self = NULL; JSGET_PTRSHELL(S_CCEaseOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16221,10 +16195,10 @@ JSBool S_CCEaseOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCEaseOut* ret = CCEaseOut::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -16640,8 +16614,8 @@ JSBool S_CCNode::jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		self->registerScriptHandler(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16668,8 +16642,8 @@ JSBool S_CCNode::jsremoveFromParentAndCleanup(JSContext *cx, uint32_t argc, jsva
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->removeFromParentAndCleanup(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16683,10 +16657,10 @@ JSBool S_CCNode::jsremoveChild(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ob", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		bool arg1 = argv[1].toBoolean();
 		self->removeChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16700,9 +16674,9 @@ JSBool S_CCNode::jsremoveChildByTag(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		int arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ib", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
 		self->removeChildByTag(arg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16716,8 +16690,8 @@ JSBool S_CCNode::jsremoveAllChildrenWithCleanup(JSContext *cx, uint32_t argc, js
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->removeAllChildrenWithCleanup(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16731,8 +16705,8 @@ JSBool S_CCNode::jsgetChildByTag(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		CCNode* ret = self->getChildByTag(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -16757,10 +16731,10 @@ JSBool S_CCNode::jsreorderChild(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		self->reorderChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16879,8 +16853,8 @@ JSBool S_CCNode::jsrunAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
 		CCAction* ret = self->runAction(narg0);
 		if (ret == NULL) {
@@ -16919,8 +16893,8 @@ JSBool S_CCNode::jsstopAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
 		self->stopAction(narg0);
 		
@@ -16935,8 +16909,8 @@ JSBool S_CCNode::jsstopActionByTag(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		self->stopActionByTag(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -16976,8 +16950,8 @@ JSBool S_CCNode::jsscheduleUpdateWithPriority(JSContext *cx, uint32_t argc, jsva
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		self->scheduleUpdateWithPriority(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -17043,8 +17017,8 @@ JSBool S_CCNode::jsconvertToNodeSpace(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToNodeSpace(*narg0));
 		do {
@@ -17066,8 +17040,8 @@ JSBool S_CCNode::jsconvertToWorldSpace(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToWorldSpace(*narg0));
 		do {
@@ -17089,8 +17063,8 @@ JSBool S_CCNode::jsconvertToNodeSpaceAR(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToNodeSpaceAR(*narg0));
 		do {
@@ -17112,8 +17086,8 @@ JSBool S_CCNode::jsconvertToWorldSpaceAR(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToWorldSpaceAR(*narg0));
 		do {
@@ -17135,8 +17109,8 @@ JSBool S_CCNode::jsconvertTouchToNodeSpace(JSContext *cx, uint32_t argc, jsval *
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTouch* narg0; JSGET_PTRSHELL(CCTouch, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertTouchToNodeSpace(narg0));
 		do {
@@ -17158,8 +17132,8 @@ JSBool S_CCNode::jsconvertTouchToNodeSpaceAR(JSContext *cx, uint32_t argc, jsval
 	S_CCNode* self = NULL; JSGET_PTRSHELL(S_CCNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTouch* narg0; JSGET_PTRSHELL(CCTouch, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertTouchToNodeSpaceAR(narg0));
 		do {
@@ -17271,8 +17245,8 @@ JSBool S_CCEaseExponentialIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCEaseExponentialIn* self = NULL; JSGET_PTRSHELL(S_CCEaseExponentialIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -17307,8 +17281,8 @@ JSBool S_CCEaseExponentialIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCEaseExponentialIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseExponentialIn* ret = CCEaseExponentialIn::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -17492,8 +17466,8 @@ JSBool S_CCFlipX3D::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCFlipX3D* self = NULL; JSGET_PTRSHELL(S_CCFlipX3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		bool ret = self->initWithDuration(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -17507,10 +17481,10 @@ JSBool S_CCFlipX3D::jsinitWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipX3D* self = NULL; JSGET_PTRSHELL(S_CCFlipX3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithSize(*narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -17524,8 +17498,8 @@ JSBool S_CCFlipX3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipX3D* self = NULL; JSGET_PTRSHELL(S_CCFlipX3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -17536,8 +17510,8 @@ JSBool S_CCFlipX3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFlipX3D::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCFlipX3D* ret = CCFlipX3D::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -17640,8 +17614,8 @@ JSBool S_CCEaseInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -17676,10 +17650,10 @@ JSBool S_CCEaseInOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCEaseInOut* ret = CCEaseInOut::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -17782,8 +17756,8 @@ JSBool S_CCEaseExponentialOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCEaseExponentialOut* self = NULL; JSGET_PTRSHELL(S_CCEaseExponentialOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -17818,8 +17792,8 @@ JSBool S_CCEaseExponentialOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp
 }
 JSBool S_CCEaseExponentialOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseExponentialOut* ret = CCEaseExponentialOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -17923,8 +17897,8 @@ JSBool S_CCJumpTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCJumpTo* self = NULL; JSGET_PTRSHELL(S_CCJumpTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -17936,12 +17910,12 @@ JSBool S_CCJumpTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCJumpTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		double arg0;
-		JSObject *arg1;
-		double arg2;
-		int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dodi", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
+		int arg3 = (int)argv[3].toNumber();
 		CCJumpTo* ret = CCJumpTo::actionWithDuration(arg0, *narg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -18043,11 +18017,11 @@ void S_CCTransitionPageTurn::jsCreateClass(JSContext *cx, JSObject *globalObj, c
 
 JSBool S_CCTransitionPageTurn::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSBool arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "dob", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		bool arg2 = argv[2].toBoolean();
 		CCTransitionPageTurn* ret = CCTransitionPageTurn::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -18072,11 +18046,11 @@ JSBool S_CCTransitionPageTurn::jsinitWithDuration(JSContext *cx, uint32_t argc, 
 	S_CCTransitionPageTurn* self = NULL; JSGET_PTRSHELL(S_CCTransitionPageTurn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		JSBool arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "dob", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		bool arg2 = argv[2].toBoolean();
 		bool ret = self->initWithDuration(arg0, narg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -18090,8 +18064,8 @@ JSBool S_CCTransitionPageTurn::jsactionWithSize(JSContext *cx, uint32_t argc, js
 	S_CCTransitionPageTurn* self = NULL; JSGET_PTRSHELL(S_CCTransitionPageTurn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		CCActionInterval* ret = self->actionWithSize(*narg0);
 		if (ret == NULL) {
@@ -18166,6 +18140,9 @@ JSBool S_CCParticleSystemQuad::jsPropertySet(JSContext *cx, JSObject *obj, jsid 
 	S_CCParticleSystemQuad *cobj; JSGET_PTRSHELL(S_CCParticleSystemQuad, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kDisplayFrame:
+		
+		break;
 	default:
 		break;
 	}
@@ -18189,6 +18166,7 @@ void S_CCParticleSystemQuad::jsCreateClass(JSContext *cx, JSObject *globalObj, c
 			{"quads", kQuads, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemQuad::jsPropertyGet, S_CCParticleSystemQuad::jsPropertySet},
 			{"indices", kIndices, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemQuad::jsPropertyGet, S_CCParticleSystemQuad::jsPropertySet},
 			{"quadsID", kQuadsID, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemQuad::jsPropertyGet, S_CCParticleSystemQuad::jsPropertySet},
+			{"displayFrame", kDisplayFrame, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemQuad::jsPropertyGet, S_CCParticleSystemQuad::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -18212,9 +18190,9 @@ void S_CCParticleSystemQuad::jsCreateClass(JSContext *cx, JSObject *globalObj, c
 
 JSBool S_CCParticleSystemQuad::jsparticleWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCParticleSystemQuad* ret = CCParticleSystemQuad::particleWithFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -18252,8 +18230,8 @@ JSBool S_CCParticleSystemQuad::jsinitTexCoordsWithRect(JSContext *cx, uint32_t a
 	S_CCParticleSystemQuad* self = NULL; JSGET_PTRSHELL(S_CCParticleSystemQuad, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCRect* narg0; JSGET_PTRSHELL(CCRect, narg0, arg0);
 		self->initTexCoordsWithRect(*narg0);
 		
@@ -18268,8 +18246,8 @@ JSBool S_CCParticleSystemQuad::jsinitWithTotalParticles(JSContext *cx, uint32_t 
 	S_CCParticleSystemQuad* self = NULL; JSGET_PTRSHELL(S_CCParticleSystemQuad, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		bool ret = self->initWithTotalParticles(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -18283,10 +18261,10 @@ JSBool S_CCParticleSystemQuad::jsupdateQuadWithParticle(JSContext *cx, uint32_t 
 	S_CCParticleSystemQuad* self = NULL; JSGET_PTRSHELL(S_CCParticleSystemQuad, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		tCCParticle* narg0; JSGET_PTRSHELL(tCCParticle, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		self->updateQuadWithParticle(narg0, *narg1);
 		
@@ -18352,6 +18330,9 @@ JSBool S_CCLabelTTF::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval
 	S_CCLabelTTF *cobj; JSGET_PTRSHELL(S_CCLabelTTF, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kString:
+		do { JSString *tmp = JS_NewStringCopyZ(cx, cobj->getString()); JS_SET_RVAL(cx, val, STRING_TO_JSVAL(tmp)); } while (0);
+		break;
 	default:
 		break;
 	}
@@ -18364,6 +18345,9 @@ JSBool S_CCLabelTTF::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	S_CCLabelTTF *cobj; JSGET_PTRSHELL(S_CCLabelTTF, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kString:
+		do { cobj->setString(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);
+		break;
 	default:
 		break;
 	}
@@ -18640,6 +18624,12 @@ JSBool S_CCDirector::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 	case kProjection:
 				// don't know what this is (js ~> c)
 		break;
+	case kAlphaBlending:
+		
+		break;
+	case kDepthTest:
+		
+		break;
 	case kDeviceOrientation:
 				// don't know what this is (js ~> c)
 		break;
@@ -18696,6 +18686,8 @@ void S_CCDirector::jsCreateClass(JSContext *cx, JSObject *globalObj, const char 
 			{"winSize", kWinSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"displaySizeInPixels", kDisplaySizeInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"zEye", kZEye, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
+			{"alphaBlending", kAlphaBlending, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
+			{"depthTest", kDepthTest, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{"deviceOrientation", kDeviceOrientation, JSPROP_PERMANENT | JSPROP_SHARED, S_CCDirector::jsPropertyGet, S_CCDirector::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
@@ -18807,8 +18799,8 @@ JSBool S_CCDirector::jsreshapeProjection(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSize* narg0; JSGET_PTRSHELL(CCSize, narg0, arg0);
 		self->reshapeProjection(*narg0);
 		
@@ -18823,8 +18815,8 @@ JSBool S_CCDirector::jsconvertToGL(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToGL(*narg0));
 		do {
@@ -18846,8 +18838,8 @@ JSBool S_CCDirector::jsconvertToUI(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->convertToUI(*narg0));
 		do {
@@ -18869,8 +18861,8 @@ JSBool S_CCDirector::jsrunWithScene(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCScene* narg0; JSGET_PTRSHELL(CCScene, narg0, arg0);
 		self->runWithScene(narg0);
 		
@@ -18885,8 +18877,8 @@ JSBool S_CCDirector::jspushScene(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCScene* narg0; JSGET_PTRSHELL(CCScene, narg0, arg0);
 		self->pushScene(narg0);
 		
@@ -18914,8 +18906,8 @@ JSBool S_CCDirector::jsreplaceScene(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCScene* narg0; JSGET_PTRSHELL(CCScene, narg0, arg0);
 		self->replaceScene(narg0);
 		
@@ -19073,8 +19065,8 @@ JSBool S_CCDirector::jsenableRetinaDisplay(JSContext *cx, uint32_t argc, jsval *
 	S_CCDirector* self = NULL; JSGET_PTRSHELL(S_CCDirector, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		bool ret = self->enableRetinaDisplay(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -19199,8 +19191,8 @@ JSBool S_CCFlipY3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFlipY3D* self = NULL; JSGET_PTRSHELL(S_CCFlipY3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -19211,8 +19203,8 @@ JSBool S_CCFlipY3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFlipY3D::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCFlipY3D* ret = CCFlipY3D::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -19330,12 +19322,12 @@ JSBool S_CCLiquid::jsinitWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLiquid* self = NULL; JSGET_PTRSHELL(S_CCLiquid, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithWaves(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -19349,8 +19341,8 @@ JSBool S_CCLiquid::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCLiquid* self = NULL; JSGET_PTRSHELL(S_CCLiquid, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -19361,12 +19353,12 @@ JSBool S_CCLiquid::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCLiquid::jsactionWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCLiquid* ret = CCLiquid::actionWithWaves(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -19468,8 +19460,8 @@ JSBool S_CCEaseExponentialInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *v
 	S_CCEaseExponentialInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseExponentialInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -19480,8 +19472,8 @@ JSBool S_CCEaseExponentialInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *v
 }
 JSBool S_CCEaseExponentialInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseExponentialInOut* ret = CCEaseExponentialInOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -19586,8 +19578,8 @@ JSBool S_CCTiledGrid3DAction::jstile(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTiledGrid3DAction* self = NULL; JSGET_PTRSHELL(S_CCTiledGrid3DAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		//INVALID RETURN TYPE _51F
 		return JS_TRUE;
@@ -19600,8 +19592,8 @@ JSBool S_CCTiledGrid3DAction::jsoriginalTile(JSContext *cx, uint32_t argc, jsval
 	S_CCTiledGrid3DAction* self = NULL; JSGET_PTRSHELL(S_CCTiledGrid3DAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		//INVALID RETURN TYPE _51F
 		return JS_TRUE;
@@ -19651,6 +19643,24 @@ JSBool S_CCParticleSystemPoint::jsPropertySet(JSContext *cx, JSObject *obj, jsid
 	S_CCParticleSystemPoint *cobj; JSGET_PTRSHELL(S_CCParticleSystemPoint, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kStartSpin:
+		
+		break;
+	case kStartSpinVar:
+		
+		break;
+	case kEndSpin:
+		
+		break;
+	case kEndSpinVar:
+		
+		break;
+	case kStartSize:
+		
+		break;
+	case kEndSize:
+		
+		break;
 	default:
 		break;
 	}
@@ -19673,6 +19683,12 @@ void S_CCParticleSystemPoint::jsCreateClass(JSContext *cx, JSObject *globalObj, 
 		static JSPropertySpec properties[] = {
 			{"vertices", kVertices, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
 			{"verticesID", kVerticesID, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"startSpin", kStartSpin, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"startSpinVar", kStartSpinVar, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"endSpin", kEndSpin, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"endSpinVar", kEndSpinVar, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"startSize", kStartSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
+			{"endSize", kEndSize, JSPROP_PERMANENT | JSPROP_SHARED, S_CCParticleSystemPoint::jsPropertyGet, S_CCParticleSystemPoint::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -19694,9 +19710,9 @@ void S_CCParticleSystemPoint::jsCreateClass(JSContext *cx, JSObject *globalObj, 
 
 JSBool S_CCParticleSystemPoint::jsparticleWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCParticleSystemPoint* ret = CCParticleSystemPoint::particleWithFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -19721,8 +19737,8 @@ JSBool S_CCParticleSystemPoint::jsinitWithTotalParticles(JSContext *cx, uint32_t
 	S_CCParticleSystemPoint* self = NULL; JSGET_PTRSHELL(S_CCParticleSystemPoint, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		unsigned int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
 		bool ret = self->initWithTotalParticles(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -19736,10 +19752,10 @@ JSBool S_CCParticleSystemPoint::jsupdateQuadWithParticle(JSContext *cx, uint32_t
 	S_CCParticleSystemPoint* self = NULL; JSGET_PTRSHELL(S_CCParticleSystemPoint, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		tCCParticle* narg0; JSGET_PTRSHELL(tCCParticle, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		self->updateQuadWithParticle(narg0, *narg1);
 		
@@ -19864,12 +19880,12 @@ JSBool S_CCJumpBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCJumpBy* self = NULL; JSGET_PTRSHELL(S_CCJumpBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		double arg0;
-		JSObject *arg1;
-		double arg2;
-		unsigned int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dodi", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
 		bool ret = self->initWithDuration(arg0, *narg1, arg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -19883,8 +19899,8 @@ JSBool S_CCJumpBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCJumpBy* self = NULL; JSGET_PTRSHELL(S_CCJumpBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -19899,8 +19915,8 @@ JSBool S_CCJumpBy::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCJumpBy* self = NULL; JSGET_PTRSHELL(S_CCJumpBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -19935,12 +19951,12 @@ JSBool S_CCJumpBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCJumpBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		double arg0;
-		JSObject *arg1;
-		double arg2;
-		unsigned int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dodi", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
+		float arg2 = (float)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
 		CCJumpBy* ret = CCJumpBy::actionWithDuration(arg0, *narg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -20002,6 +20018,9 @@ JSBool S_CCFollow::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	S_CCFollow *cobj; JSGET_PTRSHELL(S_CCFollow, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kBoudarySet:
+		
+		break;
 	default:
 		break;
 	}
@@ -20031,6 +20050,7 @@ void S_CCFollow::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 			{"rightBoundary", kRightBoundary, JSPROP_PERMANENT | JSPROP_SHARED, S_CCFollow::jsPropertyGet, S_CCFollow::jsPropertySet},
 			{"topBoundary", kTopBoundary, JSPROP_PERMANENT | JSPROP_SHARED, S_CCFollow::jsPropertyGet, S_CCFollow::jsPropertySet},
 			{"bottomBoundary", kBottomBoundary, JSPROP_PERMANENT | JSPROP_SHARED, S_CCFollow::jsPropertyGet, S_CCFollow::jsPropertySet},
+			{"boudarySet", kBoudarySet, JSPROP_PERMANENT | JSPROP_SHARED, S_CCFollow::jsPropertyGet, S_CCFollow::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -20068,8 +20088,8 @@ JSBool S_CCFollow::jsinitWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFollow* self = NULL; JSGET_PTRSHELL(S_CCFollow, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		bool ret = self->initWithTarget(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -20107,8 +20127,8 @@ JSBool S_CCFollow::jsstop(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFollow::jsactionWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		CCFollow* ret = CCFollow::actionWithTarget(narg0);
 		if (ret == NULL) {
@@ -20214,10 +20234,10 @@ JSBool S_CCSkewBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSkewBy* self = NULL; JSGET_PTRSHELL(S_CCSkewBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -20231,8 +20251,8 @@ JSBool S_CCSkewBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSkewBy* self = NULL; JSGET_PTRSHELL(S_CCSkewBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -20268,10 +20288,10 @@ JSBool S_CCSkewBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSkewBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		CCSkewBy* ret = CCSkewBy::actionWithDuration(arg0, arg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -20384,10 +20404,10 @@ JSBool S_CCAccelDeccelAmplitude::jsinitWithAction(JSContext *cx, uint32_t argc, 
 	S_CCAccelDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -20401,8 +20421,8 @@ JSBool S_CCAccelDeccelAmplitude::jsstartWithTarget(JSContext *cx, uint32_t argc,
 	S_CCAccelDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -20417,8 +20437,8 @@ JSBool S_CCAccelDeccelAmplitude::jsupdate(JSContext *cx, uint32_t argc, jsval *v
 	S_CCAccelDeccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelDeccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -20453,10 +20473,10 @@ JSBool S_CCAccelDeccelAmplitude::jsreverse(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCAccelDeccelAmplitude::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCAccelDeccelAmplitude* ret = CCAccelDeccelAmplitude::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -20559,8 +20579,8 @@ JSBool S_CCEaseSineIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseSineIn* self = NULL; JSGET_PTRSHELL(S_CCEaseSineIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -20595,8 +20615,8 @@ JSBool S_CCEaseSineIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseSineIn::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseSineIn* ret = CCEaseSineIn::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -20663,10 +20683,7 @@ JSBool S_CCLabelAtlas::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSB
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
 	case kString:
-		do {
-			std::string tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*val));
-			cobj->setString(tmp);
-		} while (0);
+		do { cobj->setString(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);
 		break;
 	default:
 		break;
@@ -20709,14 +20726,14 @@ void S_CCLabelAtlas::jsCreateClass(JSContext *cx, JSObject *globalObj, const cha
 
 JSBool S_CCLabelAtlas::jslabelWithString(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 5) {
-		JSString *arg0;
-		JSString *arg1;
-		unsigned int arg2;
-		unsigned int arg3;
-		unsigned char arg4;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "SSiic", &arg0, &arg1, &arg2, &arg3, &arg4);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
+		unsigned int arg2 = (unsigned int)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
+		unsigned char arg4 = (unsigned char)argv[4].toNumber();
 		CCLabelAtlas* ret = CCLabelAtlas::labelWithString(narg0, narg1, arg2, arg3, arg4);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -20741,14 +20758,14 @@ JSBool S_CCLabelAtlas::jsinitWithString(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCLabelAtlas* self = NULL; JSGET_PTRSHELL(S_CCLabelAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 5) {
-		JSString *arg0;
-		JSString *arg1;
-		unsigned int arg2;
-		unsigned int arg3;
-		unsigned char arg4;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "SSiic", &arg0, &arg1, &arg2, &arg3, &arg4);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
+		unsigned int arg2 = (unsigned int)argv[2].toNumber();
+		unsigned int arg3 = (unsigned int)argv[3].toNumber();
+		unsigned char arg4 = (unsigned char)argv[4].toNumber();
 		bool ret = self->initWithString(narg0, narg1, arg2, arg3, arg4);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -20931,8 +20948,8 @@ JSBool S_CCMenuItem::jsregisterScriptHandler(JSContext *cx, uint32_t argc, jsval
 	S_CCMenuItem* self = NULL; JSGET_PTRSHELL(S_CCMenuItem, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		int arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "i", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
 		self->registerScriptHandler(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -21052,9 +21069,9 @@ JSBool S_CCMoveBy::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMoveBy* self = NULL; JSGET_PTRSHELL(S_CCMoveBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		bool ret = self->initWithDuration(arg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -21069,8 +21086,8 @@ JSBool S_CCMoveBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCMoveBy* self = NULL; JSGET_PTRSHELL(S_CCMoveBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -21106,9 +21123,9 @@ JSBool S_CCMoveBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCMoveBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCPoint* narg1; JSGET_PTRSHELL(CCPoint, narg1, arg1);
 		CCMoveBy* ret = CCMoveBy::actionWithDuration(arg0, *narg1);
 		if (ret == NULL) {
@@ -21212,8 +21229,8 @@ JSBool S_CCEaseSineOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseSineOut* self = NULL; JSGET_PTRSHELL(S_CCEaseSineOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -21248,8 +21265,8 @@ JSBool S_CCEaseSineOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseSineOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseSineOut* ret = CCEaseSineOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -21414,9 +21431,9 @@ void S_CCTMXTiledMap::jsCreateClass(JSContext *cx, JSObject *globalObj, const ch
 
 JSBool S_CCTMXTiledMap::jstiledMapWithTMXFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCTMXTiledMap* ret = CCTMXTiledMap::tiledMapWithTMXFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -21441,9 +21458,9 @@ JSBool S_CCTMXTiledMap::jsinitWithTMXFile(JSContext *cx, uint32_t argc, jsval *v
 	S_CCTMXTiledMap* self = NULL; JSGET_PTRSHELL(S_CCTMXTiledMap, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithTMXFile(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -21457,9 +21474,9 @@ JSBool S_CCTMXTiledMap::jslayerNamed(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTMXTiledMap* self = NULL; JSGET_PTRSHELL(S_CCTMXTiledMap, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCTMXLayer* ret = self->layerNamed(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -21584,10 +21601,10 @@ JSBool S_CCAccelAmplitude::jsinitWithAction(JSContext *cx, uint32_t argc, jsval 
 	S_CCAccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -21601,8 +21618,8 @@ JSBool S_CCAccelAmplitude::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval
 	S_CCAccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -21617,8 +21634,8 @@ JSBool S_CCAccelAmplitude::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCAccelAmplitude* self = NULL; JSGET_PTRSHELL(S_CCAccelAmplitude, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -21653,10 +21670,10 @@ JSBool S_CCAccelAmplitude::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCAccelAmplitude::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCAction* narg0; JSGET_PTRSHELL(CCAction, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCAccelAmplitude* ret = CCAccelAmplitude::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -21780,10 +21797,7 @@ JSBool S_CCTMXLayer::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBoo
 		} while (0);
 		break;
 	case kLayerName:
-		do {
-			std::string tmp = JS_EncodeString(cx, JSVAL_TO_STRING(*val));
-			cobj->setLayerName(tmp);
-		} while (0);
+		do { cobj->setLayerName(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);
 		break;
 	default:
 		break;
@@ -21844,8 +21858,8 @@ JSBool S_CCTMXLayer::jstileAt(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTMXLayer* self = NULL; JSGET_PTRSHELL(S_CCTMXLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCSprite* ret = self->tileAt(*narg0);
 		if (ret == NULL) {
@@ -21871,8 +21885,8 @@ JSBool S_CCTMXLayer::jstileGIDAt(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTMXLayer* self = NULL; JSGET_PTRSHELL(S_CCTMXLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		unsigned int ret = self->tileGIDAt(*narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -21887,8 +21901,8 @@ JSBool S_CCTMXLayer::jsremoveTileAt(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTMXLayer* self = NULL; JSGET_PTRSHELL(S_CCTMXLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		self->removeTileAt(*narg0);
 		
@@ -21903,8 +21917,8 @@ JSBool S_CCTMXLayer::jspositionAt(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTMXLayer* self = NULL; JSGET_PTRSHELL(S_CCTMXLayer, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCPoint* narg0; JSGET_PTRSHELL(CCPoint, narg0, arg0);
 		CCPoint* ret = new CCPoint(self->positionAt(*narg0));
 		do {
@@ -22013,10 +22027,10 @@ JSBool S_CCSkewTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSkewTo* self = NULL; JSGET_PTRSHELL(S_CCSkewTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -22030,8 +22044,8 @@ JSBool S_CCSkewTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSkewTo* self = NULL; JSGET_PTRSHELL(S_CCSkewTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -22046,8 +22060,8 @@ JSBool S_CCSkewTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSkewTo* self = NULL; JSGET_PTRSHELL(S_CCSkewTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -22058,10 +22072,10 @@ JSBool S_CCSkewTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSkewTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		double arg1;
-		double arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "ddd", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
 		CCSkewTo* ret = CCSkewTo::actionWithDuration(arg0, arg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22166,12 +22180,12 @@ JSBool S_CCShaky3D::jsinitWithRange(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShaky3D* self = NULL; JSGET_PTRSHELL(S_CCShaky3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithRange(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -22185,8 +22199,8 @@ JSBool S_CCShaky3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCShaky3D* self = NULL; JSGET_PTRSHELL(S_CCShaky3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -22197,12 +22211,12 @@ JSBool S_CCShaky3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCShaky3D::jsactionWithRange(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		JSBool arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "ibod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCShaky3D* ret = CCShaky3D::actionWithRange(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22270,6 +22284,9 @@ JSBool S_CCActionInterval::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id,
 	S_CCActionInterval *cobj; JSGET_PTRSHELL(S_CCActionInterval, cobj, obj);
 	if (!cobj) return JS_FALSE;
 	switch(propId) {
+	case kAmplitudeRate:
+		
+		break;
 	default:
 		break;
 	}
@@ -22318,8 +22335,8 @@ JSBool S_CCActionInterval::jsinitWithDuration(JSContext *cx, uint32_t argc, jsva
 	S_CCActionInterval* self = NULL; JSGET_PTRSHELL(S_CCActionInterval, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		bool ret = self->initWithDuration(arg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -22346,8 +22363,8 @@ JSBool S_CCActionInterval::jsstep(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCActionInterval* self = NULL; JSGET_PTRSHELL(S_CCActionInterval, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->step(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -22361,8 +22378,8 @@ JSBool S_CCActionInterval::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval
 	S_CCActionInterval* self = NULL; JSGET_PTRSHELL(S_CCActionInterval, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -22398,8 +22415,8 @@ JSBool S_CCActionInterval::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCActionInterval::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCActionInterval* ret = CCActionInterval::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22510,11 +22527,11 @@ void S_CCTransitionZoomFlipY::onEnter() {
 }
 JSBool S_CCTransitionZoomFlipY::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionZoomFlipY* ret = CCTransitionZoomFlipY::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22654,9 +22671,9 @@ JSBool S_CCTextureCache::jsaddImage(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCTexture2D* ret = self->addImage(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22681,11 +22698,11 @@ JSBool S_CCTextureCache::jsaddUIImage(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSString *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oS", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCImage* narg0; JSGET_PTRSHELL(CCImage, narg0, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
 		CCTexture2D* ret = self->addUIImage(narg0, narg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22710,9 +22727,9 @@ JSBool S_CCTextureCache::jstextureForKey(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCTexture2D* ret = self->textureForKey(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22763,8 +22780,8 @@ JSBool S_CCTextureCache::jsremoveTexture(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		self->removeTexture(narg0);
 		
@@ -22779,9 +22796,9 @@ JSBool S_CCTextureCache::jsremoveTextureForKey(JSContext *cx, uint32_t argc, jsv
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		self->removeTextureForKey(narg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -22808,12 +22825,12 @@ JSBool S_CCTextureCache::jsaddPVRTCImage(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		JSString *arg0;
-		int arg1;
-		JSBool arg2;
-		int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "Sibi", &arg0, &arg1, &arg2, &arg3);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		int arg1 = (int)argv[1].toNumber();
+		bool arg2 = argv[2].toBoolean();
+		int arg3 = (int)argv[3].toNumber();
 		CCTexture2D* ret = self->addPVRTCImage(narg0, arg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22838,9 +22855,9 @@ JSBool S_CCTextureCache::jsaddPVRImage(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCTextureCache* self = NULL; JSGET_PTRSHELL(S_CCTextureCache, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCTexture2D* ret = self->addPVRImage(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -22974,8 +22991,8 @@ JSBool S_CCRepeatForever::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *
 	S_CCRepeatForever* self = NULL; JSGET_PTRSHELL(S_CCRepeatForever, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		bool ret = self->initWithAction(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -22990,8 +23007,8 @@ JSBool S_CCRepeatForever::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval 
 	S_CCRepeatForever* self = NULL; JSGET_PTRSHELL(S_CCRepeatForever, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -23006,8 +23023,8 @@ JSBool S_CCRepeatForever::jsstep(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRepeatForever* self = NULL; JSGET_PTRSHELL(S_CCRepeatForever, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->step(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -23055,8 +23072,8 @@ JSBool S_CCRepeatForever::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCRepeatForever::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCRepeatForever* ret = CCRepeatForever::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -23188,10 +23205,10 @@ JSBool S_CCSpeed::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSpeed* self = NULL; JSGET_PTRSHELL(S_CCSpeed, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -23205,8 +23222,8 @@ JSBool S_CCSpeed::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSpeed* self = NULL; JSGET_PTRSHELL(S_CCSpeed, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -23268,10 +23285,10 @@ JSBool S_CCSpeed::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSpeed::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCSpeed* ret = CCSpeed::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -23382,11 +23399,11 @@ void S_CCTransitionZoomFlipX::onEnter() {
 }
 JSBool S_CCTransitionZoomFlipX::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionZoomFlipX* ret = CCTransitionZoomFlipX::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -23488,8 +23505,8 @@ JSBool S_CCEaseSineInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCEaseSineInOut* self = NULL; JSGET_PTRSHELL(S_CCEaseSineInOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -23500,8 +23517,8 @@ JSBool S_CCEaseSineInOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseSineInOut::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCEaseSineInOut* ret = CCEaseSineInOut::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -23608,9 +23625,9 @@ JSBool S_CCSplitCols::jsinitWithCols(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSplitCols* self = NULL; JSGET_PTRSHELL(S_CCSplitCols, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		int arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "id", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithCols(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -23624,8 +23641,8 @@ JSBool S_CCSplitCols::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSplitCols* self = NULL; JSGET_PTRSHELL(S_CCSplitCols, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -23639,8 +23656,8 @@ JSBool S_CCSplitCols::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCSplitCols* self = NULL; JSGET_PTRSHELL(S_CCSplitCols, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -23652,9 +23669,9 @@ JSBool S_CCSplitCols::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCSplitCols::jsactionWithCols(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		int arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "id", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCSplitCols* ret = CCSplitCols::actionWithCols(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -23757,8 +23774,8 @@ JSBool S_CCFadeOut::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeOut* self = NULL; JSGET_PTRSHELL(S_CCFadeOut, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -23793,8 +23810,8 @@ JSBool S_CCFadeOut::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFadeOut::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCFadeOut* ret = CCFadeOut::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -23899,13 +23916,13 @@ void S_CCTileMapAtlas::jsCreateClass(JSContext *cx, JSObject *globalObj, const c
 
 JSBool S_CCTileMapAtlas::jstileMapAtlasWithTileFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		JSString *arg0;
-		JSString *arg1;
-		int arg2;
-		int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "SSii", &arg0, &arg1, &arg2, &arg3);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
+		int arg2 = (int)argv[2].toNumber();
+		int arg3 = (int)argv[3].toNumber();
 		CCTileMapAtlas* ret = CCTileMapAtlas::tileMapAtlasWithTileFile(narg0, narg1, arg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -23930,13 +23947,13 @@ JSBool S_CCTileMapAtlas::jsinitWithTileFile(JSContext *cx, uint32_t argc, jsval 
 	S_CCTileMapAtlas* self = NULL; JSGET_PTRSHELL(S_CCTileMapAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		JSString *arg0;
-		JSString *arg1;
-		int arg2;
-		int arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "SSii", &arg0, &arg1, &arg2, &arg3);
-		char *narg0 = JS_EncodeString(cx, arg0);
-		char *narg1 = JS_EncodeString(cx, arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		JSString *arg1 = JSVAL_TO_STRING(argv[1]);
+		char * narg1 = JS_EncodeString(cx, arg1);
+		int arg2 = (int)argv[2].toNumber();
+		int arg3 = (int)argv[3].toNumber();
 		bool ret = self->initWithTileFile(narg0, narg1, arg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -23950,8 +23967,8 @@ JSBool S_CCTileMapAtlas::jstileAt(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTileMapAtlas* self = NULL; JSGET_PTRSHELL(S_CCTileMapAtlas, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		//INVALID RETURN TYPE _45B
 		return JS_TRUE;
@@ -24096,11 +24113,11 @@ JSBool S_CCRenderTexture::jsbeginWithClear(JSContext *cx, uint32_t argc, jsval *
 	S_CCRenderTexture* self = NULL; JSGET_PTRSHELL(S_CCRenderTexture, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		double arg0;
-		double arg1;
-		double arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dddd", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
 		self->beginWithClear(arg0, arg1, arg2, arg3);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24127,8 +24144,8 @@ JSBool S_CCRenderTexture::jsend(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRenderTexture* self = NULL; JSGET_PTRSHELL(S_CCRenderTexture, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->end(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24142,11 +24159,11 @@ JSBool S_CCRenderTexture::jsclear(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCRenderTexture* self = NULL; JSGET_PTRSHELL(S_CCRenderTexture, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		double arg0;
-		double arg1;
-		double arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "dddd", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		float arg2 = (float)argv[2].toNumber();
+		float arg3 = (float)argv[3].toNumber();
 		self->clear(arg0, arg1, arg2, arg3);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24160,13 +24177,13 @@ JSBool S_CCRenderTexture::jssaveBuffer(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCRenderTexture* self = NULL; JSGET_PTRSHELL(S_CCRenderTexture, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 5) {
-		JSString *arg0;
-		int arg1;
-		int arg2;
-		int arg3;
-		int arg4;
-		JS_ConvertArguments(cx, 5, JS_ARGV(cx, vp), "Siiii", &arg0, &arg1, &arg2, &arg3, &arg4);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		int arg1 = (int)argv[1].toNumber();
+		int arg2 = (int)argv[2].toNumber();
+		int arg3 = (int)argv[3].toNumber();
+		int arg4 = (int)argv[4].toNumber();
 		bool ret = self->saveBuffer(narg0, arg1, arg2, arg3, arg4);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -24304,9 +24321,9 @@ void S_CCTransitionCrossFade::onExit() {
 }
 JSBool S_CCTransitionCrossFade::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionCrossFade* ret = CCTransitionCrossFade::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -24425,12 +24442,12 @@ JSBool S_CCWaves3D::jsinitWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCWaves3D* self = NULL; JSGET_PTRSHELL(S_CCWaves3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithWaves(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -24444,8 +24461,8 @@ JSBool S_CCWaves3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCWaves3D* self = NULL; JSGET_PTRSHELL(S_CCWaves3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24456,12 +24473,12 @@ JSBool S_CCWaves3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCWaves3D::jsactionWithWaves(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCWaves3D* ret = CCWaves3D::actionWithWaves(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -24568,8 +24585,8 @@ JSBool S_CCActionEase::jsinitWithAction(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCActionEase* self = NULL; JSGET_PTRSHELL(S_CCActionEase, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		bool ret = self->initWithAction(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -24584,8 +24601,8 @@ JSBool S_CCActionEase::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCActionEase* self = NULL; JSGET_PTRSHELL(S_CCActionEase, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -24613,8 +24630,8 @@ JSBool S_CCActionEase::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCActionEase* self = NULL; JSGET_PTRSHELL(S_CCActionEase, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24649,8 +24666,8 @@ JSBool S_CCActionEase::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCActionEase::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
 		CCActionEase* ret = CCActionEase::actionWithAction(narg0);
 		if (ret == NULL) {
@@ -24757,9 +24774,9 @@ JSBool S_CCFadeTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeTo* self = NULL; JSGET_PTRSHELL(S_CCFadeTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		unsigned char arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dc", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned char arg1 = (unsigned char)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -24773,8 +24790,8 @@ JSBool S_CCFadeTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeTo* self = NULL; JSGET_PTRSHELL(S_CCFadeTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -24789,8 +24806,8 @@ JSBool S_CCFadeTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeTo* self = NULL; JSGET_PTRSHELL(S_CCFadeTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -24801,9 +24818,9 @@ JSBool S_CCFadeTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFadeTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		unsigned char arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dc", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned char arg1 = (unsigned char)argv[1].toNumber();
 		CCFadeTo* ret = CCFadeTo::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -24870,15 +24887,7 @@ JSBool S_CCMenuItemLabel::jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, 
 		do { jsval tmp; JS_NewNumberValue(cx, cobj->getOpacity(), &tmp); JS_SET_RVAL(cx, val, tmp); } while (0);
 		break;
 	case kColor:
-		do {
-			JSObject *tmp = JS_NewObject(cx, NULL, NULL, NULL);
-			pointerShell_t *pt = (pointerShell_t *)JS_malloc(cx, sizeof(pointerShell_t));
-			ccColor3B* ctmp = new ccColor3B(cobj->getColor());
-			pt->flags = 0;
-			pt->data = (void *)ctmp;
-			JS_SetPrivate(tmp, pt);
-			JS_SET_RVAL(cx, val, OBJECT_TO_JSVAL(tmp));
-		} while (0);
+		
 		break;
 	case kIsOpacityModifyRGB:
 		JS_SET_RVAL(cx, val, BOOLEAN_TO_JSVAL(cobj->getIsOpacityModifyRGB()));
@@ -24914,6 +24923,31 @@ JSBool S_CCMenuItemLabel::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, 
 			if (tmp) { cobj->setLabel(tmp); }
 		} while (0);
 		break;
+	case kString:
+		
+		break;
+	case kIsEnabled:
+		
+		break;
+	case kOpacity:
+		
+		break;
+	case kColor:
+		do {
+			JSObject *arr = JSVAL_TO_OBJECT(*val);
+			jsval jr, jg, jb;
+			int32_t r, g, b;
+			JS_GetElement(cx, arr, 0, &jr);
+			JS_GetElement(cx, arr, 1, &jg);
+			JS_GetElement(cx, arr, 2, &jb);
+			JS_ValueToInt32(cx, jr, &r); JS_ValueToInt32(cx, jg, &g); JS_ValueToInt32(cx, jb, &b);
+			ccColor3B color = ccc3(r, g, b);
+			cobj->setColor(color);
+		} while (0);
+		break;
+	case kIsOpacityModifyRGB:
+		
+		break;
 	default:
 		break;
 	}
@@ -24938,6 +24972,8 @@ void S_CCMenuItemLabel::jsCreateClass(JSContext *cx, JSObject *globalObj, const 
 			{"label", kLabel, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
 			{"colorBackup", kColorBackup, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
 			{"originalScale", kOriginalScale, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{"string", kString, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
+			{"isEnabled", kIsEnabled, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
 			{"opacity", kOpacity, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
 			{"color", kColor, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
 			{"isOpacityModifyRGB", kIsOpacityModifyRGB, JSPROP_PERMANENT | JSPROP_SHARED, S_CCMenuItemLabel::jsPropertyGet, S_CCMenuItemLabel::jsPropertySet},
@@ -25091,9 +25127,9 @@ void S_CCTransitionJumpZoom::onEnter() {
 }
 JSBool S_CCTransitionJumpZoom::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionJumpZoom* ret = CCTransitionJumpZoom::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -25199,9 +25235,9 @@ JSBool S_CCBlink::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCBlink* self = NULL; JSGET_PTRSHELL(S_CCBlink, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "di", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -25215,8 +25251,8 @@ JSBool S_CCBlink::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCBlink* self = NULL; JSGET_PTRSHELL(S_CCBlink, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -25251,9 +25287,9 @@ JSBool S_CCBlink::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCBlink::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "di", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		CCBlink* ret = CCBlink::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -25364,11 +25400,11 @@ void S_CCTransitionFlipAngular::onEnter() {
 }
 JSBool S_CCTransitionFlipAngular::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionFlipAngular* ret = CCTransitionFlipAngular::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -25479,9 +25515,9 @@ void S_CCTransitionRotoZoom::onEnter() {
 }
 JSBool S_CCTransitionRotoZoom::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionRotoZoom* ret = CCTransitionRotoZoom::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -25600,12 +25636,12 @@ JSBool S_CCJumpTiles3D::jsinitWithJumps(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCJumpTiles3D* self = NULL; JSGET_PTRSHELL(S_CCJumpTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		bool ret = self->initWithJumps(arg0, arg1, *narg2, arg3);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -25619,8 +25655,8 @@ JSBool S_CCJumpTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCJumpTiles3D* self = NULL; JSGET_PTRSHELL(S_CCJumpTiles3D, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -25631,12 +25667,12 @@ JSBool S_CCJumpTiles3D::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCJumpTiles3D::jsactionWithJumps(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 4) {
-		int arg0;
-		double arg1;
-		JSObject *arg2;
-		double arg3;
-		JS_ConvertArguments(cx, 4, JS_ARGV(cx, vp), "idod", &arg0, &arg1, &arg2, &arg3);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
+		JSObject *arg2 = JSVAL_TO_OBJECT(argv[2]);
 		ccGridSize* narg2; JSGET_PTRSHELL(ccGridSize, narg2, arg2);
+		float arg3 = (float)argv[3].toNumber();
 		CCJumpTiles3D* ret = CCJumpTiles3D::actionWithJumps(arg0, arg1, *narg2, arg3);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -25739,8 +25775,8 @@ JSBool S_CCFadeIn::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCFadeIn* self = NULL; JSGET_PTRSHELL(S_CCFadeIn, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -25775,8 +25811,8 @@ JSBool S_CCFadeIn::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCFadeIn::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		CCFadeIn* ret = CCFadeIn::actionWithDuration(arg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -25884,10 +25920,10 @@ JSBool S_CCUserDefault::jsgetBoolForKey(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sb", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		bool arg1 = argv[1].toBoolean();
 		bool ret = self->getBoolForKey(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -25901,10 +25937,10 @@ JSBool S_CCUserDefault::jsgetIntegerForKey(JSContext *cx, uint32_t argc, jsval *
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Si", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		int ret = self->getIntegerForKey(narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -25918,10 +25954,10 @@ JSBool S_CCUserDefault::jsgetFloatForKey(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sd", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		float ret = self->getFloatForKey(narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -25935,10 +25971,10 @@ JSBool S_CCUserDefault::jsgetDoubleForKey(JSContext *cx, uint32_t argc, jsval *v
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sd", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		double arg1 = (double)argv[1].toNumber();
 		double ret = self->getDoubleForKey(narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -25952,10 +25988,10 @@ JSBool S_CCUserDefault::jssetBoolForKey(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sb", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		bool arg1 = argv[1].toBoolean();
 		self->setBoolForKey(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -25969,10 +26005,10 @@ JSBool S_CCUserDefault::jssetIntegerForKey(JSContext *cx, uint32_t argc, jsval *
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Si", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		self->setIntegerForKey(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -25986,10 +26022,10 @@ JSBool S_CCUserDefault::jssetFloatForKey(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sd", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		self->setFloatForKey(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -26003,10 +26039,10 @@ JSBool S_CCUserDefault::jssetDoubleForKey(JSContext *cx, uint32_t argc, jsval *v
 	S_CCUserDefault* self = NULL; JSGET_PTRSHELL(S_CCUserDefault, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Sd", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		double arg1 = (double)argv[1].toNumber();
 		self->setDoubleForKey(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -26145,9 +26181,9 @@ JSBool S_CCSplitRows::jsinitWithRows(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSplitRows* self = NULL; JSGET_PTRSHELL(S_CCSplitRows, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		int arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "id", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithRows(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -26161,8 +26197,8 @@ JSBool S_CCSplitRows::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSplitRows* self = NULL; JSGET_PTRSHELL(S_CCSplitRows, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -26176,8 +26212,8 @@ JSBool S_CCSplitRows::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 	S_CCSplitRows* self = NULL; JSGET_PTRSHELL(S_CCSplitRows, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -26189,9 +26225,9 @@ JSBool S_CCSplitRows::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCSplitRows::jsactionWithRows(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		int arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "id", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		int arg0 = (int)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCSplitRows* ret = CCSplitRows::actionWithRows(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -26329,9 +26365,9 @@ JSBool S_CCTransitionSlideInB::jsaction(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCTransitionSlideInB::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSlideInB* ret = CCTransitionSlideInB::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -26433,11 +26469,11 @@ void S_CCTransitionSceneOriented::jsCreateClass(JSContext *cx, JSObject *globalO
 
 JSBool S_CCTransitionSceneOriented::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		CCTransitionSceneOriented* ret = CCTransitionSceneOriented::transitionWithDuration(arg0, narg1, arg2);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -26462,11 +26498,11 @@ JSBool S_CCTransitionSceneOriented::jsinitWithDuration(JSContext *cx, uint32_t a
 	S_CCTransitionSceneOriented* self = NULL; JSGET_PTRSHELL(S_CCTransitionSceneOriented, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 3) {
-		double arg0;
-		JSObject *arg1;
-		tOrientation arg2;
-		JS_ConvertArguments(cx, 3, JS_ARGV(cx, vp), "doi", &arg0, &arg1, &arg2);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
+		tOrientation arg2 = (tOrientation)argv[2].toNumber();
 		bool ret = self->initWithDuration(arg0, narg1, arg2);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -26601,8 +26637,8 @@ JSBool S_CCSet::jsaddObject(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSet* self = NULL; JSGET_PTRSHELL(S_CCSet, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCObject* narg0; JSGET_PTRSHELL(CCObject, narg0, arg0);
 		self->addObject(narg0);
 		
@@ -26617,8 +26653,8 @@ JSBool S_CCSet::jsremoveObject(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSet* self = NULL; JSGET_PTRSHELL(S_CCSet, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCObject* narg0; JSGET_PTRSHELL(CCObject, narg0, arg0);
 		self->removeObject(narg0);
 		
@@ -26633,8 +26669,8 @@ JSBool S_CCSet::jscontainsObject(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSet* self = NULL; JSGET_PTRSHELL(S_CCSet, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCObject* narg0; JSGET_PTRSHELL(CCObject, narg0, arg0);
 		bool ret = self->containsObject(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -26792,9 +26828,9 @@ JSBool S_CCTouch::jsSetTouchInfo(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCTouch* self = NULL; JSGET_PTRSHELL(S_CCTouch, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		self->SetTouchInfo(arg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -26921,9 +26957,9 @@ JSBool S_CCTransitionSlideInT::jsaction(JSContext *cx, uint32_t argc, jsval *vp)
 }
 JSBool S_CCTransitionSlideInT::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionSlideInT* ret = CCTransitionSlideInT::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -27065,8 +27101,56 @@ JSBool S_CCSprite::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool 
 	case kFlipY:
 		do { JSBool tmp; JS_ValueToBoolean(cx, *val, &tmp); cobj->setFlipY(tmp); } while (0);
 		break;
+	case kUsesSpriteBatchNode:
+		
+		break;
 	case kHonorParentTransform:
 				// don't know what this is (js ~> c)
+		break;
+	case kDirtyRecursively:
+		
+		break;
+	case kPosition:
+		
+		break;
+	case kPositionInPixels:
+		
+		break;
+	case kRotation:
+		
+		break;
+	case kSkewX:
+		
+		break;
+	case kSkewY:
+		
+		break;
+	case kScaleX:
+		
+		break;
+	case kScaleY:
+		
+		break;
+	case kScale:
+		
+		break;
+	case kVertexZ:
+		
+		break;
+	case kAnchorPoint:
+		
+		break;
+	case kIsRelativeAnchorPoint:
+		
+		break;
+	case kIsVisible:
+		
+		break;
+	case kIsOpacityModifyRGB:
+		
+		break;
+	case kDisplayFrame:
+		
 		break;
 	default:
 		break;
@@ -27110,8 +27194,23 @@ void S_CCSprite::jsCreateClass(JSContext *cx, JSObject *globalObj, const char *n
 			{"opacityModifyRGB", kOpacityModifyRGB, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"flipX", kFlipX, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"flipY", kFlipY, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"usesSpriteBatchNode", kUsesSpriteBatchNode, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"honorParentTransform", kHonorParentTransform, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"dirtyRecursively", kDirtyRecursively, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"position", kPosition, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"positionInPixels", kPositionInPixels, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"rotation", kRotation, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"skewX", kSkewX, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"skewY", kSkewY, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"scaleX", kScaleX, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"scaleY", kScaleY, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"scale", kScale, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"vertexZ", kVertexZ, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"anchorPoint", kAnchorPoint, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"isRelativeAnchorPoint", kIsRelativeAnchorPoint, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"isVisible", kIsVisible, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{"isOpacityModifyRGB", kIsOpacityModifyRGB, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
+			{"displayFrame", kDisplayFrame, JSPROP_PERMANENT | JSPROP_SHARED, S_CCSprite::jsPropertyGet, S_CCSprite::jsPropertySet},
 			{0, 0, 0, 0, 0}
 		};
 
@@ -27207,8 +27306,8 @@ JSBool S_CCSprite::jsisUsesBatchNode(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSprite::jsspriteWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		CCSprite* ret = CCSprite::spriteWithTexture(narg0);
 		if (ret == NULL) {
@@ -27231,8 +27330,8 @@ JSBool S_CCSprite::jsspriteWithTexture(JSContext *cx, uint32_t argc, jsval *vp) 
 }
 JSBool S_CCSprite::jsspriteWithSpriteFrame(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteFrame* narg0; JSGET_PTRSHELL(CCSpriteFrame, narg0, arg0);
 		CCSprite* ret = CCSprite::spriteWithSpriteFrame(narg0);
 		if (ret == NULL) {
@@ -27255,9 +27354,9 @@ JSBool S_CCSprite::jsspriteWithSpriteFrame(JSContext *cx, uint32_t argc, jsval *
 }
 JSBool S_CCSprite::jsspriteWithSpriteFrameName(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCSprite* ret = CCSprite::spriteWithSpriteFrameName(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -27279,9 +27378,9 @@ JSBool S_CCSprite::jsspriteWithSpriteFrameName(JSContext *cx, uint32_t argc, jsv
 }
 JSBool S_CCSprite::jsspriteWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCSprite* ret = CCSprite::spriteWithFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -27303,10 +27402,10 @@ JSBool S_CCSprite::jsspriteWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCSprite::jsspriteWithBatchNode(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteBatchNode* narg0; JSGET_PTRSHELL(CCSpriteBatchNode, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		CCSprite* ret = CCSprite::spriteWithBatchNode(narg0, *narg1);
 		if (ret == NULL) {
@@ -27345,10 +27444,10 @@ JSBool S_CCSprite::jsremoveChild(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ob", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		bool arg1 = argv[1].toBoolean();
 		self->removeChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -27362,8 +27461,8 @@ JSBool S_CCSprite::jsremoveAllChildrenWithCleanup(JSContext *cx, uint32_t argc, 
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->removeAllChildrenWithCleanup(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -27377,10 +27476,10 @@ JSBool S_CCSprite::jsreorderChild(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		self->reorderChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -27433,8 +27532,8 @@ JSBool S_CCSprite::jsinitWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		bool ret = self->initWithTexture(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27449,8 +27548,8 @@ JSBool S_CCSprite::jsinitWithSpriteFrame(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteFrame* narg0; JSGET_PTRSHELL(CCSpriteFrame, narg0, arg0);
 		bool ret = self->initWithSpriteFrame(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27465,9 +27564,9 @@ JSBool S_CCSprite::jsinitWithSpriteFrameName(JSContext *cx, uint32_t argc, jsval
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithSpriteFrameName(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -27481,9 +27580,9 @@ JSBool S_CCSprite::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		bool ret = self->initWithFile(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -27497,10 +27596,10 @@ JSBool S_CCSprite::jsinitWithBatchNode(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteBatchNode* narg0; JSGET_PTRSHELL(CCSpriteBatchNode, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = self->initWithBatchNode(narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27515,10 +27614,10 @@ JSBool S_CCSprite::jsinitWithBatchNodeRectInPixels(JSContext *cx, uint32_t argc,
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oo", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteBatchNode* narg0; JSGET_PTRSHELL(CCSpriteBatchNode, narg0, arg0);
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCRect* narg1; JSGET_PTRSHELL(CCRect, narg1, arg1);
 		bool ret = self->initWithBatchNodeRectInPixels(narg0, *narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27559,8 +27658,8 @@ JSBool S_CCSprite::jsuseBatchNode(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteBatchNode* narg0; JSGET_PTRSHELL(CCSpriteBatchNode, narg0, arg0);
 		self->useBatchNode(narg0);
 		
@@ -27575,8 +27674,8 @@ JSBool S_CCSprite::jsisFrameDisplayed(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCSprite* self = NULL; JSGET_PTRSHELL(S_CCSprite, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSpriteFrame* narg0; JSGET_PTRSHELL(CCSpriteFrame, narg0, arg0);
 		bool ret = self->isFrameDisplayed(narg0);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27761,9 +27860,9 @@ JSBool S_CCTransitionScene::jscleanup(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCTransitionScene::jstransitionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		CCTransitionScene* ret = CCTransitionScene::transitionWithDuration(arg0, narg1);
 		if (ret == NULL) {
@@ -27789,9 +27888,9 @@ JSBool S_CCTransitionScene::jsinitWithDuration(JSContext *cx, uint32_t argc, jsv
 	S_CCTransitionScene* self = NULL; JSGET_PTRSHELL(S_CCTransitionScene, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		CCScene* narg1; JSGET_PTRSHELL(CCScene, narg1, arg1);
 		bool ret = self->initWithDuration(arg0, narg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
@@ -27911,8 +28010,8 @@ JSBool S_CCScaleBy::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCScaleBy* self = NULL; JSGET_PTRSHELL(S_CCScaleBy, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -27948,9 +28047,9 @@ JSBool S_CCScaleBy::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCScaleBy::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCScaleBy* ret = CCScaleBy::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -28090,8 +28189,8 @@ void S_CCSpriteBatchNode::jsCreateClass(JSContext *cx, JSObject *globalObj, cons
 
 JSBool S_CCSpriteBatchNode::jsbatchNodeWithTexture(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
 		CCSpriteBatchNode* ret = CCSpriteBatchNode::batchNodeWithTexture(narg0);
 		if (ret == NULL) {
@@ -28114,9 +28213,9 @@ JSBool S_CCSpriteBatchNode::jsbatchNodeWithTexture(JSContext *cx, uint32_t argc,
 }
 JSBool S_CCSpriteBatchNode::jsbatchNodeWithFile(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 1) {
-		JSString *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "S", &arg0);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
 		CCSpriteBatchNode* ret = CCSpriteBatchNode::batchNodeWithFile(narg0);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -28141,10 +28240,10 @@ JSBool S_CCSpriteBatchNode::jsinitWithTexture(JSContext *cx, uint32_t argc, jsva
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCTexture2D* narg0; JSGET_PTRSHELL(CCTexture2D, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithTexture(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -28158,10 +28257,10 @@ JSBool S_CCSpriteBatchNode::jsinitWithFile(JSContext *cx, uint32_t argc, jsval *
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSString *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "Si", &arg0, &arg1);
-		char *narg0 = JS_EncodeString(cx, arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSString *arg0 = JSVAL_TO_STRING(argv[0]);
+		char * narg0 = JS_EncodeString(cx, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		bool ret = self->initWithFile(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -28188,9 +28287,9 @@ JSBool S_CCSpriteBatchNode::jsremoveChildAtIndex(JSContext *cx, uint32_t argc, j
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		unsigned int arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ib", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		unsigned int arg0 = (unsigned int)argv[0].toNumber();
+		bool arg1 = argv[1].toBoolean();
 		self->removeChildAtIndex(arg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28204,10 +28303,10 @@ JSBool S_CCSpriteBatchNode::jsinsertChild(JSContext *cx, uint32_t argc, jsval *v
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		self->insertChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28221,8 +28320,8 @@ JSBool S_CCSpriteBatchNode::jsremoveSpriteFromAtlas(JSContext *cx, uint32_t argc
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
 		self->removeSpriteFromAtlas(narg0);
 		
@@ -28237,10 +28336,10 @@ JSBool S_CCSpriteBatchNode::jsrebuildIndexInOrder(JSContext *cx, uint32_t argc, 
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		unsigned int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
+		unsigned int arg1 = (unsigned int)argv[1].toNumber();
 		unsigned int ret = self->rebuildIndexInOrder(narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -28254,8 +28353,8 @@ JSBool S_CCSpriteBatchNode::jshighestAtlasIndexInChild(JSContext *cx, uint32_t a
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
 		unsigned int ret = self->highestAtlasIndexInChild(narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -28270,8 +28369,8 @@ JSBool S_CCSpriteBatchNode::jslowestAtlasIndexInChild(JSContext *cx, uint32_t ar
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
 		unsigned int ret = self->lowestAtlasIndexInChild(narg0);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
@@ -28286,10 +28385,10 @@ JSBool S_CCSpriteBatchNode::jsatlasIndexForChild(JSContext *cx, uint32_t argc, j
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCSprite* narg0; JSGET_PTRSHELL(CCSprite, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		unsigned int ret = self->atlasIndexForChild(narg0, arg1);
 		do { jsval tmp; JS_NewNumberValue(cx, ret, &tmp); JS_SET_RVAL(cx, vp, tmp); } while (0);
 		
@@ -28316,10 +28415,10 @@ JSBool S_CCSpriteBatchNode::jsreorderChild(JSContext *cx, uint32_t argc, jsval *
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		int arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "oi", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		int arg1 = (int)argv[1].toNumber();
 		self->reorderChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28333,10 +28432,10 @@ JSBool S_CCSpriteBatchNode::jsremoveChild(JSContext *cx, uint32_t argc, jsval *v
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		JSBool arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "ob", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
+		bool arg1 = argv[1].toBoolean();
 		self->removeChild(narg0, arg1);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28350,8 +28449,8 @@ JSBool S_CCSpriteBatchNode::jsremoveAllChildrenWithCleanup(JSContext *cx, uint32
 	S_CCSpriteBatchNode* self = NULL; JSGET_PTRSHELL(S_CCSpriteBatchNode, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSBool arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "b", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		bool arg0 = argv[0].toBoolean();
 		self->removeAllChildrenWithCleanup(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28472,8 +28571,8 @@ JSBool S_CCGridAction::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp
 	S_CCGridAction* self = NULL; JSGET_PTRSHELL(S_CCGridAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -28512,10 +28611,10 @@ JSBool S_CCGridAction::jsinitWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCGridAction* self = NULL; JSGET_PTRSHELL(S_CCGridAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithSize(*narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -28526,10 +28625,10 @@ JSBool S_CCGridAction::jsinitWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCGridAction::jsactionWithSize(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCGridAction* ret = CCGridAction::actionWithSize(*narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -28641,9 +28740,9 @@ JSBool S_CCScaleTo::jsinitWithDuration(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCScaleTo* self = NULL; JSGET_PTRSHELL(S_CCScaleTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithDuration(arg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -28657,8 +28756,8 @@ JSBool S_CCScaleTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCScaleTo* self = NULL; JSGET_PTRSHELL(S_CCScaleTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -28673,8 +28772,8 @@ JSBool S_CCScaleTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCScaleTo* self = NULL; JSGET_PTRSHELL(S_CCScaleTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		double arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "d", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
 		self->update(arg0);
 		
 		JS_SET_RVAL(cx, vp, JSVAL_TRUE);
@@ -28685,9 +28784,9 @@ JSBool S_CCScaleTo::jsupdate(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCScaleTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "dd", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		float arg1 = (float)argv[1].toNumber();
 		CCScaleTo* ret = CCScaleTo::actionWithDuration(arg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -28798,10 +28897,10 @@ JSBool S_CCEaseRateAction::jsinitWithAction(JSContext *cx, uint32_t argc, jsval 
 	S_CCEaseRateAction* self = NULL; JSGET_PTRSHELL(S_CCEaseRateAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		bool ret = self->initWithAction(narg0, arg1);
 		JS_SET_RVAL(cx, vp, BOOLEAN_TO_JSVAL(ret));
 		
@@ -28836,10 +28935,10 @@ JSBool S_CCEaseRateAction::jsreverse(JSContext *cx, uint32_t argc, jsval *vp) {
 }
 JSBool S_CCEaseRateAction::jsactionWithAction(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		JSObject *arg0;
-		double arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "od", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCActionInterval* narg0; JSGET_PTRSHELL(CCActionInterval, narg0, arg0);
+		float arg1 = (float)argv[1].toNumber();
 		CCEaseRateAction* ret = CCEaseRateAction::actionWithAction(narg0, arg1);
 		if (ret == NULL) {
 			JS_SET_RVAL(cx, vp, JSVAL_NULL);
@@ -28943,8 +29042,8 @@ JSBool S_CCGrid3DAction::jsvertex(JSContext *cx, uint32_t argc, jsval *vp) {
 	S_CCGrid3DAction* self = NULL; JSGET_PTRSHELL(S_CCGrid3DAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		//INVALID RETURN TYPE _4E0
 		return JS_TRUE;
@@ -28957,8 +29056,8 @@ JSBool S_CCGrid3DAction::jsoriginalVertex(JSContext *cx, uint32_t argc, jsval *v
 	S_CCGrid3DAction* self = NULL; JSGET_PTRSHELL(S_CCGrid3DAction, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		ccGridSize* narg0; JSGET_PTRSHELL(ccGridSize, narg0, arg0);
 		//INVALID RETURN TYPE _4E0
 		return JS_TRUE;
@@ -29049,8 +29148,8 @@ JSBool S_CCBezierTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 	S_CCBezierTo* self = NULL; JSGET_PTRSHELL(S_CCBezierTo, self, obj);
 	if (self == NULL) return JS_FALSE;
 	if (argc == 1) {
-		JSObject *arg0;
-		JS_ConvertArguments(cx, 1, JS_ARGV(cx, vp), "o", &arg0);
+		jsval *argv = JS_ARGV(cx, vp);
+		JSObject *arg0 = JSVAL_TO_OBJECT(argv[0]);
 		CCNode* narg0; JSGET_PTRSHELL(CCNode, narg0, arg0);
 		self->startWithTarget(narg0);
 		
@@ -29062,9 +29161,9 @@ JSBool S_CCBezierTo::jsstartWithTarget(JSContext *cx, uint32_t argc, jsval *vp) 
 }
 JSBool S_CCBezierTo::jsactionWithDuration(JSContext *cx, uint32_t argc, jsval *vp) {
 	if (argc == 2) {
-		double arg0;
-		JSObject *arg1;
-		JS_ConvertArguments(cx, 2, JS_ARGV(cx, vp), "do", &arg0, &arg1);
+		jsval *argv = JS_ARGV(cx, vp);
+		float arg0 = (float)argv[0].toNumber();
+		JSObject *arg1 = JSVAL_TO_OBJECT(argv[1]);
 		ccBezierConfig* narg1; JSGET_PTRSHELL(ccBezierConfig, narg1, arg1);
 		CCBezierTo* ret = CCBezierTo::actionWithDuration(arg0, *narg1);
 		if (ret == NULL) {

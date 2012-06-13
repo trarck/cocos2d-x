@@ -81,17 +81,18 @@ class CppMethod
     call_params = []
     convert_params = []
     self_str = @static ? "#{@klass.name}::" : "self->"
-    str << "#{indent}\tjsval *argv = JS_ARGV(cx, vp);\n"
+    str << "#{indent}\tjsval *argv = JS_ARGV(cx, vp);\n" if @arguments.size > 0
+    # debugger if @name == "transitionWithDuration" && @klass.name == "CCTransitionZoomFlipAngular"
     @arguments.each_with_index do |arg, i|
       type = {}
       @klass.generator.arg_format(arg, type)
       # fundamental type
       if type[:fundamental] && !type[:pointer]
-        # fix for JS_ConvertArguments (it only accepts doubles and JSBool for booleans)
-        if type[:name].match(/long|int|short|double/)
-          str << "#{indent}\t#{type[:name]} arg#{i} = argv[#{i}].toNumber();\n"
-        elsif type[:name].match(/bool|BOOL/)
+        if type[:name].match(/bool|BOOL/)
           str << "#{indent}\t#{type[:name]} arg#{i} = argv[#{i}].toBoolean();\n"
+        else
+          # everything else is treated as number
+          str << "#{indent}\t#{type[:name]} arg#{i} = (#{type[:name]})argv[#{i}].toNumber();\n"
         end
 
         # type[:name] = "double" if type[:name] == "float"
@@ -158,7 +159,7 @@ class CppMethod
       unless type[:fundamental] && type[:name] == "void"
         ret = type[:name]
         ref = type[:pointer].nil? && type[:fundamental].nil?
-        ret += "#{!type[:pointer] ? "" : "*"} ret = "
+        ret += "#{type[:pointer] || ref ? "*" : ""} ret = "
       else
         void_ret = "JS_SET_RVAL(cx, vp, JSVAL_TRUE);"
       end
@@ -218,6 +219,8 @@ class CppClass
       next if field['name'].match(/camera/i)
       # disable spritebatch for CCSprite for now
       next if field['name'] == "spriteBatchNode" && @name == "CCSprite"
+      # disable setString for CCLabelTTF
+      next if field['name'] == "m_pString" && @name == "CCLabelTTF"
 
       # puts field if @name == "CCPoint"
       md = field['name'].match(/m_(\w+)/)
@@ -323,6 +326,10 @@ class CppClass
         next if method['name'] == "run"
         next if method['name'] == "initInstance"
       end
+      if @name == "CCAnimation"
+        next if method['name'] == "initWithFrames"
+        next if method['name'] == "animationWithFrames"
+      end
       next if method['name'] == "getXMLFilePath" && @name == "CCUserDefault"
 
       # mark as singleton (produce no constructor code)
@@ -341,10 +348,15 @@ class CppClass
           @properties[field_name] = {:type => method['type'],
                                      :getter => CppMethod.new(method, self, bindings_generator),
                                      :requires_accessor => true}
+        elsif action == "set" && !(field_name.match(/texture|camera/i)) && method['num_args'] == "1"
+          # add "fake" property
+          @properties[field_name] = {:type => method['type'],
+                                     :setter => CppMethod.new(method, self, bindings_generator),
+                                     :requires_accessor => true}
         elsif (@name == "CCApplication" || @name == "CCUserDefault") ||
               (action == "set" && @name == "CCTexture2D" && field_name.match(/alias/i)) ||
               (action == "get" && @name == "CCNode" && field_name == "childByTag")
-          # special case for CCTexture2D
+          # special case for some classes
           m = CppMethod.new(method, self, bindings_generator)
           @methods[m.name] ||= []
           @methods[m.name] << m
@@ -469,6 +481,7 @@ class CppClass
       next if @name == "CCMenuItemLabel" && name == "initWithLabel"
       next if @name == "CCApplication" && name == "getCurrentLanguage"
       next if @name == "CCUserDefault" && (name == "getStringForKey" || name == "setStringForKey")
+      # next if @name == "CCLabelTTF" && name == "setString"
 
       # event
       if name =~ /^(on|ccTouch)/
@@ -637,6 +650,7 @@ class CppClass
   end
 
   def generate_setter
+    # debugger if @name == "CCLabelTTF"
     str =  ""
     str << "JSBool S_#{@name}::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)\n"
     str << "{\n"
@@ -678,6 +692,18 @@ class CppClass
         str << "\t\t} while (0);\n"
         str << "\t\tbreak;\n"
       else
+        if @name.match(/^CCLabel/) && prop == "string"
+          str << "\tcase k#{prop.capitalize}:\n"
+          str << "\t\tdo { cobj->setString(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);\n"
+          str << "\t\tbreak;\n"
+          next
+        end
+        if @name == "CCTMXLayer" && prop == "layerName"
+          str << "\tcase k#{prop.capitalize}:\n"
+          str << "\t\tdo { cobj->setLayerName(JS_EncodeString(cx, JSVAL_TO_STRING(*val))); } while (0);\n"
+          str << "\t\tbreak;\n"
+          next
+        end
         convert_code = convert_value_from_js(val, "val", prop, 2)
         next if convert_code.nil?
         str << "\tcase k#{prop.capitalize}:\n"

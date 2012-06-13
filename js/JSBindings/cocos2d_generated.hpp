@@ -299,7 +299,9 @@ public:
 		kIsOpacityModifyRGB,
 		kString,
 		kConfiguration,
-		kOpacity
+		kOpacity,
+		kCString,
+		kAnchorPoint
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -509,6 +511,7 @@ public:
 		kDisabledImage,
 		kColor,
 		kOpacity,
+		kIsEnabled,
 		kIsOpacityModifyRGB
 	};
 
@@ -762,6 +765,7 @@ public:
 		kCOpacity,
 		kColor,
 		kBlendFunc,
+		kContentSize,
 		kOpacity,
 		kIsOpacityModifyRGB
 	};
@@ -801,7 +805,8 @@ public:
 		kHasPremultipliedAlpha,
 		kPVRHaveAlphaPremultiplied,
 		kPixelFormat,
-		kContentSizeInPixels
+		kContentSizeInPixels,
+		kTexParameters
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -861,7 +866,8 @@ public:
 	enum {
 		kNameStr = 1,
 		kDelay,
-		kFrames
+		kFrames,
+		kName
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -869,13 +875,11 @@ public:
 	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
-	static JSBool jsinitWithFrames(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddFrame(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddFrameWithFileName(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsaddFrameWithTexture(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsinit(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsanimation(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jsanimationWithFrames(JSContext *cx, uint32_t argc, jsval *vp);
 
 };
 
@@ -2413,14 +2417,16 @@ public:
 	static JSClass *jsClass;
 	static JSObject *jsObject;
 
+	enum {
+		kAnimationInterval = 1,
+		kOrientation
+	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
 	static void jsFinalize(JSContext *cx, JSObject *obj);
 	static JSBool jsPropertyGet(JSContext *cx, JSObject *obj, jsid _id, jsval *val);
 	static JSBool jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val);
 	static void jsCreateClass(JSContext *cx, JSObject *globalObj, const char *name);
-	static JSBool jssetAnimationInterval(JSContext *cx, uint32_t argc, jsval *vp);
-	static JSBool jssetOrientation(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsstatusBarFrame(JSContext *cx, uint32_t argc, jsval *vp);
 	static JSBool jsgetCurrentLanguage(JSContext *cx, uint32_t argc, jsval *vp);
 
@@ -2689,7 +2695,8 @@ public:
 	enum {
 		kQuads = 1,
 		kIndices,
-		kQuadsID
+		kQuadsID,
+		kDisplayFrame
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -2793,6 +2800,8 @@ public:
 		kWinSize,
 		kDisplaySizeInPixels,
 		kZEye,
+		kAlphaBlending,
+		kDepthTest,
 		kDeviceOrientation
 	};
 
@@ -2925,7 +2934,13 @@ public:
 	S_CCParticleSystemPoint(JSObject *obj) : CCParticleSystemPoint(), m_jsobj(obj) {};
 	enum {
 		kVertices = 1,
-		kVerticesID
+		kVerticesID,
+		kStartSpin,
+		kStartSpinVar,
+		kEndSpin,
+		kEndSpinVar,
+		kStartSize,
+		kEndSize
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -2986,7 +3001,8 @@ public:
 		kLeftBoundary,
 		kRightBoundary,
 		kTopBoundary,
-		kBottomBoundary
+		kBottomBoundary,
+		kBoudarySet
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);
@@ -3702,6 +3718,8 @@ public:
 		kLabel,
 		kColorBackup,
 		kOriginalScale,
+		kString,
+		kIsEnabled,
 		kOpacity,
 		kColor,
 		kIsOpacityModifyRGB
@@ -4045,8 +4063,23 @@ public:
 		kOpacityModifyRGB,
 		kFlipX,
 		kFlipY,
+		kUsesSpriteBatchNode,
 		kHonorParentTransform,
-		kIsOpacityModifyRGB
+		kDirtyRecursively,
+		kPosition,
+		kPositionInPixels,
+		kRotation,
+		kSkewX,
+		kSkewY,
+		kScaleX,
+		kScaleY,
+		kScale,
+		kVertexZ,
+		kAnchorPoint,
+		kIsRelativeAnchorPoint,
+		kIsVisible,
+		kIsOpacityModifyRGB,
+		kDisplayFrame
 	};
 
 	static JSBool jsConstructor(JSContext *cx, uint32_t argc, jsval *vp);

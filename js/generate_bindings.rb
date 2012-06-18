@@ -348,7 +348,7 @@ class CppClass
           @properties[field_name] = {:type => method['type'],
                                      :getter => CppMethod.new(method, self, bindings_generator),
                                      :requires_accessor => true}
-        elsif action == "set" && !(field_name.match(/texture|camera/i)) && method['num_args'] == "1"
+        elsif action == "set" && @name == "CCLabelTTF" && method['num_args'] == "1"
           # add "fake" property
           @properties[field_name] = {:type => method['type'],
                                      :setter => CppMethod.new(method, self, bindings_generator),
@@ -650,7 +650,6 @@ class CppClass
   end
 
   def generate_setter
-    # debugger if @name == "CCLabelTTF"
     str =  ""
     str << "JSBool S_#{@name}::jsPropertySet(JSContext *cx, JSObject *obj, jsid _id, JSBool strict, jsval *val)\n"
     str << "{\n"

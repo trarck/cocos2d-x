@@ -58,6 +58,7 @@ static CDBufferManager *bufferManager = nil;
         bufferManager = [[CDBufferManager alloc] initWithEngine:soundEngine];
         mute_ = NO;
         enabled_ = YES;
+        [am setResignBehavior:kAMRBDoNothing autoHandle:YES];
     }
     return self;
 }

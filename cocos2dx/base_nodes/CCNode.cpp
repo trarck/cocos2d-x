@@ -1212,6 +1212,12 @@ void CCNode::setAdditionalTransform(const CCAffineTransform& additionalTransform
     m_bAdditionalTransformDirty = true;
 }
 
+void CCNode::setTransform(const CCAffineTransform& transform)
+{
+    m_sTransform=transform;
+    m_bTransformDirty=false;
+}
+
 CCAffineTransform CCNode::parentToNodeTransform(void)
 {
     if ( m_bInverseDirty ) {

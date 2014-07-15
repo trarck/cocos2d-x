@@ -196,8 +196,6 @@ typedef enum {
 /** Call if you want to use built in resign behavior but need to do some additional audio processing on become active. */
 - (void) applicationDidBecomeActive;
 
-- (void) interruption:(NSNotification*)notification;
-
 //New AVAudioPlayer API
 /** Loads the data from the specified file path to the channel's audio source */
 -(CDLongAudioSource*) audioSourceLoad:(NSString*) filePath channel:(tAudioSourceChannel) channel;

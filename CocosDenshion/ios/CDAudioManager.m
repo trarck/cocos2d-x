@@ -403,18 +403,9 @@ static BOOL configured = FALSE;
 - (id) init: (tAudioManagerMode) mode {
     if ((self = [super init])) {
         
-        //Initialise the audio session
-        float osVersion = [[UIDevice currentDevice].systemVersion floatValue];
-        if (osVersion >=6.0)
-        {
-            [AVAudioSession sharedInstance];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(interruption:) name:AVAudioSessionInterruptionNotification object:nil];
-        }
-        else
-        {
-            AVAudioSession* session = [AVAudioSession sharedInstance];
-            session.delegate = self;
-        }
+        //Initialise the audio session 
+        AVAudioSession* session = [AVAudioSession sharedInstance];
+        session.delegate = self;
     
         _mode = mode;
         backgroundMusicCompletionSelector = nil;
@@ -630,7 +621,7 @@ static BOOL configured = FALSE;
     self->_resigned = YES;
     
     //Set the audio sesssion to one that allows sharing so that other audio won't be clobbered on resume
-//    [self audioSessionSetCategory:AVAudioSessionCategoryAmbient];
+    [self audioSessionSetCategory:AVAudioSessionCategoryAmbient];
     
     switch (_resignBehavior) {
             
@@ -698,16 +689,6 @@ static BOOL configured = FALSE;
                 break;
                 
         }
-        
-        //fix a bug.when background is playing,then enter resign active.when background disappear,enter active immediately.
-        //Then play effect,not hear effect sound.(actiual the effect can't be play,and the stat is not AL_PLAYING)
-        ALCcontext* alcContext=alcGetCurrentContext();
-        
-        if (alcContext!=NULL) {
-            [self audioSessionInterrupted];
-            [self audioSessionResumed];
-        }
-
         CDLOGINFO(@"Denshion::CDAudioManager - audio manager handled become active");
     }
 }
@@ -731,23 +712,7 @@ static BOOL configured = FALSE;
     if (backgroundMusicCompletionSelector != nil) {
         [backgroundMusicCompletionListener performSelector:backgroundMusicCompletionSelector];
     }    
-}
-
-- (void) interruption:(NSNotification*)notification
-{
-    NSDictionary *interuptionDict = notification.userInfo;
-    NSUInteger interuptionType = [[interuptionDict valueForKey:AVAudioSessionInterruptionTypeKey] intValue];
-    CDLOGINFO(@"Denshion::CDAudioManager - interruption type:%d",interuptionType);
-    if (interuptionType == AVAudioSessionInterruptionTypeBegan)
-        [self beginInterruption];
-#if __CC_PLATFORM_IOS >= 40000
-    else if (interuptionType == AVAudioSessionInterruptionTypeEnded)
-        [self endInterruptionWithFlags:(NSUInteger)[interuptionDict valueForKey:AVAudioSessionInterruptionOptionKey]];
-#else
-    else if (interuptionType == AVAudioSessionInterruptionTypeEnded)
-        [self endInterruption];
-#endif
-}
+}    
 
 -(void) beginInterruption {
     CDLOGINFO(@"Denshion::CDAudioManager - begin interruption");

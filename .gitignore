@@ -125,3 +125,6 @@ tags
 /tools/tolua++/tolua++.rar
 /v*-deps-*.zip
 /external/version.json
+
+projects
+CocosWidget

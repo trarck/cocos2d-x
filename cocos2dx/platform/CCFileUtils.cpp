@@ -515,7 +515,7 @@ unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* psz
     return pBuffer;
 }
 
-unsigned char* CCFileUtils::getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize)
+unsigned char* CCFileUtils::getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize,const char* password)
 {
     unsigned char * pBuffer = NULL;
     unzFile pFile = NULL;
@@ -536,8 +536,12 @@ unsigned char* CCFileUtils::getFileDataFromZip(const char* pszZipFilePath, const
         unz_file_info FileInfo;
         nRet = unzGetCurrentFileInfo(pFile, &FileInfo, szFilePathA, sizeof(szFilePathA), NULL, 0, NULL, 0);
         CC_BREAK_IF(UNZ_OK != nRet);
-
-        nRet = unzOpenCurrentFile(pFile);
+        
+        if(password){
+            nRet=unzOpenCurrentFilePassword(pFile, password);
+        }else{
+            nRet = unzOpenCurrentFile(pFile);
+        }
         CC_BREAK_IF(UNZ_OK != nRet);
 
         pBuffer = new unsigned char[FileInfo.uncompressed_size];
@@ -553,6 +557,51 @@ unsigned char* CCFileUtils::getFileDataFromZip(const char* pszZipFilePath, const
         unzClose(pFile);
     }
 
+    return pBuffer;
+}
+
+unsigned char* CCFileUtils::getFileDataFromZipData(const char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password)
+{
+    unsigned char * pBuffer = NULL;
+    
+    unzFile pFile = NULL;
+    *pSize = 0;
+    
+    do
+    {
+        CC_BREAK_IF(!zipData);
+        
+        pFile = unzOpenBuffer(zipData, dataSize);
+        CC_BREAK_IF(!pFile);
+        
+        int nRet = unzLocateFile(pFile, pszFileName, 1);
+        CC_BREAK_IF(UNZ_OK != nRet);
+        
+        char szFilePathA[260];
+        unz_file_info FileInfo;
+        nRet = unzGetCurrentFileInfo(pFile, &FileInfo, szFilePathA, sizeof(szFilePathA), NULL, 0, NULL, 0);
+        CC_BREAK_IF(UNZ_OK != nRet);
+        
+        if(password){
+            nRet=unzOpenCurrentFilePassword(pFile, password);
+        }else{
+            nRet = unzOpenCurrentFile(pFile);
+        }
+        CC_BREAK_IF(UNZ_OK != nRet);
+        
+        pBuffer = new unsigned char[FileInfo.uncompressed_size];
+        int CC_UNUSED nSize = unzReadCurrentFile(pFile, pBuffer, FileInfo.uncompressed_size);
+        CCAssert(nSize == 0 || nSize == (int)FileInfo.uncompressed_size, "the file size is wrong");
+        
+        *pSize = FileInfo.uncompressed_size;
+        unzCloseCurrentFile(pFile);
+    } while (0);
+    
+    if (pFile)
+    {
+        unzClose(pFile);
+    }
+    
     return pBuffer;
 }
 
@@ -818,6 +867,81 @@ void CCFileUtils::setPopupNotify(bool bNotify)
 bool CCFileUtils::isPopupNotify()
 {
     return s_bPopupNotify;
+}
+
+static int primes[] = {
+	0x2717,0x2719,0x2735,0x2737,0x274D,0x2753,0x2755,0
+};
+
+unsigned char* CCFileUtils::getEncryptedFileData(const char* pszFileName,unsigned long * pSize)
+{
+    unsigned long fileSize=0;
+    
+    unsigned char* encryptData=getFileData(pszFileName, "rb", &fileSize);
+    
+    unsigned char* decryptData=NULL;
+    
+    unsigned char* outData=NULL;
+    
+    //get base filename
+    std::string filename=pszFileName;
+    size_t pos=filename.find_last_not_of("/\\");
+    
+    if (pos!=std::string::npos) {
+        
+        //decrypt data
+        std::string basename=filename.substr(pos);
+        
+        decryptData= new unsigned char[fileSize];
+        
+        int prime=0;
+        for (int i=0; i<=6; ++i) {
+            if (fileSize % primes[i]) {
+                prime=primes[i];
+                break;
+            }
+        }
+        
+        unsigned long long n=0;
+        
+        unsigned int m;
+        
+        int j=0;
+        
+        const unsigned char* pBasename=(const unsigned char*)basename.c_str();
+        
+        int basefileNameLength=basename.length();
+        
+        for (int i=0; i<fileSize; ++i) {
+            
+            n=i*prime;
+            
+            m= n % fileSize;
+            
+            decryptData[m]=encryptData[i] ^ pBasename[j];
+            
+            j=(j+1) % basefileNameLength;
+        }
+        
+        //get data from password zip
+        size_t extPos=basename.find_last_of(".");
+        
+        std::string basenameWithoutExt=basename.substr(0,extPos);
+        
+        std::string password="cocos2d: ERROR: Invalid filename "+basenameWithoutExt;
+        
+        outData=getFileDataFromZipData((const char*)decryptData, fileSize, "data", pSize,password.c_str());
+        
+        if (decryptData) {
+            delete [] decryptData;
+        }
+    }
+    
+    if (encryptData) {
+        delete [] encryptData;
+    }
+    
+    return outData;
 }
 
 NS_CC_END

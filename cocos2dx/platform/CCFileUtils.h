@@ -107,8 +107,9 @@ public:
      *  @warning Recall: you are responsible for calling delete[] on any Non-NULL pointer returned.
      *  @js NA
      */
-    virtual unsigned char* getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize);
-
+    virtual unsigned char* getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize,const char* password=NULL);
+    
+    virtual unsigned char* getFileDataFromZipData(const char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password=NULL);
     
     /** Returns the fullpath for a given filename.
      
@@ -330,6 +331,8 @@ public:
     virtual void setPopupNotify(bool bNotify);
     virtual bool isPopupNotify();
 
+    virtual unsigned char* getEncryptedFileData(const char* pszFileName,unsigned long * pSize);
+    
 protected:
     /**
      *  The default constructor.

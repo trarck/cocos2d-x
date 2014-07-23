@@ -60,6 +60,11 @@ void CCLuaEngine::addSearchPath(const char* path)
     m_stack->addSearchPath(path);
 }
 
+void CCLuaEngine::clearSearchPath()
+{
+    m_stack->clearSearchPath();
+}
+
 void CCLuaEngine::addLuaLoader(lua_CFunction func)
 {
     m_stack->addLuaLoader(func);
@@ -454,6 +459,53 @@ bool CCLuaEngine::parseConfig(CCScriptEngineProtocol::ConfigType type, const std
     m_stack->pushString(str.c_str());
     
     return m_stack->executeFunction(2);
+}
+
+void CCLuaEngine::reset()
+{
+    if (m_stack) {
+        m_stack->release();
+    }
+    
+    
+    m_stack = CCLuaStack::create();
+    m_stack->retain();
+    
+    clearSearchPath();
+    
+    //TODO move to appliaction
+    //TODO use global storagePath
+    addSearchPath("patch/data");
+    
+   
+    std::string fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename("data/configloader.abc");
+
+    size_t pos=fullpath.find_last_of("\\/");
+    
+    std::string dataPath=fullpath.substr(0,pos);
+
+    addSearchPath(dataPath.c_str());
+    
+    require("configloader");
+    
+    lua_getglobal(m_stack,"base_version");
+    
+    const char* baseVerison=lua_tostring(m_stack, -1);
+    
+    CCUserDefault::sharedUserDefault()->setStringForKey("current-version", baseVerison);
+    CCUserDefault::sharedUserDefault()->flush();
+    
+}
+
+void CCLuaEngine::require(const char* filename)
+{
+    char buff[512];
+    
+    memset(buff, 0, 512);
+    
+    sprintf(buff, "require \"%s\"\n",filename);
+    
+    m_stack->executeString(buff);
 }
 
 NS_CC_END

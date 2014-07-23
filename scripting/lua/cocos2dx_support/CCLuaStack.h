@@ -58,6 +58,8 @@ public:
      */
     virtual void addSearchPath(const char* path);
     
+    virtual void clearSearchPath();
+    
     /**
      @brief Add lua loader, now it is used on android
      */

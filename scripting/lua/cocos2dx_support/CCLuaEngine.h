@@ -69,6 +69,8 @@ public:
      */
     virtual void addSearchPath(const char* path);
     
+    virtual void clearSearchPath();
+    
     /**
      @brief Add lua loader, now it is used on android
      */
@@ -130,6 +132,10 @@ public:
 
     virtual bool handleAssert(const char *msg);
     virtual bool parseConfig(CCScriptEngineProtocol::ConfigType type, const std::string& str);
+    
+    virtual void reset();
+    
+    virtual void require(const char* filename);
     
 private:
     CCLuaEngine(void)

@@ -147,6 +147,14 @@ void CCLuaStack::addSearchPath(const char* path)
     lua_pop(m_state, 2);                                                /* L: - */
 }
 
+void CCLuaStack::clearSearchPath()
+{
+    lua_getglobal(m_state, "package");      /* L: package */
+    lua_pushstring(m_state, "");            /* L: package "" */
+    lua_setfield(m_state, -2, "path");      /* package.path = "", L: package */
+    lua_pop(m_state, 1);
+}
+
 void CCLuaStack::addLuaLoader(lua_CFunction func)
 {
     if (!func) return;

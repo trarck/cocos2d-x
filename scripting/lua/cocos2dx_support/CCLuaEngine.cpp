@@ -475,25 +475,25 @@ void CCLuaEngine::reset()
     
     //TODO move to appliaction
     //TODO use global storagePath
-    addSearchPath("patch/data");
-    
-   
-    std::string fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename("data/configloader.abc");
-
-    size_t pos=fullpath.find_last_of("\\/");
-    
-    std::string dataPath=fullpath.substr(0,pos);
-
-    addSearchPath(dataPath.c_str());
-    
-    require("configloader");
-    
-    lua_getglobal(m_stack,"base_version");
-    
-    const char* baseVerison=lua_tostring(m_stack, -1);
-    
-    CCUserDefault::sharedUserDefault()->setStringForKey("current-version", baseVerison);
-    CCUserDefault::sharedUserDefault()->flush();
+//    addSearchPath("patch/data");
+//    
+//   
+//    std::string fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename("data/configloader.abc");
+//
+//    size_t pos=fullpath.find_last_of("\\/");
+//    
+//    std::string dataPath=fullpath.substr(0,pos);
+//
+//    addSearchPath(dataPath.c_str());
+//    
+//    require("configloader");
+//    
+//    lua_getglobal(m_stack,"base_version");
+//    
+//    const char* baseVerison=lua_tostring(m_stack, -1);
+//    
+//    CCUserDefault::sharedUserDefault()->setStringForKey("current-version", baseVerison);
+//    CCUserDefault::sharedUserDefault()->flush();
     
 }
 

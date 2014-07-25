@@ -1,6 +1,6 @@
 /*
 ** Lua binding: Cocos2d
-** Generated automatically by tolua++-1.0.92 on Fri Jan 17 14:29:43 2014.
+** Generated automatically by tolua++-1.0.92 on Fri Jul 25 18:29:59 2014.
 */
 
 /****************************************************************************
@@ -16919,6 +16919,71 @@ static int tolua_Cocos2d_CCNode_getComponent00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: setMessageRect of class  CCNode */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCNode_setMessageRect00
+static int tolua_Cocos2d_CCNode_setMessageRect00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCNode",0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"const CCRect",0,&tolua_err)) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCNode* self = (CCNode*)  tolua_tousertype(tolua_S,1,0);
+  const CCRect* messageRect = ((const CCRect*)  tolua_tousertype(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'setMessageRect'", NULL);
+#endif
+  {
+   self->setMessageRect(*messageRect);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'setMessageRect'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: getMessageRect of class  CCNode */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCNode_getMessageRect00
+static int tolua_Cocos2d_CCNode_getMessageRect00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCNode",0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,2,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCNode* self = (CCNode*)  tolua_tousertype(tolua_S,1,0);
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'getMessageRect'", NULL);
+#endif
+  {
+   const CCRect& tolua_ret = (const CCRect&)  self->getMessageRect();
+    tolua_pushusertype(tolua_S,(void*)&tolua_ret,"const CCRect");
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'getMessageRect'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: new of class  CCNodeRGBA */
 #ifndef TOLUA_DISABLE_tolua_Cocos2d_CCNodeRGBA_new00
 static int tolua_Cocos2d_CCNodeRGBA_new00(lua_State* tolua_S)
@@ -19208,7 +19273,8 @@ static int tolua_Cocos2d_CCTextureCache_addImage00(lua_State* tolua_S)
  if (
      !tolua_isusertype(tolua_S,1,"CCTextureCache",0,&tolua_err) ||
      !tolua_isstring(tolua_S,2,0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,3,&tolua_err)
+     !tolua_isnumber(tolua_S,3,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
  )
   goto tolua_lerror;
  else
@@ -19216,11 +19282,12 @@ static int tolua_Cocos2d_CCTextureCache_addImage00(lua_State* tolua_S)
  {
   CCTextureCache* self = (CCTextureCache*)  tolua_tousertype(tolua_S,1,0);
   const char* fileimage = ((const char*)  tolua_tostring(tolua_S,2,0));
+  CCTexture2DPixelFormat pixelFormat = ((CCTexture2DPixelFormat) (int)  tolua_tonumber(tolua_S,3,kCCTexture2DPixelFormat_Default));
 #ifndef TOLUA_RELEASE
   if (!self) tolua_error(tolua_S,"invalid 'self' in function 'addImage'", NULL);
 #endif
   {
-   CCTexture2D* tolua_ret = (CCTexture2D*)  self->addImage(fileimage);
+   CCTexture2D* tolua_ret = (CCTexture2D*)  self->addImage(fileimage,pixelFormat);
     int nID = (tolua_ret) ? (int)tolua_ret->m_uID : -1;
     int* pLuaID = (tolua_ret) ? &tolua_ret->m_nLuaID : NULL;
     toluafix_pushusertype_ccobject(tolua_S, nID, pLuaID, (void*)tolua_ret,"CCTexture2D");
@@ -67385,6 +67452,11 @@ TOLUA_API int tolua_Cocos2d_open (lua_State* tolua_S)
   tolua_constant(tolua_S,"kTargetIphone",kTargetIphone);
   tolua_constant(tolua_S,"kTargetIpad",kTargetIpad);
   tolua_constant(tolua_S,"kTargetBlackBerry",kTargetBlackBerry);
+  tolua_constant(tolua_S,"kTargetNaCl",kTargetNaCl);
+  tolua_constant(tolua_S,"kTargetEmscripten",kTargetEmscripten);
+  tolua_constant(tolua_S,"kTargetTizen",kTargetTizen);
+  tolua_constant(tolua_S,"kTargetWinRT",kTargetWinRT);
+  tolua_constant(tolua_S,"kTargetWP8",kTargetWP8);
   #ifdef __cplusplus
   tolua_cclass(tolua_S,"CCApplication","CCApplication","",tolua_collect_CCApplication);
   #else
@@ -67619,6 +67691,8 @@ TOLUA_API int tolua_Cocos2d_open (lua_State* tolua_S)
    tolua_function(tolua_S,"create",tolua_Cocos2d_CCNode_create00);
    tolua_function(tolua_S,"setZOrder",tolua_Cocos2d_CCNode_setZOrder00);
    tolua_function(tolua_S,"getComponent",tolua_Cocos2d_CCNode_getComponent00);
+   tolua_function(tolua_S,"setMessageRect",tolua_Cocos2d_CCNode_setMessageRect00);
+   tolua_function(tolua_S,"getMessageRect",tolua_Cocos2d_CCNode_getMessageRect00);
   tolua_endmodule(tolua_S);
   #ifdef __cplusplus
   tolua_cclass(tolua_S,"CCNodeRGBA","CCNodeRGBA","CCNode",tolua_collect_CCNodeRGBA);

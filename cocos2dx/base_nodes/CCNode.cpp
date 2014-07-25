@@ -90,6 +90,7 @@ CCNode::CCNode(void)
 , m_nScriptHandler(0)
 , m_nUpdateScriptHandler(0)
 , m_pComponentContainer(NULL)
+,m_messageRect(CCRectZero)
 {
     // set default scheduler and actionManager
     CCDirector *director = CCDirector::sharedDirector();
@@ -1328,6 +1329,16 @@ bool CCNode::removeComponent(CCComponent *pComponent)
 void CCNode::removeAllComponents()
 {
     m_pComponentContainer->removeAll();
+}
+
+void CCNode::setMessageRect(const CCRect& messageRect)
+{
+    m_messageRect = messageRect;
+}
+
+const CCRect& CCNode::getMessageRect()
+{
+    return m_messageRect;
 }
 
 // CCNodeRGBA

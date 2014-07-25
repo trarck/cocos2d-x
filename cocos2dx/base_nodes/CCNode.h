@@ -1383,6 +1383,10 @@ public:
      */
     virtual void removeAllComponents();
     /// @} end of component functions
+    
+    virtual void setMessageRect(const CCRect& messageRect);
+    
+    virtual const CCRect& getMessageRect();
 
 private:
     /// lazy allocs
@@ -1466,6 +1470,7 @@ protected:
     
     CCComponentContainer *m_pComponentContainer;        ///< Dictionary of components
 
+    CCRect m_messageRect;
 };
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)

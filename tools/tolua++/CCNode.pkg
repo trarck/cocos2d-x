@@ -119,6 +119,9 @@ class CCNode : public CCObject
     static CCNode * create(void);
     virtual void setZOrder(int zOrder);
     CCComponent* getComponent(const char *pName);
+	
+    void setMessageRect(const CCRect& messageRect);
+    const CCRect& getMessageRect();
 };
 
 class CCNodeRGBA : public CCNode, public CCRGBAProtocol

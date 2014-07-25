@@ -1,7 +1,7 @@
 
 class CCTextureCache : public CCObject
 {
-    CCTexture2D* addImage(const char* fileimage);
+    CCTexture2D* addImage(const char* fileimage,CCTexture2DPixelFormat pixelFormat=kCCTexture2DPixelFormat_Default);
     CCTexture2D* addUIImage(CCImage *image, const char *key);
     CCTexture2D* textureForKey(const char* key);
 

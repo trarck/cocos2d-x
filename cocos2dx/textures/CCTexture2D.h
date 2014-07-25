@@ -159,6 +159,8 @@ public:
 
     bool initWithImage(CCImage * uiImage);
 
+    bool initWithImage(CCImage * uiImage,CCTexture2DPixelFormat pixelFormat,CCImage* alphaImage);
+    
     /** Initializes a texture from a string with dimensions, alignment, font name and font size */
     bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment);
     /** Initializes a texture from a string with font name and font size */
@@ -269,6 +271,8 @@ public:
     bool hasMipmaps();
 private:
     bool initPremultipliedATextureWithImage(CCImage * image, unsigned int pixelsWide, unsigned int pixelsHigh);
+    
+    bool initPremultipliedATextureWithImage(CCImage * image, unsigned int pixelsWide, unsigned int pixelsHigh,CCTexture2DPixelFormat pixelFormat,CCImage* alphaImage);
     
     // By default PVR images are treated as if they don't have the alpha channel premultiplied
     bool m_bPVRHaveAlphaPremultiplied;

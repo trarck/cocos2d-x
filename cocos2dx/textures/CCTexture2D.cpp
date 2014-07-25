@@ -433,6 +433,152 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
     return true;
 }
 
+
+bool CCTexture2D::initWithImage(CCImage * uiImage,CCTexture2DPixelFormat pixelFormat,CCImage* alphaImage)
+{
+    if (uiImage == NULL)
+    {
+        CCLOG("cocos2d: CCTexture2D. Can't create Texture. UIImage is nil");
+        return false;
+    }
+    
+    unsigned int imageWidth = uiImage->getWidth();
+    unsigned int imageHeight = uiImage->getHeight();
+    
+    CCConfiguration *conf = CCConfiguration::sharedConfiguration();
+    
+    unsigned maxTextureSize = conf->getMaxTextureSize();
+    if (imageWidth > maxTextureSize || imageHeight > maxTextureSize)
+    {
+        CCLOG("cocos2d: WARNING: Image (%u x %u) is bigger than the supported %u x %u", imageWidth, imageHeight, maxTextureSize, maxTextureSize);
+        return false;
+    }
+    
+    // always load premultiplied images
+    return initPremultipliedATextureWithImage(uiImage, imageWidth, imageHeight,pixelFormat,alphaImage);
+}
+
+bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned int width, unsigned int height,CCTexture2DPixelFormat pixelFormat,CCImage* alphaImage)
+{
+    
+    //no image
+    if (!alphaImage) {
+        CCTexture2DPixelFormat oldPixelFormat=g_defaultAlphaPixelFormat;
+        g_defaultAlphaPixelFormat=pixelFormat;
+        
+        
+        bool ret=initPremultipliedATextureWithImage(image, width, height);
+        
+        g_defaultAlphaPixelFormat=oldPixelFormat;
+        
+        return ret;
+    }
+    
+    
+    
+    unsigned char*            tempData = image->getData();
+    unsigned int*             inPixel32  = NULL;
+    unsigned char*            inPixel8 = NULL;
+    unsigned short*           outPixel16 = NULL;
+    unsigned int*             outPixel32 = NULL;
+//    unsigned int*             alphaPixel32  = NULL;
+    unsigned char*            alphaPixel8  = NULL;
+    
+    bool                      hasAlpha = image->hasAlpha();
+    CCSize                    imageSize = CCSizeMake((float)(image->getWidth()), (float)(image->getHeight()));
+//    size_t                    bpp = image->getBitsPerComponent();
+    
+    //becase alpha image ,so must use alpha pixelformat
+    if (pixelFormat!=kCCTexture2DPixelFormat_RGBA8888 || pixelFormat!=kCCTexture2DPixelFormat_RGBA4444 || pixelFormat!=kCCTexture2DPixelFormat_RGB5A1) {
+        pixelFormat=g_defaultAlphaPixelFormat;
+    }
+    
+    // Repack the pixel data into the right format
+    unsigned int length = width * height;
+    
+    if (pixelFormat == kCCTexture2DPixelFormat_RGBA8888)
+    {
+        if (hasAlpha)
+        {
+            // replace alpha use alpha image alpha
+            
+            inPixel8 = (unsigned char*)image->getData();;
+            alphaPixel8=(unsigned char*)alphaImage->getData();
+            
+            for(unsigned int i = 0; i < length; ++i, inPixel8+=4,alphaPixel8+=4)
+            {
+                //只取最前面。8位会被扩展成R G B A = x x x 255
+                *(inPixel8+3) = *alphaPixel8;
+            }
+            
+            tempData=image->getData();
+        }
+        else
+        {
+            // Convert "RRRRRRRRRGGGGGGGGBBBBBBBB" to "RRRRRGGGGGGBBBBBAAAA"
+            
+            tempData = new unsigned char[width * height * 4];
+            outPixel32 = (unsigned int*)tempData;
+            inPixel8 = (unsigned char*)image->getData();
+            alphaPixel8=(unsigned char*)alphaImage->getData();
+            
+            for(unsigned int i = 0; i < length; ++i,alphaPixel8+=3)
+            {
+                *outPixel32++ =
+                ((*inPixel8++ & 0xFF) << 24) |  // R
+                ((*inPixel8++ & 0xFF) << 16)  |  // G
+                ((*inPixel8++ & 0xFF) << 8)   |    // B
+                ((*alphaPixel8 & 0xFF));
+            }
+        }
+    }
+    else if (pixelFormat == kCCTexture2DPixelFormat_RGBA4444)
+    {
+        // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
+        
+        inPixel32 = (unsigned int*)image->getData();
+        tempData = new unsigned char[width * height * 2];
+        outPixel16 = (unsigned short*)tempData;
+        alphaPixel8=(unsigned char*)alphaImage->getData();
+        
+        for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
+        {
+            *outPixel16++ =
+            ((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | // R
+            ((((*inPixel32 >> 8) & 0xFF) >> 4) <<  8) | // G
+            ((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | // B
+            (((*alphaPixel8 & 0xFF) >> 4) << 0);  // A
+        }
+    }
+    else if (pixelFormat == kCCTexture2DPixelFormat_RGB5A1)
+    {
+        // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGBBBBBA"
+        inPixel32 = (unsigned int*)image->getData();
+        tempData = new unsigned char[width * height * 2];
+        outPixel16 = (unsigned short*)tempData;
+        alphaPixel8=(unsigned char*)alphaImage->getData();
+        
+        for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
+        {
+            *outPixel16++ =
+            ((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | // R
+            ((((*inPixel32 >> 8) & 0xFF) >> 3) <<  6) | // G
+            ((((*inPixel32 >> 16) & 0xFF) >> 3) << 1) | // B
+            ((((*alphaPixel8) & 0xFF) >> 7) << 0);  // A
+        }
+    }
+    
+    initWithData(tempData, pixelFormat, width, height, imageSize);
+    
+    if (tempData != image->getData())
+    {
+        delete [] tempData;
+    }
+    
+    m_bHasPremultipliedAlpha = image->isPremultipliedAlpha();
+    return true;
+}
+
 // implementation CCTexture2D (Text)
 bool CCTexture2D::initWithString(const char *text, const char *fontName, float fontSize)
 {

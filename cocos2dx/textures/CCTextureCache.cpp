@@ -391,12 +391,13 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
     }
 }
 
-CCTexture2D * CCTextureCache::addImage(const char * path)
+CCTexture2D * CCTextureCache::addImage(const char * path,CCTexture2DPixelFormat pixelFormat)
 {
     CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");
 
     CCTexture2D * texture = NULL;
     CCImage* pImage = NULL;
+    CCImage* pAlphaImage = NULL;
     // Split up directory and filename
     // MUTEX:
     // Needed since addImageAsync calls this method from a different thread
@@ -404,6 +405,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
     //pthread_mutex_lock(m_pDictLock);
 
     std::string pathKey = path;
+    
 
     pathKey = CCFileUtils::sharedFileUtils()->fullPathForFilename(pathKey.c_str());
     if (pathKey.size() == 0)
@@ -415,7 +417,52 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
     std::string fullpath = pathKey; // (CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path));
     if (! texture) 
     {
-        std::string lowerCase(pathKey);
+        std::string orignalPath=path;
+        std::string alphaMaskPath="";
+        std::string lookPathKey=pathKey;
+        
+        size_t pos=orignalPath.find(".png");
+        
+        if (pos!=std::string::npos){
+            //使用pvr.ccz代替png
+            if (!CCFileUtils::sharedFileUtils()->isFileExist(fullpath)) {
+                
+                fullpath=orignalPath.substr(0,pos);
+                fullpath+=".pvr.ccz";
+                
+                fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fullpath.c_str());
+                
+                if (CCFileUtils::sharedFileUtils()->isFileExist(fullpath)) {
+                    
+                    lookPathKey=orignalPath.substr(0,pos)+".pvr.ccz";
+                    
+                }else{
+                    //如果pvr也不存在，使用复合模式
+                    fullpath=orignalPath.substr(0,pos)+".jpg";
+                    fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fullpath.c_str());
+                    
+                    lookPathKey=orignalPath.substr(0,pos)+".jpg";
+                    
+                    //alpha mask file
+                    alphaMaskPath=orignalPath.substr(0,pos)+"_alpha_mask";
+                    alphaMaskPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(alphaMaskPath.c_str());
+                }
+            }
+        }
+        
+        if (!CCFileUtils::sharedFileUtils()->isFileExist(fullpath)) {
+            //如果是jpg不存在，使用pkm
+            pos=pathKey.find(".jpg");
+            if (pos!=std::string::npos) {
+                
+                fullpath=pathKey.substr(0,pos)+".pkm";
+                fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fullpath.c_str());
+                
+                lookPathKey=pathKey.substr(0,pos)+".pkm";
+            }
+        }
+        
+        std::string lowerCase(lookPathKey);
         for (unsigned int i = 0; i < lowerCase.length(); ++i)
         {
             lowerCase[i] = tolower(lowerCase[i]);
@@ -457,11 +504,16 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 
                 bool bRet = pImage->initWithImageFile(fullpath.c_str(), eImageFormat);
                 CC_BREAK_IF(!bRet);
+                
+                if (!alphaMaskPath.empty()) {
+                    pAlphaImage=new CCImage();
+                    pAlphaImage->initWithImageFile(alphaMaskPath.c_str(),CCImage::kFmtPng);
+                }
 
                 texture = new CCTexture2D();
                 
                 if( texture &&
-                    texture->initWithImage(pImage) )
+                    texture->initWithImage(pImage,pixelFormat,pAlphaImage) )
                 {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
                     // cache the texture file name
@@ -474,11 +526,14 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
                 {
                     CCLOG("cocos2d: Couldn't create texture for file:%s in CCTextureCache", path);
                 }
+                
             }
         } while (0);
     }
 
     CC_SAFE_RELEASE(pImage);
+    
+    CC_SAFE_RELEASE(pAlphaImage);
 
     //pthread_mutex_unlock(m_pDictLock);
     return texture;

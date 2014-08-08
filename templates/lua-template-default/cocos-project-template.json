@@ -68,6 +68,28 @@
             "files": [
                "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
             ]
+         },
+         "project_replace_cocos_search_path": {
+             "src_cocos_root":"../../cocos2d-x",
+			 "dst_cocos_deep":"../",
+             "unix_files":[
+				"frameworks/runtime-src/proj.android/project.properties",
+                "frameworks/runtime-src/proj.android/build-cfg.json",
+                "frameworks/runtime-src/proj.android/build_native.py",
+                "frameworks/runtime-src/proj.android/jni/Android.mk",
+                "frameworks/runtime-src/proj.ios_mac/PROJECT_NAME.xcodeproj/project.pbxproj"
+             ],
+             "win_files":[
+                "frameworks/runtime-src/proj.win32/PROJECT_NAME.vcxproj",
+                "frameworks/runtime-src/proj.win32/PROJECT_NAME.sln"
+             ]
+         },
+         "project_replace_cocos_search_path_cmake": {
+             "src_cocos_root":"/cocos2d-x",
+			 "dst_cocos_deep":"../",
+             "files":[
+                "frameworks/CMakeLists.txt"
+             ]
          }
     }
 }

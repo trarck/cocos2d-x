@@ -56,6 +56,29 @@
             "files": [
                "proj.ios_mac/ios/Info.plist"
             ]
+         },
+		 "project_replace_cocos_search_path": {
+             "src_cocos_root":"../cocos2d",
+             "unix_files":[
+				"proj.android/project.properties",
+                "proj.android/build-cfg.json",
+                "proj.android/build_native.py",
+                "proj.android/jni/Android.mk",
+                "proj.ios_mac/PROJECT_NAME.xcodeproj/project.pbxproj"
+             ],
+             "win_files":[
+                "proj.win32/PROJECT_NAME.vcxproj",
+                "proj.win32/PROJECT_NAME.sln",
+                "proj.wp8-xaml/PROJECT_NAME.sln",
+                "proj.wp8-xaml/AppComponent/PROJECT_NAMEComponent.vcxproj",
+                "proj.wp8-xaml/AppComponent/PROJECT_NAMEComponent.vcxproj.filters"
+             ]
+         },
+         "project_replace_cocos_search_path_cmake": {
+             "src_cocos_root":"/cocos2d",
+             "files":[
+                "CMakeLists.txt"
+             ]
          }
       }
 }

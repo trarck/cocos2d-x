@@ -2478,7 +2478,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../../external/lua/luajit/prebuilt/mac",
 					"/Users/duanhouhai/development/cocosprojects/cocos2d-x-3.0-lua/external/lua/lua/prebuilt/ios",
-					"/Users/duanhouhai/development/cocosprojects/cocos2d-x-3.0-lua/external/lua/luajit/prebuilt/mac",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../../platform/mac $(SRCROOT)/../../../../external/glfw3/include/mac";
@@ -2503,7 +2502,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../../external/lua/luajit/prebuilt/mac",
 					"/Users/duanhouhai/development/cocosprojects/cocos2d-x-3.0-lua/external/lua/lua/prebuilt/ios",
-					"/Users/duanhouhai/development/cocosprojects/cocos2d-x-3.0-lua/external/lua/luajit/prebuilt/mac",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../../platform/mac $(SRCROOT)/../../../../external/glfw3/include/mac";

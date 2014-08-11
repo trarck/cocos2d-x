@@ -187,9 +187,10 @@ static int show(lua_State* L)
         for (int i=0; i<dataSize; ++i) {
             printf("%02x",(unsigned char)data[i]);
         }
-    }else{
-        putchar(0xA);
     }
+
+    putchar(0xA);
+
     
     return 0;
 }

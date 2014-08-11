@@ -84,35 +84,33 @@ int lua_print(lua_State * luastate)
     int nargs = lua_gettop(luastate);
 
     std::string t;
+    char addrBuff[64]={0};
+    
     for (int i=1; i <= nargs; i++)
     {
-        if (lua_istable(luastate, i))
-            t += "table";
-        else if (lua_isnone(luastate, i))
-            t += "none";
-        else if (lua_isnil(luastate, i))
-            t += "nil";
-        else if (lua_isboolean(luastate, i))
-        {
-            if (lua_toboolean(luastate, i) != 0)
-                t += "true";
-            else
-                t += "false";
-        }
-        else if (lua_isfunction(luastate, i))
-            t += "function";
-        else if (lua_islightuserdata(luastate, i))
-            t += "lightuserdata";
-        else if (lua_isthread(luastate, i))
-            t += "thread";
-        else
-        {
-            const char * str = lua_tostring(luastate, i);
-            if (str)
+        switch (lua_type(luastate, i)) {
+            case LUA_TNUMBER:
+                t= lua_tostring(luastate, i);
+                break;
+            case LUA_TSTRING:
                 t += lua_tostring(luastate, i);
-            else
-                t += lua_typename(luastate, lua_type(luastate, i));
+                break;
+            case LUA_TBOOLEAN:
+                t += lua_toboolean(luastate, i) ? "true" : "false";
+                break;
+            case LUA_TNIL:
+                t+="nil";
+                break;
+            case LUA_TNONE:
+                t+="none";
+                break;
+            default:
+                sprintf(addrBuff, "%s: %p", luaL_typename(luastate, i), lua_topointer(luastate, i));
+                t+=addrBuff;
+                break;
         }
+
+        
         if (i!=nargs)
             t += "\t";
     }
@@ -156,7 +154,7 @@ bool LuaStack::init(void)
 
     // Register our version of the global "print" function
     const luaL_reg global_functions [] = {
-        {"print", lua_print},
+        {"cprint", lua_print},
         {NULL, NULL}
     };
     luaL_register(_state, "_G", global_functions);

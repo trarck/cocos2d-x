@@ -25,6 +25,13 @@ static luaL_Reg luax_exts[] = {
     {NULL, NULL}
 };
 
+static luaL_Reg luax_libs[] = {
+    {"bit", luaopen_bit},
+    {"struct", luaopen_struct},
+    {"crypto",luaopen_crypto},
+    {NULL, NULL}
+};
+
 static void register_package_preload(lua_State *L)
 {
     // load extensions
@@ -39,17 +46,21 @@ static void register_package_preload(lua_State *L)
     lua_pop(L, 2);
 }
     
-static void register_libs(lua_State *L)
+static int open_libs(lua_State *L)
 {
-    luaopen_bit(L);
-    luaopen_struct(L);
-    luaopen_crypto(L);
-//    luaopen_gzio(L);
+    const luaL_Reg *lib = luax_libs;
+    for (; lib->func; lib++) {
+        lua_pushcfunction(L, lib->func);
+        lua_pushstring(L, lib->name);
+        lua_call(L, 1, 0);
+    }
+    
+    return 0;
 }
     
 void luaopen_lua_extensions(lua_State *L)
 {
-    register_libs(L);
+    open_libs(L);
     
     // load extensions
     register_package_preload(L);

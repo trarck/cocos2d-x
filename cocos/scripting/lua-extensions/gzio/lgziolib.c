@@ -32,6 +32,7 @@
  * * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ******************************************************************************/
+#define LUA_USE_POPEN
 
 #include <errno.h>
 #include <stdio.h>
@@ -43,21 +44,18 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
-
 #define LUA_GZIOLIBNAME   "gzio"
 #define LUA_GZFILEHANDLE  "gzFile"
 
 #define IO_INPUT	1
 #define IO_OUTPUT	2
 
-#ifndef lua_popen
-
 /*
  @@ lua_popen spawns a new process connected to the current one through
  @* the file streams.
  ** CHANGE it if you have a way to implement it in your system.
  */
-#if defined(LUA_USE_POPEN)
+#ifndef lua_popen
 
 #define lua_popen(L,c,m)	((void)L, fflush(NULL), popen(c,m))
 #define lua_pclose(L,file)	((void)L, (pclose(file) != -1))
@@ -74,9 +72,6 @@ luaL_error(L, LUA_QL("popen") " not supported"), (FILE*)0)
 #define lua_pclose(L,file)		((void)((void)L, file), 0)
 
 #endif
-
-#endif
-
 
 static const char *const fnames[] = {"input", "output"};
 
@@ -426,7 +421,7 @@ static int g_read (lua_State *L, gzFile f, int first) {
     }
   }
   gzerror(f, &errnum);
-  if (Z_OK != errnum)
+  if (Z_OK != errnum && Z_STREAM_END != errnum)
     return pushresult(L, 0, NULL);
   if (!success) {
     lua_pop(L, 1);  /* remove last result */
@@ -587,50 +582,44 @@ static void createstdfile (lua_State *L, gzFile f, int k, const char *fname) {
   lua_setfield(L, -2, fname);
 }
 
-static int replace_wrapper(lua_State* L)
-{
-    /* create (private) environment (with fields IO_INPUT, IO_OUTPUT, __close) */
-    lua_createtable(L, 2, 1);
-    lua_replace(L, LUA_ENVIRONINDEX);
-    
-    /* open library */
-    luaL_register(L, LUA_GZIOLIBNAME, iolib);
-    
-    /* add module metadata */
-    lua_pushliteral (L, "_COPYRIGHT");
-    lua_pushliteral (L, "Copyright (C) 2007 Judge Maygarden");
-    lua_settable (L, -3);
-    lua_pushliteral (L, "_DESCRIPTION");
-    lua_pushliteral (L, "Lua gzip file I/O module");
-    lua_settable (L, -3);
-    lua_pushliteral (L, "_VERSION");
-    lua_pushliteral (L, "gzio 0.9.0");
-    lua_settable (L, -3);
-    
-    /* create (and set) default files */
-    createstdfile(L, stdin, IO_INPUT, "stdin");
-    createstdfile(L, stdout, IO_OUTPUT, "stdout");
-    createstdfile(L, stderr, 0, "stderr");
-    
-    /* create environment for 'popen' */
-    lua_getfield(L, -1, "popen");
-    lua_createtable(L, 0, 1);
-    lua_pushcfunction(L, io_pclose);
-    lua_setfield(L, -2, "__close");
-    lua_setfenv(L, -2);
-    lua_pop(L, 1);  /* pop 'popen' */
-    
-    /* set default close function */
-    lua_pushcfunction(L, io_fclose);
-    lua_setfield(L, LUA_ENVIRONINDEX, "__close");
-    
-    return 1;
-}
 
 GZIO_API int luaopen_gzio (lua_State *L) {
   createmeta(L);
 
-  lua_cpcall(L,replace_wrapper,0);
+  /* create (private) environment (with fields IO_INPUT, IO_OUTPUT, __close) */
+  lua_createtable(L, 2, 1);
+  lua_replace(L, LUA_ENVIRONINDEX);
+
+  /* open library */
+  luaL_register(L, LUA_GZIOLIBNAME, iolib);
+
+  /* add module metadata */
+  lua_pushliteral (L, "_COPYRIGHT");
+  lua_pushliteral (L, "Copyright (C) 2007 Judge Maygarden");
+  lua_settable (L, -3);
+  lua_pushliteral (L, "_DESCRIPTION");
+  lua_pushliteral (L, "Lua gzip file I/O module");
+  lua_settable (L, -3);
+  lua_pushliteral (L, "_VERSION");
+  lua_pushliteral (L, "gzio 0.9.0");
+  lua_settable (L, -3);
+
+  /* create (and set) default files */
+  createstdfile(L, stdin, IO_INPUT, "stdin");
+  createstdfile(L, stdout, IO_OUTPUT, "stdout");
+  createstdfile(L, stderr, 0, "stderr");
+
+  /* create environment for 'popen' */
+  lua_getfield(L, -1, "popen");
+  lua_createtable(L, 0, 1);
+  lua_pushcfunction(L, io_pclose);
+  lua_setfield(L, -2, "__close");
+  lua_setfenv(L, -2);
+  lua_pop(L, 1);  /* pop 'popen' */
+
+  /* set default close function */
+  lua_pushcfunction(L, io_fclose);
+  lua_setfield(L, LUA_ENVIRONINDEX, "__close");
 
   return 1;
 }

@@ -20,7 +20,7 @@ static luaL_Reg luax_exts[] = {
     {"mime.core", luaopen_mime_core},
     {"md5.core",luaopen_md5_core},
     {"cjson",luaopen_cjson_safe},
-//    {"gzio",luaopen_gzio},
+    {"gzio",luaopen_gzio},
     {"lpeg",luaopen_lpeg},
     {NULL, NULL}
 };
@@ -44,7 +44,7 @@ static void register_libs(lua_State *L)
     luaopen_bit(L);
     luaopen_struct(L);
     luaopen_crypto(L);
-    luaopen_gzio(L);
+//    luaopen_gzio(L);
 }
     
 void luaopen_lua_extensions(lua_State *L)

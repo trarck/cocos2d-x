@@ -126,5 +126,6 @@ tags
 /v*-deps-*.zip
 /external/version.json
 
-projects
-CocosWidget
+/projects
+/CocosWidget
+

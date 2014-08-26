@@ -114,7 +114,7 @@ bool CCLuaStack::init(void)
 
     // Register our version of the global "print" function
     const luaL_reg global_functions [] = {
-        {"print", lua_print},
+        {"cprint", lua_print},
         {NULL, NULL}
     };
     luaL_register(m_state, "_G", global_functions);

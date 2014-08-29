@@ -34,8 +34,6 @@ THE SOFTWARE.
 
 using namespace std;
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_IOS) && (CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
-
 NS_CC_BEGIN
 
 typedef enum 
@@ -99,6 +97,21 @@ public:
         parser.setDelegator(this);
 
         parser.parse(pFileName);
+        return m_pRootDict;
+    }
+    
+    CCDictionary* dictionaryWithData(const unsigned char *data,unsigned long dataSize)
+    {
+        m_eResultType = SAX_RESULT_DICT;
+        CCSAXParser parser;
+        
+        if (false == parser.init("UTF-8"))
+        {
+            return NULL;
+        }
+        parser.setDelegator(this);
+        
+        parser.parse((const char*)data,dataSize);
         return m_pRootDict;
     }
 
@@ -314,6 +327,8 @@ public:
     }
 };
 
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_IOS) && (CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
+
 CCDictionary* CCFileUtils::createCCDictionaryWithContentsOfFile(const std::string& filename)
 {
     std::string fullPath = fullPathForFilename(filename.c_str());
@@ -446,7 +461,6 @@ static tinyxml2::XMLElement* generateElementForArray(cocos2d::CCArray *array, ti
 
 
 #else
-NS_CC_BEGIN
 
 /* The subclass CCFileUtilsIOS and CCFileUtilsMac should override these two method. */
 CCDictionary* CCFileUtils::createCCDictionaryWithContentsOfFile(const std::string& filename) {return NULL;}
@@ -560,7 +574,7 @@ unsigned char* CCFileUtils::getFileDataFromZip(const char* pszZipFilePath, const
     return pBuffer;
 }
 
-unsigned char* CCFileUtils::getFileDataFromZipData(const char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password)
+unsigned char* CCFileUtils::getFileDataFromZipData(const unsigned char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password)
 {
     unsigned char * pBuffer = NULL;
     
@@ -930,7 +944,7 @@ unsigned char* CCFileUtils::getEncryptedFileData(const char* pszFileName,unsigne
         
         std::string password="cocos2d: ERROR: Invalid filename "+basenameWithoutExt;
         
-        outData=getFileDataFromZipData((const char*)decryptData, fileSize, "data", pSize,password.c_str());
+        outData=getFileDataFromZipData(decryptData, fileSize, "data", pSize,password.c_str());
         
         if (decryptData) {
             delete [] decryptData;
@@ -942,6 +956,12 @@ unsigned char* CCFileUtils::getEncryptedFileData(const char* pszFileName,unsigne
     }
     
     return outData;
+}
+
+CCDictionary* CCFileUtils::createCCDictionaryWithData(const unsigned char* data,unsigned long dataSize)
+{
+    CCDictMaker tMaker;
+    return tMaker.dictionaryWithData(data,dataSize);
 }
 
 NS_CC_END

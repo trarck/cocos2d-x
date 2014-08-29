@@ -420,6 +420,13 @@ CCDictionary* CCDictionary::createWithContentsOfFile(const char *pFileName)
     return pRet;
 }
 
+CCDictionary* CCDictionary::createWithData(const unsigned char *data,unsigned long dataSize)
+{
+    CCDictionary* pRet = CCFileUtils::sharedFileUtils()->createCCDictionaryWithData(data, dataSize);
+    pRet->autorelease();
+    return pRet;
+}
+
 bool CCDictionary::writeToFile(const char *fullPath)
 {
     return CCFileUtils::sharedFileUtils()->writeToFile(this, fullPath);

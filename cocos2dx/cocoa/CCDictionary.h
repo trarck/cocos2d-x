@@ -371,6 +371,8 @@ public:
      */
     static CCDictionary* createWithContentsOfFile(const char *pFileName);
     
+    static CCDictionary* createWithData(const unsigned char *data,unsigned long dataSize);
+    
     /**
      *  Write a dictionary to a plist file.
      *  @param fullPath The full path of the plist file. You can get writeable path by getWritablePath()

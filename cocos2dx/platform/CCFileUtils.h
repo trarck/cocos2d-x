@@ -109,7 +109,7 @@ public:
      */
     virtual unsigned char* getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize,const char* password=NULL);
     
-    virtual unsigned char* getFileDataFromZipData(const char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password=NULL);
+    virtual unsigned char* getFileDataFromZipData(const unsigned char* zipData,unsigned long dataSize, const char* pszFileName, unsigned long * pSize,const char* password=NULL);
     
     /** Returns the fullpath for a given filename.
      
@@ -384,6 +384,8 @@ protected:
      *  @note This method is used internally.
      */
     virtual CCDictionary* createCCDictionaryWithContentsOfFile(const std::string& filename);
+    
+    virtual CCDictionary* createCCDictionaryWithData(const unsigned char* data,unsigned long dataSize);
     
     /**
      *  Write a dictionary to a plist file.

@@ -27,6 +27,10 @@ THE SOFTWARE.
 #ifndef __CCSHADERCACHE_H__
 #define __CCSHADERCACHE_H__
 
+#include <vector>
+#include <map>
+
+#include "CCGL.h"
 #include "cocoa/CCDictionary.h"
 
 NS_CC_BEGIN
@@ -44,6 +48,14 @@ class CCGLProgram;
  */
 class CC_DLL CCShaderCache : public CCObject 
 {
+public:
+    typedef struct ShaderSource
+    {
+        std::string vsh;
+        std::string fsh;
+        
+    } ShaderSource;
+    
 public:
     /**
      * @js ctor
@@ -77,12 +89,20 @@ public:
 
     /** adds a CCGLProgram to the cache for a given name */
     void addProgram(CCGLProgram* program, const char* key);
+    
+    void loadAutoReloadingProgram(CCGLProgram* program, const char* key);
+    
+    void addAutoReloadingProgram(const char* name,const char* vshFile, const char* fshFile);
 
 private:
     bool init();
     void loadDefaultShader(CCGLProgram *program, int type);
 
     CCDictionary* m_pPrograms;
+    
+    std::map< std::string,ShaderSource> m_shaderSources;
+    
+    std::vector< std::string > m_autoReloadingProgramKeys;
 
 };
 

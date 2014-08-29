@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include "CCGLProgram.h"
 #include "ccMacros.h"
 #include "ccShaders.h"
+#include "platform/CCFileUtils.h"
 
 
 NS_CC_BEGIN
@@ -319,6 +320,47 @@ CCGLProgram* CCShaderCache::programForKey(const char* key)
 void CCShaderCache::addProgram(CCGLProgram* program, const char* key)
 {
     m_pPrograms->setObject(program, key);
+}
+
+void CCShaderCache::loadAutoReloadingProgram(CCGLProgram* program, const char* key)
+{
+    std::map<std::string, ShaderSource>::iterator iter=m_shaderSources.find(key);
+    
+    program->initWithVertexShaderByteArray(iter->second.vsh.c_str(), iter->second.fsh.c_str());
+    
+    program->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+    program->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+    program->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+    
+    program->link();
+    program->updateUniforms();
+    
+}
+
+void CCShaderCache::addAutoReloadingProgram(const char* name,const char* vshFile, const char* fshFile)
+{
+    std::string vshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(vshFile);
+    std::string fshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fshFile);
+    
+    CCString* vshString=CCString::createWithContentsOfFile(vshFullPath.c_str());
+    CCString* fshString=CCString::createWithContentsOfFile(fshFullPath.c_str());
+    
+    ShaderSource shaderSource;
+    shaderSource.vsh=vshString->getCString();
+    shaderSource.fsh=fshString->getCString();
+    
+    std::string shaderSourceKey=name;
+    m_shaderSources[shaderSourceKey]=shaderSource;
+    
+    CCGLProgram* program=new CCGLProgram();
+    
+    loadAutoReloadingProgram(program, name);
+    
+    addProgram(program, name);
+    
+    program->release();
+    
+    m_autoReloadingProgramKeys.push_back(name);
 }
 
 NS_CC_END

@@ -48,13 +48,13 @@ class CCGLProgram;
  */
 class CC_DLL CCShaderCache : public CCObject 
 {
-public:
-    typedef struct ShaderSource
-    {
-        std::string vsh;
-        std::string fsh;
-        
-    } ShaderSource;
+//public:
+//    typedef struct ShaderSource
+//    {
+//        std::string vsh;
+//        std::string fsh;
+//        
+//    } ShaderSource;
     
 public:
     /**
@@ -100,9 +100,10 @@ private:
 
     CCDictionary* m_pPrograms;
     
-    std::map< std::string,ShaderSource> m_shaderSources;
-    
-    std::vector< std::string > m_autoReloadingProgramKeys;
+    //keep shader source in memery
+//    std::map< std::string,ShaderSource> m_shaderSources;
+//    
+//    std::vector< std::string > m_autoReloadingProgramKeys;
 
 };
 

@@ -324,9 +324,9 @@ void CCShaderCache::addProgram(CCGLProgram* program, const char* key)
 
 void CCShaderCache::loadAutoReloadingProgram(CCGLProgram* program, const char* key)
 {
-    std::map<std::string, ShaderSource>::iterator iter=m_shaderSources.find(key);
-    
-    program->initWithVertexShaderByteArray(iter->second.vsh.c_str(), iter->second.fsh.c_str());
+//    std::map<std::string, ShaderSource>::iterator iter=m_shaderSources.find(key);
+//    
+//    program->initWithVertexShaderByteArray(iter->second.vsh.c_str(), iter->second.fsh.c_str());
     
     program->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
     program->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
@@ -339,20 +339,22 @@ void CCShaderCache::loadAutoReloadingProgram(CCGLProgram* program, const char* k
 
 void CCShaderCache::addAutoReloadingProgram(const char* name,const char* vshFile, const char* fshFile)
 {
-    std::string vshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(vshFile);
-    std::string fshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fshFile);
+//    std::string vshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(vshFile);
+//    std::string fshFullPath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fshFile);
+//    
+//    CCString* vshString=CCString::createWithContentsOfFile(vshFullPath.c_str());
+//    CCString* fshString=CCString::createWithContentsOfFile(fshFullPath.c_str());
+//    
+//    ShaderSource shaderSource;
+//    shaderSource.vsh=vshString->getCString();
+//    shaderSource.fsh=fshString->getCString();
     
-    CCString* vshString=CCString::createWithContentsOfFile(vshFullPath.c_str());
-    CCString* fshString=CCString::createWithContentsOfFile(fshFullPath.c_str());
-    
-    ShaderSource shaderSource;
-    shaderSource.vsh=vshString->getCString();
-    shaderSource.fsh=fshString->getCString();
-    
-    std::string shaderSourceKey=name;
-    m_shaderSources[shaderSourceKey]=shaderSource;
+//    std::string shaderSourceKey=name;
+//    m_shaderSources[shaderSourceKey]=shaderSource;
     
     CCGLProgram* program=new CCGLProgram();
+    
+    program->initWithVertexShaderFilename(vshFile, fshFile);
     
     loadAutoReloadingProgram(program, name);
     
@@ -360,7 +362,7 @@ void CCShaderCache::addAutoReloadingProgram(const char* name,const char* vshFile
     
     program->release();
     
-    m_autoReloadingProgramKeys.push_back(name);
+//    m_autoReloadingProgramKeys.push_back(name);
 }
 
 NS_CC_END

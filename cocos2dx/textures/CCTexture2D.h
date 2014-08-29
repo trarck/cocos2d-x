@@ -171,6 +171,8 @@ public:
     /** Initializes a texture from a PVR file */
     bool initWithPVRFile(const char* file);
     
+    bool initWithPVRData(unsigned char* data,unsigned long dataSize);
+    
     /** Initializes a texture from a ETC file */
     bool initWithETCFile(const char* file);
 

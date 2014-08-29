@@ -869,6 +869,38 @@ bool CCTexture2D::initWithPVRFile(const char* file)
     return bRet;
 }
 
+bool CCTexture2D::initWithPVRData(unsigned char* data,unsigned long dataSize)
+{
+    bool bRet = false;
+    // nothing to do with CCObject::init
+    
+    CCTexturePVR *pvr = new CCTexturePVR;
+    bRet = pvr->initWithData(data, dataSize);
+    
+    if (bRet)
+    {
+        pvr->setRetainName(true); // don't dealloc texture on release
+        
+        m_uName = pvr->getName();
+        m_fMaxS = 1.0f;
+        m_fMaxT = 1.0f;
+        m_uPixelsWide = pvr->getWidth();
+        m_uPixelsHigh = pvr->getHeight();
+        m_tContentSize = CCSizeMake((float)m_uPixelsWide, (float)m_uPixelsHigh);
+        m_bHasPremultipliedAlpha = PVRHaveAlphaPremultiplied_;
+        m_ePixelFormat = pvr->getFormat();
+        m_bHasMipmaps = pvr->getNumberOfMipmaps() > 1;
+        
+        pvr->release();
+    }
+    else
+    {
+        CCLOG("cocos2d: Couldn't load PVR Data");
+    }
+    
+    return bRet;
+}
+
 bool CCTexture2D::initWithETCFile(const char* file)
 {
     bool bRet = false;

@@ -97,6 +97,8 @@ public:
 
     /** initializes a CCTexturePVR with a path */
     bool initWithContentsOfFile(const char* path);
+    
+    bool initWithData(unsigned char* pvrdata,unsigned long pvrlen);
 
     /** creates and initializes a CCTexturePVR with a path */
     static CCTexturePVR* create(const char* path);

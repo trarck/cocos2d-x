@@ -1,0 +1,15 @@
+class CCClippingNode : public CCNodeRGBA
+{
+
+    static CCClippingNode* create();
+    
+    static CCClippingNode* create(CCNode *pStencil);
+
+    CCNode* getStencil() const;
+    void setStencil(CCNode *pStencil);
+    
+    GLfloat getAlphaThreshold() const;
+    void setAlphaThreshold(GLfloat fAlphaThreshold);
+    bool isInverted() const;
+    void setInverted(bool bInverted);
+};

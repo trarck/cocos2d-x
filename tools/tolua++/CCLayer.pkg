@@ -32,6 +32,14 @@ class CCLayer : public CCNode
     void unregisterScriptAccelerateHandler(void);
 
     static CCLayer *create(void);
+	
+    bool isClipRect();
+    
+    void setClipRect(const CCRect& clipRect);
+    
+    const CCRect& getClipZone();
+    
+    void removeClipRect();
 };
 
 class CCLayerRGBA : public CCLayer, public CCRGBAProtocol

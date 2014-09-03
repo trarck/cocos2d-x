@@ -169,6 +169,46 @@ public:
     inline CCTouchScriptHandlerEntry* getScriptTouchHandlerEntry() { return m_pScriptTouchHandlerEntry; };
     inline CCScriptHandlerEntry* getScriptKeypadHandlerEntry() { return m_pScriptKeypadHandlerEntry; };
     inline CCScriptHandlerEntry* getScriptAccelerateHandlerEntry() { return m_pScriptAccelerateHandlerEntry; };
+    
+    virtual void visit();
+    
+    inline void setUseClip(bool useClip)
+    {
+        m_useClip = useClip;
+    }
+    
+    inline bool isUseClip()
+    {
+        return m_useClip;
+    }
+    
+    inline bool isClipRect()
+    {
+        return m_useClip;
+    }
+    
+    inline void setClipRect(const CCRect& clipRect)
+    {
+        m_useClip=true;
+        m_clipRect = clipRect;
+    }
+    
+    inline const CCRect& getClipRect()
+    {
+        return m_clipRect;
+    }
+    
+    inline const CCRect& getClipZone()
+    {
+        return m_clipRect;
+    }
+    
+    inline void removeClipRect()
+    {
+        m_useClip=false;
+        m_clipRect=CCRectZero;
+    }
+    
 protected:   
     bool m_bTouchEnabled;
     bool m_bAccelerometerEnabled;
@@ -185,6 +225,11 @@ private:
     
     int  excuteScriptTouchHandler(int nEventType, CCTouch *pTouch);
     int  excuteScriptTouchHandler(int nEventType, CCSet *pTouches);
+    
+    bool m_useClip;//320
+    CCRect m_clipRect;//324
+    bool m_bScissorRestored;//340
+    CCRect m_scissorRect;//344
 };
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)

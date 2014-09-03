@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "keypad_dispatcher/CCKeypadDispatcher.h"
 #include "CCAccelerometer.h"
 #include "CCDirector.h"
+#include "CCEGLView.h"
 #include "support/CCPointExtension.h"
 #include "script_support/CCScriptSupport.h"
 #include "shaders/CCShaderCache.h"
@@ -51,6 +52,8 @@ CCLayer::CCLayer()
 , m_pScriptAccelerateHandlerEntry(NULL)
 , m_nTouchPriority(0)
 , m_eTouchMode(kCCTouchesAllAtOnce)
+, m_useClip(false)
+, m_bScissorRestored(false)
 {
     m_bIgnoreAnchorPointForPosition = true;
     setAnchorPoint(ccp(0.5f, 0.5f));
@@ -486,6 +489,70 @@ void CCLayer::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 
     CC_UNUSED_PARAM(pTouches);
     CC_UNUSED_PARAM(pEvent);
+}
+
+void CCLayer::visit()
+{
+    bool scissorEnabled=glIsEnabled(GL_SCISSOR_TEST);
+    GLfloat params[4];
+    
+    if (scissorEnabled) {
+        glGetFloatv(GL_SCISSOR_BOX, params);
+        m_scissorRect.origin.x=params[0];
+        m_scissorRect.origin.y=params[1];
+        m_scissorRect.size.width=params[2];
+        m_scissorRect.size.height=params[3];
+    }else{
+        if (m_useClip) {
+            glGetFloatv(GL_SCISSOR_BOX, params);
+            m_scissorRect=CCRectZero;
+        }
+    }
+    
+    if (m_useClip) {
+        
+        CCRect frame=m_clipRect;
+        CCAffineTransform t = nodeToWorldTransform();
+        
+        frame=CCRectApplyAffineTransform(frame, t);
+        
+        if (frame.origin.x<0) {
+            frame.size.width+=frame.origin.x;
+            frame.origin.x=0;
+        }
+        
+        if (frame.origin.y<0) {
+            frame.size.height+=frame.origin.y;
+            frame.origin.y=0;
+        }
+        
+        CCRect scissorRect;
+        
+        if (scissorEnabled) {
+            scissorRect=CCEGLView::sharedOpenGLView()->getScissorRect();
+            
+            if (frame.intersectsRect(scissorRect)) {
+                float x = MAX(frame.origin.x, scissorRect.origin.x);
+                float y = MAX(frame.origin.y, scissorRect.origin.y);
+                float xx = MIN(frame.origin.x+frame.size.width, scissorRect.origin.x+scissorRect.size.width);
+                float yy = MIN(frame.origin.y+frame.size.height, scissorRect.origin.y+scissorRect.size.height);
+                CCEGLView::sharedOpenGLView()->setScissorInPoints(x, y, xx-x, yy-y);
+            }
+        }else{
+            glEnable(GL_SCISSOR_TEST);
+            CCEGLView::sharedOpenGLView()->setScissorInPoints(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
+        }
+        
+        CCNode::visit();
+        
+        if(scissorEnabled){
+            CCEGLView::sharedOpenGLView()->setScissorInPoints(scissorRect.origin.x, scissorRect.origin.y, scissorRect.size.width, scissorRect.size.height);
+        }else{
+            glDisable(GL_SCISSOR_TEST);
+        }
+    }else{
+        CCNode::visit();
+    }
 }
 
 // LayerRGBA

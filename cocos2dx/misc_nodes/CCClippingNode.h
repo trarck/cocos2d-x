@@ -38,7 +38,7 @@ NS_CC_BEGIN
  The stencil is an other CCNode that will not be drawn.
  The clipping is done using the alpha part of the stencil (adjusted with an alphaThreshold).
  */
-class CC_DLL CCClippingNode : public CCNode
+class CC_DLL CCClippingNode : public CCNodeRGBA
 {
 protected:
     CCNode* m_pStencil;

@@ -505,7 +505,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path,CCTexture2DPixelFormat 
                 bool bRet = pImage->initWithImageFile(fullpath.c_str(), eImageFormat);
                 CC_BREAK_IF(!bRet);
                 
-                if (!alphaMaskPath.empty()) {
+                if (!alphaMaskPath.empty() && CCFileUtils::sharedFileUtils()->isFileExist(alphaMaskPath)) {
                     pAlphaImage=new CCImage();
                     pAlphaImage->initWithImageFile(alphaMaskPath.c_str(),CCImage::kFmtPng);
                 }

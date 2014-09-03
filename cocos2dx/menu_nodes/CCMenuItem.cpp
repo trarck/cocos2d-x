@@ -134,8 +134,8 @@ bool CCMenuItem::isEnabled()
 CCRect CCMenuItem::rect()
 {
     return CCRectMake( m_obPosition.x - m_obContentSize.width * m_obAnchorPoint.x,
-                      m_obPosition.y - m_obContentSize.height * m_obAnchorPoint.y,
-                      m_obContentSize.width, m_obContentSize.height);
+                          m_obPosition.y - m_obContentSize.height * m_obAnchorPoint.y,
+                          m_obContentSize.width, m_obContentSize.height);
 }
 
 bool CCMenuItem::isSelected()
@@ -147,6 +147,15 @@ void CCMenuItem::setTarget(CCObject *rec, SEL_MenuHandler selector)
 {
     m_pListener = rec;
     m_pfnSelector = selector;
+}
+
+CCRect CCMenuItem::getTouchingArea()
+{
+    if (m_haveTouchingArea) {
+        return m_touchingArea;
+    }else{
+        return rect();
+    }
 }
 
 //

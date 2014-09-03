@@ -69,6 +69,7 @@ public:
     , m_pListener(NULL)            
     , m_pfnSelector(NULL)
     , m_nScriptTapHandler(0)
+    , m_haveTouchingArea(false)
     {}
     /**
      * @js NA
@@ -108,11 +109,21 @@ public:
     
     /** set the target/selector of the menu item*/
     void setTarget(CCObject *rec, SEL_MenuHandler selector);
-
+    
+    virtual void setTouchingArea(const CCRect& touchingArea)
+    {
+        m_touchingArea=touchingArea;
+        m_haveTouchingArea=true;
+    }
+    
+    virtual CCRect getTouchingArea();
+    
 protected:
     CCObject*       m_pListener;
     SEL_MenuHandler    m_pfnSelector;
     int             m_nScriptTapHandler;
+    bool m_haveTouchingArea;
+    CCRect m_touchingArea;
 };
 
 /** @brief An abstract class for "label" CCMenuItemLabel items 

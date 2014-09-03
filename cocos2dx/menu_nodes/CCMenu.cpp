@@ -613,8 +613,8 @@ CCMenuItem* CCMenu::itemForTouch(CCTouch *touch)
             if (pChild && pChild->isVisible() && pChild->isEnabled())
             {
                 CCPoint local = pChild->convertToNodeSpace(touchLocation);
-                CCRect r = pChild->rect();
-                r.origin = CCPointZero;
+                CCRect r = pChild->getTouchingArea();
+//                r.origin = CCPointZero;
 
                 if (r.containsPoint(local))
                 {

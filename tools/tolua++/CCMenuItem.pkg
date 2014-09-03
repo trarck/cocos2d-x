@@ -11,6 +11,10 @@ class CCMenuItem : public CCNodeRGBA
 
     void registerScriptTapHandler(LUA_FUNCTION funcID);
     void unregisterScriptTapHandler(void);
+	
+    void setTouchingArea(const CCRect& touchingArea);
+    
+    const CCRect& getTouchingArea();
 };
 
 class CCMenuItemLabel : public CCMenuItem

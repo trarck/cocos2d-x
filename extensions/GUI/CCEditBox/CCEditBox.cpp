@@ -56,7 +56,7 @@ void CCEditBox::touchDownAction(CCObject *sender, CCControlEvent controlEvent)
     m_pEditBoxImpl->openKeyboard();
 }
 
-CCEditBox* CCEditBox::create(const CCSize& size, CCScale9Sprite* pNormal9SpriteBg, CCScale9Sprite* pPressed9SpriteBg/* = NULL*/, CCScale9Sprite* pDisabled9SpriteBg/* = NULL*/)
+CCEditBox* CCEditBox::create(const CCSize& size, CCScale9Sprite* pNormal9SpriteBg, CCScale9Sprite* pPressed9SpriteBg/* = NULL*/, CCScale9Sprite* pDisabled9SpriteBg/* = NULL*/,bool haveEvent /*=true*/)
 {
     CCEditBox* pRet = new CCEditBox();
     
@@ -81,7 +81,7 @@ CCEditBox* CCEditBox::create(const CCSize& size, CCScale9Sprite* pNormal9SpriteB
     return pRet;
 }
 
-bool CCEditBox::initWithSizeAndBackgroundSprite(const CCSize& size, CCScale9Sprite* pPressed9SpriteBg)
+bool CCEditBox::initWithSizeAndBackgroundSprite(const CCSize& size, CCScale9Sprite* pPressed9SpriteBg,bool haveEvent/*=true*/)
 {
     if (CCControlButton::initWithBackgroundSprite(pPressed9SpriteBg))
     {
@@ -91,7 +91,9 @@ bool CCEditBox::initWithSizeAndBackgroundSprite(const CCSize& size, CCScale9Spri
         this->setZoomOnTouchDown(false);
         this->setPreferredSize(size);
         this->setPosition(ccp(0, 0));
-        this->addTargetWithActionForControlEvent(this, cccontrol_selector(CCEditBox::touchDownAction), CCControlEventTouchUpInside);
+        if (haveEvent) {
+            this->addTargetWithActionForControlEvent(this, cccontrol_selector(CCEditBox::touchDownAction), CCControlEventTouchUpInside);
+        }
         
         return true;
     }

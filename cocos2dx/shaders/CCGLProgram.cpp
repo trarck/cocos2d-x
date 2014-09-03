@@ -621,4 +621,20 @@ void CCGLProgram::reset()
     m_pHashForUniforms = NULL;
 }
 
+CCGLProgram* CCGLProgram::createWithFileName(const char* vShaderFilename, const char* fShaderFilename)
+{
+    CCGLProgram *program = new CCGLProgram();
+    program->initWithVertexShaderFilename(vShaderFilename, fShaderFilename);
+    
+    program->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+    program->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+    program->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+    
+    program->link();
+    program->updateUniforms();
+    
+    program->autorelease();
+    return program;
+}
+
 NS_CC_END

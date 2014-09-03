@@ -269,6 +269,8 @@ public:
      * @lua NA
      */
     inline const GLuint getProgram() { return m_uProgram; }
+    
+    static CCGLProgram* createWithFileName(const char* vShaderFilename, const char* fShaderFilename);
 
 private:
     bool updateUniformLocation(GLint location, GLvoid* data, unsigned int bytes);

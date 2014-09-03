@@ -28,6 +28,7 @@ $pfile "CCTexture2D.pkg"
 $pfile "CCTextureAtlas.pkg"
 $pfile "CCTextureCache.pkg"
 $pfile "CCRenderTexture.pkg"
+$pfile "CCClippingNode.pkg"
 $pfile "CCSprite.pkg"
 $pfile "CCSpriteBatchNode.pkg"
 $pfile "CCSpriteFrame.pkg"
@@ -73,6 +74,9 @@ $pfile "CCTMXTiledMap.pkg"
 $pfile "CCTMXXMLParser.pkg"
 $pfile "CCTouch.pkg"
 
+$pfile "CCGLProgram.pkg"
+$pfile "CCShaderCache.pkg"
+		
 $pfile "CCSet.pkg"
 
 $pfile "SimpleAudioEngine.pkg"

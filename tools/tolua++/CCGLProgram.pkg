@@ -1,0 +1,16 @@
+
+class CCGLProgram : public CCObject
+{
+    static CCGLProgram* createWithFileName(const char* vShaderFilename, const char* fShaderFilename);
+	
+	void use();
+	
+	GLint getUniformLocationForName(const char* name);
+	
+	void setUniformsForBuiltins();
+	
+	void setUniformLocationWith2f(GLint location, GLfloat f1, GLfloat f2);
+	
+	void setUniformLocationWith4f(GLint location, GLfloat f1, GLfloat f2, GLfloat f3, GLfloat f4);
+};
+

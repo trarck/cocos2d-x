@@ -1,0 +1,8 @@
+
+class CCShaderCache : public CCObject
+{
+    static CCShaderCache* sharedShaderCache();
+	
+	CCGLProgram * programForKey(const char* key);
+};
+

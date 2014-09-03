@@ -86,6 +86,8 @@ class CCSprite : public CCNodeRGBA
 	CCSpriteBatchNode* getBatchNode();
 	void setDisplayFrameWithAnimationName(const char *animationName, int frameIndex);
 
+	bool initWithSpriteFrame(CCSpriteFrame *pSpriteFrame);
+
 	static CCSprite* createWithTexture(CCTexture2D *pTexture);
 	static CCSprite* createWithTexture(CCTexture2D *pTexture, CCRect rect);
 	static CCSprite* createWithSpriteFrame(CCSpriteFrame *pSpriteFrame);

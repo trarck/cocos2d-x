@@ -494,8 +494,8 @@ void CCLayer::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 void CCLayer::visit()
 {
     bool scissorEnabled=glIsEnabled(GL_SCISSOR_TEST);
-    GLfloat params[4];
-    
+    GLfloat params[4]={0};
+        
     if (scissorEnabled) {
         glGetFloatv(GL_SCISSOR_BOX, params);
         m_scissorRect.origin.x=params[0];
@@ -526,6 +526,14 @@ void CCLayer::visit()
             frame.origin.y=0;
         }
         
+        if (frame.size.width<0) {
+            frame.size.width=0;
+        }
+        
+        if (frame.size.height<0) {
+            frame.size.height=0;
+        }
+        
         CCRect scissorRect;
         
         if (scissorEnabled) {
@@ -542,6 +550,8 @@ void CCLayer::visit()
             glEnable(GL_SCISSOR_TEST);
             CCEGLView::sharedOpenGLView()->setScissorInPoints(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
         }
+        
+        CHECK_GL_ERROR_DEBUG();
         
         CCNode::visit();
         

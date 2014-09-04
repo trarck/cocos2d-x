@@ -425,10 +425,10 @@ CCTexture2D * CCTextureCache::addImage(const char * path,CCTexture2DPixelFormat 
         
         if (pos!=std::string::npos){
             //使用pvr.ccz代替png
+			//
             if (!CCFileUtils::sharedFileUtils()->isFileExist(fullpath)) {
                 
-                fullpath=orignalPath.substr(0,pos);
-                fullpath+=".pvr.ccz";
+                fullpath=orignalPath.substr(0,pos)+".pvr.ccz";
                 
                 fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fullpath.c_str());
                 
@@ -437,7 +437,9 @@ CCTexture2D * CCTextureCache::addImage(const char * path,CCTexture2DPixelFormat 
                     lookPathKey=orignalPath.substr(0,pos)+".pvr.ccz";
                     
                 }else{
+					
                     //如果pvr也不存在，使用复合模式
+					//
                     fullpath=orignalPath.substr(0,pos)+".jpg";
                     fullpath=CCFileUtils::sharedFileUtils()->fullPathForFilename(fullpath.c_str());
                     
@@ -452,6 +454,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path,CCTexture2DPixelFormat 
         
         if (!CCFileUtils::sharedFileUtils()->isFileExist(fullpath)) {
             //如果是jpg不存在，使用pkm
+			//
             pos=pathKey.find(".jpg");
             if (pos!=std::string::npos) {
                 

@@ -479,6 +479,7 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
     unsigned char*            tempData = NULL;
     unsigned int*             inPixel32  = NULL;
     unsigned char*            inPixel8 = NULL;
+    unsigned char*            outPixel8 = NULL;
     unsigned short*           outPixel16 = NULL;
     unsigned int*             outPixel32 = NULL;
 //    unsigned int*             alphaPixel32  = NULL;
@@ -489,7 +490,7 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
 //    size_t                    bpp = image->getBitsPerComponent();
     
     //becase alpha image ,so must use alpha pixelformat
-    if (pixelFormat!=kCCTexture2DPixelFormat_RGBA8888 || pixelFormat!=kCCTexture2DPixelFormat_RGBA4444 || pixelFormat!=kCCTexture2DPixelFormat_RGB5A1) {
+    if (!(pixelFormat==kCCTexture2DPixelFormat_RGBA8888 || pixelFormat==kCCTexture2DPixelFormat_RGBA4444 || pixelFormat==kCCTexture2DPixelFormat_RGB5A1)) {
         pixelFormat=g_defaultAlphaPixelFormat;
     }
     
@@ -518,22 +519,16 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
             // Convert "RRRRRRRRRGGGGGGGGBBBBBBBB" to "RRRRRGGGGGGBBBBBAAAA"
             
             tempData = new unsigned char[width * height * 4];
-            outPixel32 = (unsigned int*)tempData;
+            outPixel8=tempData;
             inPixel8 = (unsigned char*)image->getData();
             alphaPixel8=(unsigned char*)alphaImage->getData();
-            //CCLOG("%x",(255 << 24)|(0 <<16) | (0 << 8) | 0);
+            
             for(unsigned int i = 0; i < length; ++i,alphaPixel8+=4)
             {
-				//CCLOG("r=%d,g=%d,b=%d,a=%d",*inPixel8,*(inPixel8+1),*(inPixel8+2),*alphaPixel8);
-                *outPixel32 =
-						
-                ((*(inPixel8+2) & 0xFF) << 0) |  // R
-                ((*(inPixel8+1) & 0xFF) << 8)  |  // G
-                ((*(inPixel8+0) & 0xFF) << 16)   |    // B
-                (((*alphaPixel8 & 0xFF)) << 24);
-
-				inPixel8+=3;
-				outPixel32++;
+                *outPixel8++= *inPixel8++;   //R
+				*outPixel8++= *inPixel8++;   //G
+                *outPixel8++= *inPixel8++;   //B
+                *outPixel8++= *alphaPixel8;  //A
             }
         }
     }

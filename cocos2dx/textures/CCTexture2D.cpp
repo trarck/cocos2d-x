@@ -523,7 +523,7 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
             inPixel8 = (unsigned char*)image->getData();
             alphaPixel8=(unsigned char*)alphaImage->getData();
             
-            for(unsigned int i = 0; i < length; ++i,alphaPixel8+=4)
+            for(unsigned int i = 0; i < length; ++i,alphaPixel8+=3)
             {
                 *outPixel8++= *inPixel8++;   //R
 				*outPixel8++= *inPixel8++;   //G
@@ -534,38 +534,77 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
     }
     else if (pixelFormat == kCCTexture2DPixelFormat_RGBA4444)
     {
-        // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
+		if (hasAlpha)
+		{
+			// Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRGGGGBBBBAAAA"
         
-        inPixel32 = (unsigned int*)image->getData();
-        tempData = new unsigned char[width * height * 2];
-        outPixel16 = (unsigned short*)tempData;
-        alphaPixel8=(unsigned char*)alphaImage->getData();
+			inPixel32 = (unsigned int*)image->getData();
+			tempData = new unsigned char[width * height * 2];
+			outPixel16 = (unsigned short*)tempData;
+			alphaPixel8=(unsigned char*)alphaImage->getData();
         
-        for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
-        {
-            *outPixel16++ =
-            ((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | // R
-            ((((*inPixel32 >> 8) & 0xFF) >> 4) <<  8) | // G
-            ((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | // B
-            (((*alphaPixel8 & 0xFF) >> 4) << 0);  // A
-        }
+			for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
+			{
+				*outPixel16++ =
+				((((*inPixel32 >> 0) & 0xFF) >> 4) << 12) | // R
+				((((*inPixel32 >> 8) & 0xFF) >> 4) <<  8) | // G
+				((((*inPixel32 >> 16) & 0xFF) >> 4) << 4) | // B
+				(((*alphaPixel8 & 0xFF) >> 4) << 0);  // A
+			}
+		}else{
+			// Convert "RRRRRRRRRGGGGGGGGBBBBBBBB" to "RRRRGGGGBBBBAAAA"
+        
+			inPixel8 = (unsigned char*)image->getData();
+			tempData = new unsigned char[width * height * 2];
+			outPixel16 = (unsigned short*)tempData;
+			alphaPixel8=(unsigned char*)alphaImage->getData();
+        
+			for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=3)
+			{
+				*outPixel16++ =
+				((((*inPixel8++ >> 0) & 0xFF) >> 4) << 12) | // R
+				((((*inPixel8++ >> 8) & 0xFF) >> 4) <<  8) | // G
+				((((*inPixel8++ >> 16) & 0xFF) >> 4) << 4) | // B
+				(((*alphaPixel8 & 0xFF) >> 4) << 0);  // A
+			}
+		}
+
+        
     }
     else if (pixelFormat == kCCTexture2DPixelFormat_RGB5A1)
     {
-        // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGBBBBBA"
-        inPixel32 = (unsigned int*)image->getData();
-        tempData = new unsigned char[width * height * 2];
-        outPixel16 = (unsigned short*)tempData;
-        alphaPixel8=(unsigned char*)alphaImage->getData();
+
+		if (hasAlpha){
+			// Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGBBBBBA"
+			inPixel32 = (unsigned int*)image->getData();
+			tempData = new unsigned char[width * height * 2];
+			outPixel16 = (unsigned short*)tempData;
+			alphaPixel8=(unsigned char*)alphaImage->getData();
         
-        for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
-        {
-            *outPixel16++ =
-            ((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | // R
-            ((((*inPixel32 >> 8) & 0xFF) >> 3) <<  6) | // G
-            ((((*inPixel32 >> 16) & 0xFF) >> 3) << 1) | // B
-            ((((*alphaPixel8) & 0xFF) >> 7) << 0);  // A
-        }
+			for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=4)
+			{
+				*outPixel16++ =
+				((((*inPixel32 >> 0) & 0xFF) >> 3) << 11) | // R
+				((((*inPixel32 >> 8) & 0xFF) >> 3) <<  6) | // G
+				((((*inPixel32 >> 16) & 0xFF) >> 3) << 1) | // B
+				((((*alphaPixel8) & 0xFF) >> 7) << 0);  // A
+			}
+		}else{
+			// Convert "RRRRRRRRRGGGGGGGGBBBBBBBB" to "RRRRRGGGGGBBBBBA"
+			inPixel8 = (unsigned char*)image->getData();
+			tempData = new unsigned char[width * height * 2];
+			outPixel16 = (unsigned short*)tempData;
+			alphaPixel8=(unsigned char*)alphaImage->getData();
+        
+			for(unsigned int i = 0; i < length; ++i, ++inPixel32,alphaPixel8+=3)
+			{
+				*outPixel16++ =
+				((((*inPixel8++ >> 0) & 0xFF) >> 3) << 11) | // R
+				((((*inPixel8++ >> 8) & 0xFF) >> 3) <<  6) | // G
+				((((*inPixel8++ >> 16) & 0xFF) >> 3) << 1) | // B
+				((((*alphaPixel8) & 0xFF) >> 7) << 0);  // A
+			}
+		}
     }
     
     initWithData(tempData, pixelFormat, width, height, imageSize);

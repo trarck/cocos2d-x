@@ -154,7 +154,9 @@ CCRect CCMenuItem::getTouchingArea()
     if (m_haveTouchingArea) {
         return m_touchingArea;
     }else{
-        return rect();
+        CCRect ret=rect();
+        ret.origin=CCPointZero;
+        return ret;
     }
 }
 

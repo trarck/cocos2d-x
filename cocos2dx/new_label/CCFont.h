@@ -40,7 +40,8 @@ class CC_DLL Font : public CCObject
 public:
     virtual  FontAtlas *createFontAtlas() = 0;
 
-    virtual int* getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const = 0;
+//    virtual int* getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const = 0;
+    virtual int* getHorizontalKerningForTextUTF16(unsigned short * text, int &outNumLetters) const = 0;
     virtual const char* getCurrentGlyphCollection() const;
     
     

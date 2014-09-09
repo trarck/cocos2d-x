@@ -60,12 +60,13 @@ public:
     float    getOutlineSize() const { return _outlineSize; }
     void     renderCharAt(unsigned char *dest,int posX, int posY, unsigned char* bitmap,long bitmapWidth,long bitmapHeight); 
 
-    virtual FontAtlas   * createFontAtlas() override;
-    virtual int         * getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const override;
+    virtual FontAtlas   * createFontAtlas();
+//    virtual int         * getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const;
+    virtual int         * getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const;
     
     unsigned char       * getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, Rect &outRect,int &xAdvance);
     
-    virtual int           getFontMaxHeight() const override;  
+    virtual int           getFontMaxHeight() const;  
     virtual int           getFontAscender() const;
 
 protected:

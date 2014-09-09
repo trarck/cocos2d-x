@@ -55,7 +55,7 @@ Label* Label::create()
     return ret;
 }
 
-Label* Label::create(const std::string& text, const std::string& font, float fontSize, const Size& dimensions /* = Size::ZERO */, TextHAlignment hAlignment /* = TextHAlignment::LEFT */, TextVAlignment vAlignment /* = TextVAlignment::TOP */)
+Label* Label::create(const std::string& text, const std::string& font, float fontSize, const Size& dimensions /* = Size::ZERO */, CCTextAlignment hAlignment /* = kCCTextAlignmentLeft */, CCVerticalTextAlignment vAlignment /* = kCCVerticalTextAlignmentTop */)
 {
     if (FileUtils::getInstance()->isFileExist(font))
     {
@@ -67,9 +67,9 @@ Label* Label::create(const std::string& text, const std::string& font, float fon
     }
 }
 
-Label* Label::createWithSystemFont(const std::string& text, const std::string& font, float fontSize, const Size& dimensions /* = Size::ZERO */, TextHAlignment hAlignment /* = TextHAlignment::LEFT */, TextVAlignment vAlignment /* = TextVAlignment::TOP */)
+Label* Label::createWithSystemFont(const std::string& text, const std::string& font, float fontSize, const Size& dimensions /* = Size::ZERO */, CCTextAlignment hAlignment /* = kCCTextAlignmentLeft */, CCVerticalTextAlignment vAlignment /* = kCCVerticalTextAlignmentTop */)
 {
-    auto ret = new (std::nothrow) Label(nullptr,hAlignment,vAlignment);
+    auto ret = new (std::nothrow) Label(NULL,hAlignment,vAlignment);
 
     if (ret)
     {
@@ -84,12 +84,12 @@ Label* Label::createWithSystemFont(const std::string& text, const std::string& f
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
-Label* Label::createWithTTF(const std::string& text, const std::string& fontFile, float fontSize, const Size& dimensions /* = Size::ZERO */, TextHAlignment hAlignment /* = TextHAlignment::LEFT */, TextVAlignment vAlignment /* = TextVAlignment::TOP */)
+Label* Label::createWithTTF(const std::string& text, const std::string& fontFile, float fontSize, const Size& dimensions /* = Size::ZERO */, CCTextAlignment hAlignment /* = kCCTextAlignmentLeft */, CCVerticalTextAlignment vAlignment /* = kCCVerticalTextAlignmentTop */)
 {
-    auto ret = new (std::nothrow) Label(nullptr,hAlignment,vAlignment);
+    auto ret = new (std::nothrow) Label(NULL,hAlignment,vAlignment);
 
     if (ret && FileUtils::getInstance()->isFileExist(fontFile))
     {
@@ -106,12 +106,12 @@ Label* Label::createWithTTF(const std::string& text, const std::string& fontFile
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
-Label* Label::createWithTTF(const TTFConfig& ttfConfig, const std::string& text, TextHAlignment alignment /* = TextHAlignment::CENTER */, int maxLineWidth /* = 0 */)
+Label* Label::createWithTTF(const TTFConfig& ttfConfig, const std::string& text, CCTextAlignment alignment /* = kCCTextAlignmentCenter */, int maxLineWidth /* = 0 */)
 {
-    auto ret = new (std::nothrow) Label(nullptr,alignment);
+    auto ret = new (std::nothrow) Label(NULL,alignment);
 
     if (ret && FileUtils::getInstance()->isFileExist(ttfConfig.fontFilePath) && ret->setTTFConfig(ttfConfig))
     {
@@ -123,12 +123,12 @@ Label* Label::createWithTTF(const TTFConfig& ttfConfig, const std::string& text,
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
-Label* Label::createWithBMFont(const std::string& bmfontFilePath, const std::string& text,const TextHAlignment& alignment /* = TextHAlignment::LEFT */, int maxLineWidth /* = 0 */, const Vec2& imageOffset /* = Vec2::ZERO */)
+Label* Label::createWithBMFont(const std::string& bmfontFilePath, const std::string& text,const CCTextAlignment& alignment /* = kCCTextAlignmentLeft */, int maxLineWidth /* = 0 */, const Vec2& imageOffset /* = Vec2::ZERO */)
 {
-    auto ret = new (std::nothrow) Label(nullptr,alignment);
+    auto ret = new (std::nothrow) Label(NULL,alignment);
 
     if (ret && ret->setBMFontFilePath(bmfontFilePath,imageOffset))
     {
@@ -140,7 +140,7 @@ Label* Label::createWithBMFont(const std::string& bmfontFilePath, const std::str
     }
     
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
 Label* Label::createWithCharMap(const std::string& plistFile)
@@ -154,7 +154,7 @@ Label* Label::createWithCharMap(const std::string& plistFile)
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
 Label* Label::createWithCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap)
@@ -168,7 +168,7 @@ Label* Label::createWithCharMap(Texture2D* texture, int itemWidth, int itemHeigh
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
 Label* Label::createWithCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap)
@@ -182,7 +182,7 @@ Label* Label::createWithCharMap(const std::string& charMapFile, int itemWidth, i
     }
 
     delete ret;
-    return nullptr;
+    return NULL;
 }
 
 bool Label::setCharMap(const std::string& plistFile)
@@ -233,9 +233,9 @@ bool Label::setCharMap(const std::string& charMapFile, int itemWidth, int itemHe
     return true;
 }
 
-Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = TextHAlignment::LEFT */, 
-             TextVAlignment vAlignment /* = TextVAlignment::TOP */,bool useDistanceField /* = false */,bool useA8Shader /* = false */)
-: _reusedLetter(nullptr)
+Label::Label(FontAtlas *atlas /* = NULL */, CCTextAlignment hAlignment /* = kCCTextAlignmentLeft */, 
+             CCVerticalTextAlignment vAlignment /* = kCCVerticalTextAlignmentTop */,bool useDistanceField /* = false */,bool useA8Shader /* = false */)
+: _reusedLetter(NULL)
 , _commonLineHeight(0.0f)
 , _additionalKerning(0.0f)
 , _lineBreakWithoutSpaces(false)
@@ -245,7 +245,7 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
 , _labelDimensions(Size::ZERO)
 , _hAlignment(hAlignment)
 , _vAlignment(vAlignment)
-, _horizontalKernings(nullptr)
+, _horizontalKernings(NULL)
 , _fontAtlas(atlas)
 , _isOpacityModifyRGB(false)
 , _useDistanceField(useDistanceField)
@@ -253,7 +253,7 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
 , _fontScale(1.0f)
 , _uniformEffectColor(0)
 , _currNumLines(-1)
-, _textSprite(nullptr)
+, _textSprite(NULL)
 , _contentDirty(false)
 , _shadowDirty(false)
 , _compatibleMode(false)
@@ -303,7 +303,7 @@ void Label::reset()
     if (_fontAtlas)
     {
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
-        _fontAtlas = nullptr;
+        _fontAtlas = NULL;
     }
 
     _currentLabelType = LabelType::STRING_TEXTURE;
@@ -311,8 +311,8 @@ void Label::reset()
     _shadowBlurRadius = 0;
 
     Node::removeAllChildrenWithCleanup(true);
-    _textSprite = nullptr;
-    _shadowNode = nullptr;
+    _textSprite = NULL;
+    _shadowNode = NULL;
 
     CC_SAFE_RELEASE_NULL(_reusedLetter);
 
@@ -367,7 +367,7 @@ void Label::setFontAtlas(FontAtlas* atlas,bool distanceFieldEnabled /* = false *
     if (_fontAtlas)
     {
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
-        _fontAtlas = nullptr;
+        _fontAtlas = NULL;
     }
 
     _fontAtlas = atlas;
@@ -381,7 +381,7 @@ void Label::setFontAtlas(FontAtlas* atlas,bool distanceFieldEnabled /* = false *
         SpriteBatchNode::initWithTexture(_fontAtlas->getTexture(0), 30);
     }
 
-    if (_reusedLetter == nullptr)
+    if (_reusedLetter == NULL)
     {
         _reusedLetter = Sprite::create();
         _reusedLetter->setOpacityModifyRGB(_isOpacityModifyRGB);            
@@ -472,7 +472,7 @@ void Label::setString(const std::string& text)
     }
 }
 
-void Label::setAlignment(TextHAlignment hAlignment,TextVAlignment vAlignment)
+void Label::setAlignment(CCTextAlignment hAlignment,CCVerticalTextAlignment vAlignment)
 {
     if (hAlignment != _hAlignment || vAlignment != _vAlignment)
     {
@@ -568,7 +568,7 @@ float Label::getScaleX() const
 
 void Label::alignText()
 {
-    if (_fontAtlas == nullptr || _currentUTF16String.empty())
+    if (_fontAtlas == NULL || _currentUTF16String.empty())
     {
         return;
     }
@@ -594,7 +594,7 @@ void Label::alignText()
     if(_maxLineWidth > 0 && _contentSize.width > _maxLineWidth && LabelTextFormatter::multilineText(this) )      
         LabelTextFormatter::createStringSprites(this);
 
-    if(_labelWidth > 0 || (_currNumLines > 1 && _hAlignment != TextHAlignment::LEFT))
+    if(_labelWidth > 0 || (_currNumLines > 1 && _hAlignment != kCCTextAlignmentLeft))
         LabelTextFormatter::alignText(this);
 
     int strLen = static_cast<int>(_currentUTF16String.length());
@@ -627,12 +627,13 @@ void Label::alignText()
     updateColor();
 }
 
-bool Label::computeHorizontalKernings(const std::u16string& stringToRender)
+//bool Label::computeHorizontalKernings(const std::u16string& stringToRender)
+bool Label::computeHorizontalKernings(unsigned short* stringToRender)
 {
     if (_horizontalKernings)
     {
         delete [] _horizontalKernings;
-        _horizontalKernings = nullptr;
+        _horizontalKernings = NULL;
     }
 
     int letterCount = 0;
@@ -797,7 +798,7 @@ void Label::disableEffect()
     if (_shadowNode)
     {
         Node::removeChild(_shadowNode,true);
-        _shadowNode = nullptr;
+        _shadowNode = NULL;
     }
 }
 
@@ -945,11 +946,11 @@ void Label::updateContent()
     if (_textSprite)
     {
         Node::removeChild(_textSprite,true);
-        _textSprite = nullptr;
+        _textSprite = NULL;
         if (_shadowNode)
         {
             Node::removeChild(_shadowNode,true);
-            _shadowNode = nullptr;
+            _shadowNode = NULL;
         }
     }
 
@@ -1011,7 +1012,7 @@ void Label::updateFont()
         _batchNodes.push_back(this);
 
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
-        _fontAtlas = nullptr;
+        _fontAtlas = NULL;
     }
 
     _contentDirty = true;
@@ -1026,7 +1027,7 @@ void Label::drawTextSprite(Renderer *renderer, uint32_t parentFlags)
         updateContent();
     }
     
-    if (_shadowEnabled && _shadowNode == nullptr)
+    if (_shadowEnabled && _shadowNode == NULL)
     {
         _shadowNode = Sprite::createWithTexture(_textSprite->getTexture());
         if (_shadowNode)
@@ -1085,7 +1086,7 @@ void Label::visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t pare
     // To ease the migration to v3.0, we still support the Mat4 stack,
     // but it is deprecated and your code should not rely on it
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    CCASSERT(NULL != director, "Director is null when seting matrix stack");
     
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
@@ -1130,7 +1131,7 @@ Sprite * Label::getLetter(int letterIndex)
 {
     if (_systemFontDirty || _currentLabelType == LabelType::STRING_TEXTURE)
     {
-        return nullptr;
+        return NULL;
     }
 
     if (_contentDirty)
@@ -1143,7 +1144,7 @@ Sprite * Label::getLetter(int letterIndex)
         const auto &letter = _lettersInfo[letterIndex];
 
         if(! letter.def.validDefinition)
-            return nullptr;
+            return NULL;
 
         Sprite* sp = static_cast<Sprite*>(this->getChildByTag(letterIndex));
 
@@ -1166,7 +1167,7 @@ Sprite * Label::getLetter(int letterIndex)
         return sp;
     }
 
-    return nullptr;
+    return NULL;
 }
 
 void Label::setLineHeight(float height)
@@ -1293,7 +1294,7 @@ void Label::setTextColor(const Color4B &color)
 
 void Label::updateColor()
 {
-    if (nullptr == _textureAtlas)
+    if (NULL == _textureAtlas)
     {
         return;
     }

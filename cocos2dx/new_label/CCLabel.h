@@ -58,7 +58,7 @@ typedef struct _ttfConfig
     int outlineSize;
 
     _ttfConfig(const char* filePath = "",int size = 12, const GlyphCollection& glyphCollection = kGlyphCollectionDYNAMIC,
-        const char *customGlyphCollection = nullptr,bool useDistanceField = false,int outline = 0)
+        const char *customGlyphCollection = NULL,bool useDistanceField = false,int outline = 0)
         :fontFilePath(filePath)
         ,fontSize(size)
         ,glyphs(glyphCollection)
@@ -73,7 +73,7 @@ typedef struct _ttfConfig
     }
 }TTFConfig;
 
-class CC_DLL Label : public SpriteBatchNode, public LabelProtocol
+class CC_DLL Label : public CCSpriteBatchNode, public CCLabelProtocol
 {
 public:
     static const int DistanceFieldFontSize;
@@ -84,28 +84,28 @@ public:
      * @warning It will generate texture by the platform-dependent code
      */
     static Label* createWithSystemFont(const std::string& text, const std::string& font, float fontSize,
-        const Size& dimensions = Size::ZERO, TextHAlignment hAlignment = TextHAlignment::LEFT,
-        TextVAlignment vAlignment = TextVAlignment::TOP);
+        const CCSize& dimensions = CCSizeZero, CCTextAlignment hAlignment = kCCTextAlignmentLeft,
+        CCVerticalTextAlignment vAlignment = kCCVerticalTextAlignmentTop);
 
     /** Creates a label with an initial string,font file,font size, dimension in points, horizontal alignment and vertical alignment.
      * @warning Not support font name.
      * @warning Cache textures for each different font size or font file.
      */
     static Label * createWithTTF(const std::string& text, const std::string& fontFile, float fontSize,
-        const Size& dimensions = Size::ZERO, TextHAlignment hAlignment = TextHAlignment::LEFT,
-        TextVAlignment vAlignment = TextVAlignment::TOP);
+        const CCSize& dimensions = CCSizeZero, CCTextAlignment hAlignment = kCCTextAlignmentLeft,
+        CCVerticalTextAlignment vAlignment = kCCVerticalTextAlignmentTop);
 
     /** Create a label with TTF configuration
      * @warning Not support font name.
      * @warning Cache textures for each different font file when enable distance field.
      * @warning Cache textures for each different font size or font file when disable distance field.
      */
-    static Label* createWithTTF(const TTFConfig& ttfConfig, const std::string& text, TextHAlignment alignment = TextHAlignment::LEFT, int maxLineWidth = 0);
+    static Label* createWithTTF(const TTFConfig& ttfConfig, const std::string& text, CCTextAlignment hAlignment = kCCTextAlignmentLeft, int maxLineWidth = 0);
     
     /* Creates a label with an FNT file,an initial string,horizontal alignment,max line width and the offset of image*/
     static Label* createWithBMFont(const std::string& bmfontFilePath, const std::string& text,
-        const TextHAlignment& alignment = TextHAlignment::LEFT, int maxLineWidth = 0, 
-        const Vec2& imageOffset = Vec2::ZERO);
+        const CCTextAlignment& alignment = kCCTextAlignmentLeft, int maxLineWidth = 0,
+        const CCPoint& imageOffset = CCPointZero);
     
     static Label * createWithCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
     static Label * createWithCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);
@@ -115,7 +115,7 @@ public:
     virtual bool setTTFConfig(const TTFConfig& ttfConfig);
     virtual const TTFConfig& getTTFConfig() const { return _fontConfig;}
 
-    virtual bool setBMFontFilePath(const std::string& bmfontFilePath, const Vec2& imageOffset = Vec2::ZERO);
+    virtual bool setBMFontFilePath(const std::string& bmfontFilePath, const CCPoint& imageOffset = CCPointZero);
     const std::string& getBMFontFilePath() const { return _bmFontPath;}
 
     virtual bool setCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
@@ -133,47 +133,47 @@ public:
     /** changes the string to render
     * @warning It is as expensive as changing the string if you haven't set up TTF/BMFont/CharMap for the label.
     */
-    virtual void setString(const std::string& text) override;
+    virtual void setString(const std::string& text);
 
-    virtual const std::string& getString() const override {  return _originalUTF8String; }
+    virtual const std::string& getString() const {  return _originalUTF8String; }
 
     /** Sets the text color of the label
      * Only support for TTF and system font
      * @warning Different from the color of Node.
      */
-    virtual void setTextColor(const Color4B &color);
+    virtual void setTextColor(const ccColor4B &color);
     /** Returns the text color of this label
      * Only support for TTF and system font
      * @warning Different from the color of Node.
      */
-    const Color4B& getTextColor() const { return _textColor;}
+    const ccColor4B& getTextColor() const { return _textColor;}
 
     /**
      * Enable shadow for the label
      *
      * @todo support blur for shadow effect
      */
-    virtual void enableShadow(const Color4B& shadowColor = Color4B::BLACK,const Size &offset = Size(2,-2), int blurRadius = 0);
+    virtual void enableShadow(const ccColor4B& shadowColor = ccc4(0, 0, 0, 255),const CCSize &offset = CCSize(2,-2), int blurRadius = 0);
 
     /** only support for TTF */
-    virtual void enableOutline(const Color4B& outlineColor,int outlineSize = -1);
+    virtual void enableOutline(const ccColor4B& outlineColor,int outlineSize = -1);
 
     /** only support for TTF */
-    virtual void enableGlow(const Color4B& glowColor);
+    virtual void enableGlow(const ccColor4B& glowColor);
 
     /** disable shadow/outline/glow rendering */
     virtual void disableEffect();
 
-    void setAlignment(TextHAlignment hAlignment) { setAlignment(hAlignment,_vAlignment);}
-    TextHAlignment getTextAlignment() const { return _hAlignment;}
+    void setAlignment(CCTextAlignment hAlignment) { setAlignment(hAlignment,_vAlignment);}
+    CCTextAlignment getTextAlignment() const { return _hAlignment;}
 
-    void setAlignment(TextHAlignment hAlignment,TextVAlignment vAlignment);
+    void setAlignment(CCTextAlignment hAlignment,CCVerticalTextAlignment vAlignment);
 
-    void setHorizontalAlignment(TextHAlignment hAlignment) { setAlignment(hAlignment,_vAlignment); }
-    TextHAlignment getHorizontalAlignment() const { return _hAlignment; }
+    void setHorizontalAlignment(CCTextAlignment hAlignment) { setAlignment(hAlignment,_vAlignment); }
+    CCTextAlignment getHorizontalAlignment() const { return _hAlignment; }
 
-    void setVerticalAlignment(TextVAlignment vAlignment) { setAlignment(_hAlignment,vAlignment); }
-    TextVAlignment getVerticalAlignment() const { return _vAlignment; }
+    void setVerticalAlignment(CCVerticalTextAlignment vAlignment) { setAlignment(_hAlignment,vAlignment); }
+    CCVerticalTextAlignment getVerticalAlignment() const { return _vAlignment; }
 
     void setLineBreakWithoutSpace(bool breakWithoutSpace);
 
@@ -200,12 +200,12 @@ public:
 
     /** Sets the untransformed size of the label in a more efficient way. */
     void setDimensions(unsigned int width,unsigned int height);
-    const Size& getDimensions() const{ return _labelDimensions;}
+    const CCSize& getDimensions() const{ return _labelDimensions;}
 
     /** update content immediately.*/
     virtual void updateContent();
 
-    virtual Sprite * getLetter(int lettetIndex);
+    virtual CCSprite * getLetter(int lettetIndex);
 
     /** clip upper and lower margin for reduce height of label.
      */
@@ -239,46 +239,46 @@ public:
 
     FontAtlas* getFontAtlas() { return _fontAtlas; }
     
-    virtual void setBlendFunc(const BlendFunc &blendFunc) override;
+    virtual void setBlendFunc(const ccBlendFunc &blendFunc);
 
-    virtual bool isOpacityModifyRGB() const override;
-    virtual void setOpacityModifyRGB(bool isOpacityModifyRGB) override;
-    virtual void updateDisplayedColor(const Color3B& parentColor) override;
-    virtual void updateDisplayedOpacity(GLubyte parentOpacity) override;
+    virtual bool isOpacityModifyRGB() const;
+    virtual void setOpacityModifyRGB(bool isOpacityModifyRGB);
+    virtual void updateDisplayedColor(const ccColor3B& parentColor);
+    virtual void updateDisplayedOpacity(GLubyte parentOpacity);
 
-    virtual void setScale(float scale) override;
-    virtual void setScaleX(float scaleX) override;
-    virtual void setScaleY(float scaleY) override;
-    virtual float getScaleX() const override;
-    virtual float getScaleY() const override;
+    virtual void setScale(float scale);
+    virtual void setScaleX(float scaleX);
+    virtual void setScaleY(float scaleY);
+    virtual float getScaleX() const;
+    virtual float getScaleY() const;
 
-    virtual void addChild(Node * child, int zOrder=0, int tag=0) override;
-    virtual void sortAllChildren() override;
+    virtual void addChild(CCNode * child, int zOrder=0, int tag=0);
+    virtual void sortAllChildren();
 
-    virtual std::string getDescription() const override;
+    virtual std::string getDescription() const;
 
-    virtual const Size& getContentSize() const override;
+    virtual const CCSize& getContentSize() const;
 
-    virtual Rect getBoundingBox() const override;
+    virtual CCRect getBoundingBox() const;
 
-    virtual void visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t parentFlags) override;
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
+    virtual void visit();
+    virtual void draw();
 
     CC_DEPRECATED_ATTRIBUTE static Label* create(const std::string& text, const std::string& font, float fontSize,
-        const Size& dimensions = Size::ZERO, TextHAlignment hAlignment = TextHAlignment::LEFT,
-        TextVAlignment vAlignment = TextVAlignment::TOP);
+        const CCSize& dimensions = CCSizeZero, CCTextAlignment hAlignment = kCCTextAlignmentLeft,
+        CCVerticalTextAlignment vAlignment = kCCVerticalTextAlignmentTop);
 
-    CC_DEPRECATED_ATTRIBUTE virtual void setFontDefinition(const FontDefinition& textDefinition);
-    CC_DEPRECATED_ATTRIBUTE const FontDefinition& getFontDefinition() const { return _fontDefinition; }
+    CC_DEPRECATED_ATTRIBUTE virtual void setFontDefinition(const ccFontDefinition& textDefinition);
+    CC_DEPRECATED_ATTRIBUTE const ccFontDefinition& getFontDefinition() const { return _fontDefinition; }
 
     CC_DEPRECATED_ATTRIBUTE int getCommonLineHeight() const { return getLineHeight();}
 
-CC_CONSTRUCTOR_ACCESS:
+protected:
     /**
      * @js NA
      */
-    Label(FontAtlas *atlas = nullptr, TextHAlignment hAlignment = TextHAlignment::LEFT,
-      TextVAlignment vAlignment = TextVAlignment::TOP,bool useDistanceField = false,bool useA8Shader = false);
+    Label(FontAtlas *atlas = NULL, CCTextAlignment hAlignment = kCCTextAlignmentLeft,
+      CCVerticalTextAlignment vAlignment = kCCVerticalTextAlignmentTop,bool useDistanceField = false,bool useA8Shader = false);
     /**
      * @js NA
      * @lua NA
@@ -286,17 +286,17 @@ CC_CONSTRUCTOR_ACCESS:
     virtual ~Label();
 
 protected:
-    void onDraw(const Mat4& transform, bool transformUpdated);
+    void onDraw(const CCAffineTransform& transform, bool transformUpdated);
 
     struct LetterInfo
     {
         FontLetterDefinition def;
 
-        Vec2 position;
-        Size  contentSize;
+        CCPoint position;
+        CCSize  contentSize;
         int   atlasIndex;
     };
-    enum class LabelType {
+    enum  LabelType {
 
         TTF,
         BMFONT,
@@ -306,26 +306,27 @@ protected:
 
     virtual void setFontAtlas(FontAtlas* atlas,bool distanceFieldEnabled = false, bool useA8Shader = false);
 
-    bool recordLetterInfo(const cocos2d::Vec2& point,const FontLetterDefinition& letterDef, int spriteIndex);
+    bool recordLetterInfo(const CCPoint& point,const FontLetterDefinition& letterDef, int spriteIndex);
     bool recordPlaceholderInfo(int spriteIndex);
 
     void setFontScale(float fontScale);
     
     virtual void alignText();
     
-    bool computeHorizontalKernings(const std::u16string& stringToRender);
+    //bool computeHorizontalKernings(const std::u16string& stringToRender);
+    bool computeHorizontalKernings(unsigned short* stringToRender);
 
     void computeStringNumLines();
 
     void updateQuads();
 
-    virtual void updateColor() override;
+    virtual void updateColor();
 
     virtual void updateShaderProgram();
 
     void drawShadowWithoutBlur();
 
-    void drawTextSprite(Renderer *renderer, uint32_t parentFlags);
+    void drawTextSprite();
 
     void createSpriteWithFontDefinition();
 
@@ -367,8 +368,8 @@ protected:
     Size         _labelDimensions;
     unsigned int _labelWidth;
     unsigned int _labelHeight;
-    TextHAlignment _hAlignment;
-    TextVAlignment _vAlignment;
+    CCTextAlignment _hAlignment;
+    CCVerticalTextAlignment _vAlignment;
 
     int           _currNumLines;
     std::u16string _currentUTF16String;

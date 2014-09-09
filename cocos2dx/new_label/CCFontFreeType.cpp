@@ -51,14 +51,14 @@ FontFreeType * FontFreeType::create(const std::string &fontName, int fontSize, G
     FontFreeType *tempFont =  new FontFreeType(distanceFieldEnabled,outline);
 
     if (!tempFont)
-        return nullptr;
+        return NULL;
     
     tempFont->setCurrentGlyphCollection(glyphs, customGlyphs);
     
     if (!tempFont->createFontObject(fontName, fontSize))
     {
         delete tempFont;
-        return nullptr;
+        return NULL;
     }
     return tempFont;
 }
@@ -93,10 +93,10 @@ FT_Library FontFreeType::getFTLibrary()
 }
 
 FontFreeType::FontFreeType(bool distanceFieldEnabled /* = false */,int outline /* = 0 */)
-: _fontRef(nullptr)
+: _fontRef(NULL)
 ,_distanceFieldEnabled(distanceFieldEnabled)
 ,_outlineSize(outline)
-,_stroker(nullptr)
+,_stroker(NULL)
 {
     if (_outlineSize > 0)
     {
@@ -185,19 +185,20 @@ FontAtlas * FontFreeType::createFontAtlas()
     return atlas;
 }
 
-int * FontFreeType::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+//int * FontFreeType::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+int * FontFreeType::getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const
 {
     if (!_fontRef)
-        return nullptr;
+        return NULL;
     
     outNumLetters = static_cast<int>(text.length());
 
     if (!outNumLetters)
-        return nullptr;
+        return NULL;
     
     int *sizes = new int[outNumLetters];
     if (!sizes)
-        return nullptr;
+        return NULL;
     memset(sizes,0,outNumLetters * sizeof(int));
 
     bool hasKerning = FT_HAS_KERNING( _fontRef ) != 0;
@@ -247,7 +248,7 @@ int FontFreeType::getFontAscender() const
 unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, Rect &outRect,int &xAdvance)
 {
     bool invalidChar = true;
-    unsigned char * ret = nullptr;
+    unsigned char * ret = NULL;
 
     do 
     {
@@ -287,9 +288,9 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
 
             FT_BBox bbox;
             auto outlineBitmap = getGlyphBitmapWithOutline(theChar,bbox);
-            if(outlineBitmap == nullptr)
+            if(outlineBitmap == NULL)
             {
-                ret = nullptr;
+                ret = NULL;
                 delete [] copyBitmap;
                 break;
             }
@@ -350,7 +351,7 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
         outRect.size.height = 0;
         xAdvance = 0;
 
-        return nullptr;
+        return NULL;
     }
     else
     {
@@ -360,7 +361,7 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
 
 unsigned char * FontFreeType::getGlyphBitmapWithOutline(unsigned short theChar, FT_BBox &bbox)
 {   
-    unsigned char* ret = nullptr;
+    unsigned char* ret = NULL;
 
     FT_UInt gindex = FT_Get_Char_Index(_fontRef, theChar);
     if (FT_Load_Glyph(_fontRef, gindex, FT_LOAD_NO_BITMAP) == 0)

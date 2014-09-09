@@ -53,7 +53,7 @@ bool LabelTextFormatter::multilineText(Label *theLabel)
     float scalsX = theLabel->getScaleX();
     float lineWidth = theLabel->_maxLineWidth;
     bool breakLineWithoutSpace = theLabel->_lineBreakWithoutSpaces;
-    Label::LetterInfo* info = nullptr;
+    Label::LetterInfo* info = NULL;
 
     for (int j = 0; j+skip < limit; j++)
     {            
@@ -172,12 +172,24 @@ bool LabelTextFormatter::multilineText(Label *theLabel)
 
     multiline_string.insert(multiline_string.end(), last_word.begin(), last_word.end());
 
-    std::u16string strNew(multiline_string.begin(), multiline_string.end());
+//    std::u16string strNew(multiline_string.begin(), multiline_string.end());
+    int size = multiline_string.size();
+    unsigned short* strNew = new unsigned short[size + 1];
+    
+    for (int i = 0; i < size; ++i)
+    {
+        str_new[i] = multiline_string[i];
+    }
+    
+    strNew[size] = '\0';
+    //TODO u16string
     
     theLabel->_currentUTF16String = strNew;
     theLabel->computeStringNumLines();
     theLabel->computeHorizontalKernings(theLabel->_currentUTF16String);
 
+    CC_SAFE_DELETE_ARRAY(strNew);
+    
     return true;
 }
 
@@ -219,13 +231,13 @@ bool LabelTextFormatter::alignText(Label *theLabel)
             float shift = 0;
             switch (theLabel->_hAlignment)
             {
-                case TextHAlignment::CENTER:
+                case kCCTextAlignmentCenter:
                     {
                         float lineWidth = info->position.x + info->contentSize.width;
                         shift = theLabel->_contentSize.width/2.0f - lineWidth/2.0f;
                         break;
                     }
-                case TextHAlignment::RIGHT:
+                case kCCTextAlignmentRight:
                     {
                         float lineWidth = info->position.x + info->contentSize.width;
                         shift = theLabel->_contentSize.width - lineWidth;
@@ -289,13 +301,13 @@ bool LabelTextFormatter::createStringSprites(Label *theLabel)
         }
         switch (theLabel->_vAlignment)
         {
-        case TextVAlignment::TOP:
+        case kCCVerticalTextAlignmentTop:
             nextFontPositionY = labelHeightPixel;
             break;
-        case TextVAlignment::CENTER:
+        case kCCVerticalTextAlignmentCenter:
             nextFontPositionY = (labelHeightPixel + totalHeight) / 2.0f;
             break;
-        case TextVAlignment::BOTTOM:
+        case kCCVerticalTextAlignmentBottom:
             nextFontPositionY = totalHeight;
             break;
         default:

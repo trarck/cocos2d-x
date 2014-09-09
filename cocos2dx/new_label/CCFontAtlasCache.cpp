@@ -88,7 +88,7 @@ FontAtlas * FontAtlasCache::getFontAtlasTTF(const TTFConfig & config)
         return _atlasMap[atlasName];
     }
 
-    return nullptr;
+    return NULL;
 }
 
 FontAtlas * FontAtlasCache::getFontAtlasFNT(const std::string& fontFileName, const Vec2& imageOffset /* = Vec2::ZERO */)
@@ -116,7 +116,7 @@ FontAtlas * FontAtlasCache::getFontAtlasFNT(const std::string& fontFileName, con
         return _atlasMap[atlasName];
     }
     
-    return nullptr;
+    return NULL;
 }
 
 FontAtlas * FontAtlasCache::getFontAtlasCharMap(const std::string& plistFile)
@@ -144,7 +144,7 @@ FontAtlas * FontAtlasCache::getFontAtlasCharMap(const std::string& plistFile)
         return _atlasMap[atlasName];
     }
 
-    return nullptr;
+    return NULL;
 }
 
 FontAtlas * FontAtlasCache::getFontAtlasCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap)
@@ -174,7 +174,7 @@ FontAtlas * FontAtlasCache::getFontAtlasCharMap(Texture2D* texture, int itemWidt
         return _atlasMap[atlasName];
     }
 
-    return nullptr;
+    return NULL;
 }
 
 FontAtlas * FontAtlasCache::getFontAtlasCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap)
@@ -205,7 +205,7 @@ FontAtlas * FontAtlasCache::getFontAtlasCharMap(const std::string& charMapFile, 
         return _atlasMap[atlasName];
     }
 
-    return nullptr;
+    return NULL;
 }
 
 std::string FontAtlasCache::generateFontName(const std::string& fontFileName, int size, GlyphCollection theGlyphs, bool useDistanceField)
@@ -243,7 +243,7 @@ std::string FontAtlasCache::generateFontName(const std::string& fontFileName, in
 
 bool FontAtlasCache::releaseFontAtlas(FontAtlas *atlas)
 {
-    if (nullptr != atlas)
+    if (NULL != atlas)
     {
         for( auto &item: _atlasMap )
         {

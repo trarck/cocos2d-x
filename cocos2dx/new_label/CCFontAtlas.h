@@ -35,7 +35,8 @@ NS_CC_BEGIN
 
 //fwd
 class Font;
-class Texture2D;
+class CCTexture2D;
+
 class EventCustom;
 class EventListenerCustom;
 
@@ -72,16 +73,18 @@ public:
     virtual ~FontAtlas();
     
     void addLetterDefinition(const FontLetterDefinition &letterDefinition);
-    bool getLetterDefinitionForChar(char16_t letteCharUTF16, FontLetterDefinition &outDefinition);
+//    bool getLetterDefinitionForChar(char16_t letteCharUTF16, FontLetterDefinition &outDefinition);
+    bool getLetterDefinitionForChar(unsigned short letteCharUTF16, FontLetterDefinition &outDefinition);
     
-    bool prepareLetterDefinitions(const std::u16string& utf16String);
+    //bool prepareLetterDefinitions(const std::u16string& utf16String);
+    bool prepareLetterDefinitions(unsigned short * utf16String);
 
-    inline const std::map<ssize_t, Texture2D*>& getTextures() const{ return _atlasTextures;}
-    void  addTexture(Texture2D *texture, int slot);
+    inline const std::map<ssize_t, CCTexture2D*>& getTextures() const{ return _atlasTextures;}
+    void  addTexture(CCTexture2D *texture, int slot);
     float getCommonLineHeight() const;
     void  setCommonLineHeight(float newHeight);
     
-    Texture2D* getTexture(int slot);
+    CCTexture2D* getTexture(int slot);
     const Font* getFont() const;
 
     /** listen the event that renderer was recreated on Android/WP8
@@ -109,7 +112,7 @@ public:
 private:
 
     void relaseTextures();
-    std::map<ssize_t, Texture2D*> _atlasTextures;
+    std::map<ssize_t, CCTexture2D*> _atlasTextures;
     std::map<unsigned short, FontLetterDefinition> _fontLetterDefinitions;
     float _commonLineHeight;
     Font * _font;

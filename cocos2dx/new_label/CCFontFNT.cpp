@@ -160,19 +160,19 @@ private:
 //
 //FNTConfig Cache - free functions
 //
-static Map<std::string, BMFontConfiguration*>* s_configurations = nullptr;
+static Map<std::string, BMFontConfiguration*>* s_configurations = NULL;
 
 BMFontConfiguration* FNTConfigLoadFile(const std::string& fntFile)
 {
-    BMFontConfiguration* ret = nullptr;
+    BMFontConfiguration* ret = NULL;
 
-    if( s_configurations == nullptr )
+    if( s_configurations == NULL )
     {
         s_configurations = new (std::nothrow) Map<std::string, BMFontConfiguration*>();
     }
 
     ret = s_configurations->at(fntFile);
-    if( ret == nullptr )
+    if( ret == NULL )
     {
         ret = BMFontConfiguration::create(fntFile.c_str());
         if (ret)
@@ -197,13 +197,13 @@ BMFontConfiguration * BMFontConfiguration::create(const std::string& FNTfile)
         return ret;
     }
     CC_SAFE_DELETE(ret);
-    return nullptr;
+    return NULL;
 }
 
 bool BMFontConfiguration::initWithFNTfile(const std::string& FNTfile)
 {
-    _kerningDictionary = nullptr;
-    _fontDefDictionary = nullptr;
+    _kerningDictionary = NULL;
+    _fontDefDictionary = NULL;
     
     _characterSet = this->parseConfigFile(FNTfile);
     
@@ -221,10 +221,10 @@ std::set<unsigned int>* BMFontConfiguration::getCharacterSet() const
 }
 
 BMFontConfiguration::BMFontConfiguration()
-: _fontDefDictionary(nullptr)
+: _fontDefDictionary(NULL)
 , _commonHeight(0)
-, _kerningDictionary(nullptr)
-, _characterSet(nullptr)
+, _kerningDictionary(NULL)
+, _characterSet(NULL)
 {
 
 }
@@ -289,7 +289,7 @@ std::set<unsigned int>* BMFontConfiguration::parseConfigFile(const std::string& 
     if (contents.empty())
     {
         CCLOG("cocos2d: Error parsing FNTfile %s", controlFile.c_str());
-        return nullptr;
+        return NULL;
     }
 
     // parse spacing / padding
@@ -670,14 +670,14 @@ FontFNT * FontFNT::create(const std::string& fntFilePath, const Vec2& imageOffse
 {
     BMFontConfiguration *newConf = FNTConfigLoadFile(fntFilePath);
     if (!newConf)
-        return nullptr;
+        return NULL;
     
     // add the texture
     Texture2D *tempTexture = Director::getInstance()->getTextureCache()->addImage(newConf->getAtlasName());
     if (!tempTexture)
     {
         delete newConf;
-        return nullptr;
+        return NULL;
     }
     
     FontFNT *tempFont =  new FontFNT(newConf,imageOffset);
@@ -685,7 +685,7 @@ FontFNT * FontFNT::create(const std::string& fntFilePath, const Vec2& imageOffse
     if (!tempFont)
     {
         delete newConf;
-        return nullptr;
+        return NULL;
     }
     tempFont->autorelease();
     return tempFont;
@@ -712,7 +712,8 @@ void FontFNT::purgeCachedData()
     }
 }
 
-int * FontFNT::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+//int * FontFNT::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+int * FontFNT::getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const
 {
     outNumLetters = static_cast<int>(text.length());
     
@@ -741,7 +742,7 @@ int  FontFNT::getHorizontalKerningForChars(unsigned short firstChar, unsigned sh
     
     if (_configuration->_kerningDictionary)
     {
-        tKerningHashElement *element = nullptr;
+        tKerningHashElement *element = NULL;
         HASH_FIND_INT(_configuration->_kerningDictionary, &key, element);
         
         if (element)
@@ -755,18 +756,18 @@ FontAtlas * FontFNT::createFontAtlas()
 {
     FontAtlas *tempAtlas = new (std::nothrow) FontAtlas(*this);
     if (!tempAtlas)
-        return nullptr;
+        return NULL;
     
     // check that everything is fine with the BMFontCofniguration
     if (!_configuration->_fontDefDictionary)
-        return nullptr;
+        return NULL;
     
     size_t numGlyphs = _configuration->_characterSet->size();
     if (!numGlyphs)
-        return nullptr;
+        return NULL;
     
     if (_configuration->_commonHeight == 0)
-        return nullptr;
+        return NULL;
     
     // commone height
     tempAtlas->setCommonLineHeight(_configuration->_commonHeight);

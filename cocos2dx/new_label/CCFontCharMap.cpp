@@ -49,14 +49,14 @@ FontCharMap * FontCharMap::create(const std::string& plistFile)
     Texture2D *tempTexture = Director::getInstance()->getTextureCache()->addImage(textureFilename);
     if (!tempTexture)
     {
-        return nullptr;
+        return NULL;
     }
     
     FontCharMap *tempFont =  new FontCharMap(tempTexture,width,height,startChar);
     
     if (!tempFont)
     {
-        return nullptr;
+        return NULL;
     }
     tempFont->autorelease();
     return tempFont;
@@ -68,14 +68,14 @@ FontCharMap* FontCharMap::create(const std::string& charMapFile, int itemWidth, 
 
     if (!tempTexture)
     {
-        return nullptr;
+        return NULL;
     }
 
     FontCharMap *tempFont =  new FontCharMap(tempTexture,itemWidth,itemHeight,startCharMap);
 
     if (!tempFont)
     {
-        return nullptr;
+        return NULL;
     }
     tempFont->autorelease();
     return tempFont;
@@ -87,7 +87,7 @@ FontCharMap* FontCharMap::create(Texture2D* texture, int itemWidth, int itemHeig
 
     if (!tempFont)
     {
-        return nullptr;
+        return NULL;
     }
     tempFont->autorelease();
     return tempFont;
@@ -98,7 +98,8 @@ FontCharMap::~FontCharMap()
 
 }
 
-int * FontCharMap::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+//int * FontCharMap::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+int * FontCharMap::getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const
 {
     outNumLetters = static_cast<int>(text.length());
     
@@ -121,7 +122,7 @@ FontAtlas * FontCharMap::createFontAtlas()
 {
     FontAtlas *tempAtlas = new (std::nothrow) FontAtlas(*this);
     if (!tempAtlas)
-        return nullptr;
+        return NULL;
     
     Size s = _texture->getContentSize();
 

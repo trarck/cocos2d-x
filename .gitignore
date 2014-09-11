@@ -116,6 +116,7 @@ tags
 /external/emscripten/
 /external/libwebsockets/
 /external/sqlite3/
+/external/freetype2/
 /scripting/javascript/spidermonkey-android/
 /scripting/javascript/spidermonkey-ios/
 /scripting/javascript/spidermonkey-win32/

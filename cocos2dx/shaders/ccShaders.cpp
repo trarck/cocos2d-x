@@ -82,4 +82,7 @@ const GLchar * ccPositionColorLengthTexture_vert =
 #include "ccShader_Label_normal.frag"
 #include "ccShader_Label_outline.frag"
 
+#include "ccShader_Blur.vert"
+#include "ccShader_Blur.frag"
+
 NS_CC_END

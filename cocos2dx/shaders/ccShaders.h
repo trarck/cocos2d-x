@@ -67,6 +67,9 @@ extern CC_DLL const GLchar * ccLabelOutline_frag;
 
 extern CC_DLL const GLchar * ccLabel_vert;
 
+extern CC_DLL const GLchar * ccBlur_vert;
+extern CC_DLL const GLchar * ccBlur_frag;
+
 // end of shaders group
 /// @}
 

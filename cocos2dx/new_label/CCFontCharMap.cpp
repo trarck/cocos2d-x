@@ -45,8 +45,8 @@ FontCharMap * FontCharMap::create(const std::string& plistFile)
 
     std::string textureFilename = relPathStr + static_cast<CCString*>(dict->objectForKey("textureFilename"))->getCString();
 
-    unsigned int width = static_cast<CCInteger*>(dict->objectForKey("itemWidth"))->getValue() / CC_CONTENT_SCALE_FACTOR();
-    unsigned int height = static_cast<CCInteger*>(dict->objectForKey("itemHeight"))->getValue() / CC_CONTENT_SCALE_FACTOR();
+    unsigned int width = static_cast<CCInteger*>(dict->objectForKey("itemWidth"))->getValue() ;/// CC_CONTENT_SCALE_FACTOR();
+    unsigned int height = static_cast<CCInteger*>(dict->objectForKey("itemHeight"))->getValue();// / CC_CONTENT_SCALE_FACTOR();
     unsigned int startChar = static_cast<CCInteger*>(dict->objectForKey("firstChar"))->getValue();
 
     CCTexture2D *tempTexture = CCTextureCache::sharedTextureCache()->addImage(textureFilename.c_str());
@@ -127,7 +127,7 @@ FontAtlas * FontCharMap::createFontAtlas()
     if (!tempAtlas)
         return NULL;
     
-    CCSize s = _texture->getContentSize();
+    CCSize s = _texture->getContentSizeInPixels();
 
     int itemsPerColumn = (int)(s.height / _itemHeight);
     int itemsPerRow = (int)(s.width / _itemWidth);
@@ -139,9 +139,9 @@ FontAtlas * FontCharMap::createFontAtlas()
     tempDefinition.offsetX  = 0.0f;
     tempDefinition.offsetY  = 0.0f;
     tempDefinition.validDefinition = true;
-    tempDefinition.width    = _itemWidth;
-    tempDefinition.height   = _itemHeight;
-    tempDefinition.xAdvance = _itemWidth * CC_CONTENT_SCALE_FACTOR();
+    tempDefinition.width    = _itemWidth  / CC_CONTENT_SCALE_FACTOR();
+    tempDefinition.height   = _itemHeight /CC_CONTENT_SCALE_FACTOR();
+    tempDefinition.xAdvance = _itemWidth ;//* CC_CONTENT_SCALE_FACTOR();
 
     int charId = _mapStartChar;
     for (int row = 0; row < itemsPerColumn; ++row)
@@ -150,8 +150,8 @@ FontAtlas * FontCharMap::createFontAtlas()
         {
             tempDefinition.letteCharUTF16 = charId;
 
-            tempDefinition.U        = _itemWidth * col;
-            tempDefinition.V        = _itemHeight * row;           
+            tempDefinition.U        = _itemWidth * col /CC_CONTENT_SCALE_FACTOR();
+            tempDefinition.V        = _itemHeight * row /CC_CONTENT_SCALE_FACTOR();
 
             tempAtlas->addLetterDefinition(tempDefinition);
             charId++;

@@ -76,6 +76,8 @@ enum {
 #define kCCShader_LABEL_NORMAL "ShaderLabelNormal"
 #define kCCShader_LABEL_OUTLINE "ShaderLabelOutline"
 
+#define kCCShader_Blur "ShaderBlur"
+
 // uniform names
 #define kCCUniformPMatrix_s				"CC_PMatrix"
 #define kCCUniformMVMatrix_s			"CC_MVMatrix"
@@ -86,6 +88,7 @@ enum {
 #define kCCUniformRandom01_s			"CC_Random01"
 #define kCCUniformSampler_s				"CC_Texture0"
 #define kCCUniformAlphaTestValue		"CC_alpha_value"
+#define kCCUniformBlurSize              "CC_BlurSize"
 
 // Attribute names
 #define    kCCAttributeNameColor           "a_color"

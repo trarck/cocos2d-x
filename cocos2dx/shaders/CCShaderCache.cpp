@@ -48,6 +48,8 @@ enum {
     kCCShaderType_LabelNormal,
     kCCShaderType_LabelOutline,
     
+    kCCShaderType_Blur,
+    
     kCCShaderType_MAX,
 };
 
@@ -170,26 +172,45 @@ void CCShaderCache::loadDefaultShaders()
     m_pPrograms->setObject(p, kCCShader_ControlSwitch);
     p->release();
     
+    //
+    //label df normal
+    //
     p = new CCGLProgram();
     loadDefaultShader(p, kCCShaderType_LabelDistanceFieldNormal);
     m_pPrograms->setObject(p,kCCShader_LABEL_DISTANCEFIELD_NORMAL);
     p->release();
     
+    //
+    //label df glow
+    //
     p = new CCGLProgram();
     loadDefaultShader(p, kCCShaderType_LabelDistanceFieldGlow);
     m_pPrograms->setObject( p,kCCShader_LABEL_DISTANCEFIELD_GLOW);
     p->release();
     
+    //
+    //label normal
+    //
     p = new CCGLProgram();
     loadDefaultShader(p, kCCShaderType_LabelNormal);
     m_pPrograms->setObject( p,kCCShader_LABEL_NORMAL);
     p->release();
     
+    //
+    //label outline
+    //
     p = new CCGLProgram();
     loadDefaultShader(p, kCCShaderType_LabelOutline);
     m_pPrograms->setObject( p,kCCShader_LABEL_OUTLINE);
     p->release();
-
+    
+    //
+    //blur
+    //
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_Blur);
+    m_pPrograms->setObject( p,kCCShader_Blur);
+    p->release();
 
 }
 
@@ -250,6 +271,41 @@ void CCShaderCache::reloadDefaultShaders()
     p = programForKey(kCCShader_PositionLengthTexureColor);
     p->reset();
     loadDefaultShader(p, kCCShaderType_PositionLengthTexureColor);
+    
+    //
+    //label df normal
+    //
+    p = programForKey(kCCShader_LABEL_DISTANCEFIELD_NORMAL);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_LabelDistanceFieldNormal);
+    
+    //
+    //label df glow
+    //
+    p = programForKey(kCCShader_LABEL_DISTANCEFIELD_GLOW);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_LabelDistanceFieldGlow);
+    
+    //
+    //label normal
+    //
+    p = programForKey(kCCShader_LABEL_NORMAL);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_LabelNormal);
+    
+    //
+    //label outline
+    //
+    p = programForKey(kCCShader_LABEL_OUTLINE);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_LabelOutline);
+    
+    //
+    //blur
+    //
+    p = programForKey(kCCShader_Blur);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_Blur);
 }
 
 
@@ -353,6 +409,15 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             break;
         case kCCShaderType_LabelOutline:
             p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelOutline_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+            
+        case kCCShaderType_Blur:
+            p->initWithVertexShaderByteArray(ccBlur_vert, ccBlur_frag);
             
             p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
             p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);

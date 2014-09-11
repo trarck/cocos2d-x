@@ -23,21 +23,21 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "base/CCData.h"
+#include "CCData.h"
 
 NS_CC_BEGIN
 
 const Data Data::Null;
 
 Data::Data() :
-_bytes(nullptr),
+_bytes(NULL),
 _size(0)
 {
     CCLOGINFO("In the empty constructor of Data.");
 }
 
 Data::Data(Data&& other) :
-_bytes(nullptr),
+_bytes(NULL),
 _size(0)
 {
     CCLOGINFO("In the move constructor of Data.");
@@ -45,7 +45,7 @@ _size(0)
 }
 
 Data::Data(const Data& other) :
-_bytes(nullptr),
+_bytes(NULL),
 _size(0)
 {
     CCLOGINFO("In the copy constructor of Data.");
@@ -77,13 +77,13 @@ void Data::move(Data& other)
     _bytes = other._bytes;
     _size = other._size;
     
-    other._bytes = nullptr;
+    other._bytes = NULL;
     other._size = 0;
 }
 
 bool Data::isNull() const
 {
-    return (_bytes == nullptr || _size == 0);
+    return (_bytes == NULL || _size == 0);
 }
 
 unsigned char* Data::getBytes() const
@@ -117,7 +117,7 @@ void Data::fastSet(unsigned char* bytes, const ssize_t size)
 void Data::clear()
 {
     free(_bytes);
-    _bytes = nullptr;
+    _bytes = NULL;
     _size = 0;
 }
 

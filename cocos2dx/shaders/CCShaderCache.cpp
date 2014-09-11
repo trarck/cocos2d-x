@@ -43,6 +43,11 @@ enum {
     kCCShaderType_PositionLengthTexureColor,
     kCCShaderType_ControlSwitch,
     
+    kCCShaderType_LabelDistanceFieldNormal,
+    kCCShaderType_LabelDistanceFieldGlow,
+    kCCShaderType_LabelNormal,
+    kCCShaderType_LabelOutline,
+    
     kCCShaderType_MAX,
 };
 
@@ -164,6 +169,28 @@ void CCShaderCache::loadDefaultShaders()
     
     m_pPrograms->setObject(p, kCCShader_ControlSwitch);
     p->release();
+    
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_LabelDistanceFieldNormal);
+    m_pPrograms->setObject(p,kCCShader_LABEL_DISTANCEFIELD_NORMAL);
+    p->release();
+    
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_LabelDistanceFieldGlow);
+    m_pPrograms->setObject( p,kCCShader_LABEL_DISTANCEFIELD_GLOW);
+    p->release();
+    
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_LabelNormal);
+    m_pPrograms->setObject( p,kCCShader_LABEL_NORMAL);
+    p->release();
+    
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_LabelOutline);
+    m_pPrograms->setObject( p,kCCShader_LABEL_OUTLINE);
+    p->release();
+
+
 }
 
 
@@ -299,7 +326,40 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
 
             break;
-
+            
+        case kCCShaderType_LabelDistanceFieldNormal:
+            p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelDistanceFieldNormal_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+        case kCCShaderType_LabelDistanceFieldGlow:
+            p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelDistanceFieldGlow_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+        case kCCShaderType_LabelNormal:
+            p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelNormal_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+        case kCCShaderType_LabelOutline:
+            p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelOutline_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+            
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);
             return;
@@ -309,6 +369,8 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
     p->updateUniforms();
     
     CHECK_GL_ERROR_DEBUG();
+    
+    CCLOG("pg:%d,%d",p->getProgram(),type);
 }
 
 CCGLProgram* CCShaderCache::programForKey(const char* key)

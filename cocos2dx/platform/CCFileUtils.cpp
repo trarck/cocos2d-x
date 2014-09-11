@@ -485,6 +485,81 @@ void CCFileUtils::purgeCachedEntries()
     m_fullPathCache.clear();
 }
 
+static Data getData(const std::string& filename, bool forString)
+{
+    if (filename.empty())
+    {
+        return Data::Null;
+    }
+    
+    Data ret;
+    unsigned char* buffer = NULL;
+    ssize_t size = 0;
+    size_t readsize;
+    const char* mode = NULL;
+    if (forString)
+        mode = "rt";
+    else
+        mode = "rb";
+    
+    do
+    {
+        // Read the file from hardware
+        std::string fullPath = CCFileUtils::sharedFileUtils()->fullPathForFilename(filename.c_str());
+        FILE *fp = fopen(fullPath.c_str(), mode);
+        CC_BREAK_IF(!fp);
+        fseek(fp,0,SEEK_END);
+        size = ftell(fp);
+        fseek(fp,0,SEEK_SET);
+        
+        if (forString)
+        {
+            buffer = (unsigned char*)malloc(sizeof(unsigned char) * (size + 1));
+            buffer[size] = '\0';
+        }
+        else
+        {
+            buffer = (unsigned char*)malloc(sizeof(unsigned char) * size);
+        }
+        
+        readsize = fread(buffer, sizeof(unsigned char), size, fp);
+        fclose(fp);
+        
+        if (forString && readsize < size)
+        {
+            buffer[readsize] = '\0';
+        }
+    } while (0);
+    
+    if (NULL == buffer || 0 == readsize)
+    {
+        std::string msg = "Get data from file(";
+        msg.append(filename).append(") failed!");
+        CCLOG("%s", msg.c_str());
+    }
+    else
+    {
+        ret.fastSet(buffer, readsize);
+    }
+    
+    return ret;
+}
+
+std::string CCFileUtils::getStringFromFile(const std::string& filename)
+{
+    Data data = getData(filename, true);
+    if (data.isNull())
+    	return "";
+    
+    std::string ret((const char*)data.getBytes());
+    return ret;
+}
+
+Data CCFileUtils::getDataFromFile(const std::string& filename)
+{
+    return getData(filename, false);
+}
+
 unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* pszMode, unsigned long * pSize)
 {
     unsigned char * pBuffer = NULL;

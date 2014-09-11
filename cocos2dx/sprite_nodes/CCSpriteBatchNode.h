@@ -60,7 +60,7 @@ class CCSprite;
 * 
 * @since v0.7.1
 */
-class CC_DLL CCSpriteBatchNode : public CCNode, public CCTextureProtocol
+class CC_DLL CCSpriteBatchNode : public CCNodeRGBA, public CCTextureProtocol
 {
 public:
     /**
@@ -154,12 +154,12 @@ public:
     virtual void sortAllChildren();
     virtual void draw(void);
 
-protected:
     /** Inserts a quad at a certain index into the texture atlas. The CCSprite won't be added into the children array.
      This method should be called only when you are dealing with very big AtlasSrite and when most of the CCSprite won't be updated.
      For example: a tile map (CCTMXMap) or a label with lots of characters (CCLabelBMFont)
      */
     void insertQuadFromSprite(CCSprite *sprite, unsigned int index);
+    
     /** Updates a quad at a certain index into the texture atlas. The CCSprite won't be added into the children array.
      This method should be called only when you are dealing with very big AtlasSrite and when most of the CCSprite won't be updated.
      For example: a tile map (CCTMXMap) or a label with lots of characters (CCLabelBMFont)

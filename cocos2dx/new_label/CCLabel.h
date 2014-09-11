@@ -29,6 +29,7 @@
 
 #include "sprite_nodes/CCSpriteBatchNode.h"
 #include "CCFontAtlas.h"
+#include <vector>
 
 NS_CC_BEGIN
 
@@ -108,7 +109,7 @@ public:
         const CCPoint& imageOffset = CCPointZero);
     
     static Label * createWithCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
-    static Label * createWithCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);
+    static Label * createWithCharMap(CCTexture2D* texture, int itemWidth, int itemHeight, int startCharMap);
     static Label * createWithCharMap(const std::string& plistFile);
 
     /** set TTF configuration for Label */
@@ -119,7 +120,7 @@ public:
     const std::string& getBMFontFilePath() const { return _bmFontPath;}
 
     virtual bool setCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
-    virtual bool setCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);
+    virtual bool setCharMap(CCTexture2D* texture, int itemWidth, int itemHeight, int startCharMap);
     virtual bool setCharMap(const std::string& plistFile);
 
     /* Sets the system font[font name or font file] of label*/
@@ -136,6 +137,11 @@ public:
     virtual void setString(const std::string& text);
 
     virtual const std::string& getString() const {  return _originalUTF8String; }
+    
+    virtual void setString(const char *label);
+    
+    virtual const char* getString(void) {return _originalUTF8String.c_str();};
+    
 
     /** Sets the text color of the label
      * Only support for TTF and system font
@@ -259,7 +265,7 @@ public:
 
     virtual const CCSize& getContentSize() const;
 
-    virtual CCRect getBoundingBox() const;
+    virtual CCRect getBoundingBox();
 
     virtual void visit();
     virtual void draw();
@@ -286,8 +292,13 @@ protected:
     virtual ~Label();
 
 protected:
-    void onDraw(const CCAffineTransform& transform, bool transformUpdated);
-
+    
+    void setCurrentUTF16String(unsigned short* newString);
+    
+    void shadowTransform();
+    
+    void onDraw(/*const CCAffineTransform& transform, bool transformUpdated*/);
+    
     struct LetterInfo
     {
         FontLetterDefinition def;
@@ -298,10 +309,10 @@ protected:
     };
     enum  LabelType {
 
-        TTF,
-        BMFONT,
-        CHARMAP,
-        STRING_TEXTURE
+        kLabelTypeTTF,
+        kLabelTypeBMFONT,
+        kLabelTypeCHARMAP,
+        kLabelTypeSTRING_TEXTURE
     };
 
     virtual void setFontAtlas(FontAtlas* atlas,bool distanceFieldEnabled = false, bool useA8Shader = false);
@@ -343,20 +354,20 @@ protected:
     float         _systemFontSize;
     LabelType _currentLabelType;
 
-    std::vector<SpriteBatchNode*> _batchNodes;
+    std::vector<CCSpriteBatchNode*> _batchNodes;
     FontAtlas *                   _fontAtlas;
     std::vector<LetterInfo>       _lettersInfo;
 
     TTFConfig _fontConfig;
 
     //compatibility with older LabelTTF
-    Sprite* _textSprite;
-    FontDefinition _fontDefinition;
+    CCSprite* _textSprite;
+    ccFontDefinition _fontDefinition;
     bool  _compatibleMode;
 
     //! used for optimization
-    Sprite *_reusedLetter;
-    Rect _reusedRect;
+    CCSprite *_reusedLetter;
+    CCRect _reusedRect;
     int _limitShowCount;
 
     float _additionalKerning;
@@ -365,14 +376,14 @@ protected:
     int * _horizontalKernings;
 
     unsigned int _maxLineWidth;
-    Size         _labelDimensions;
+    CCSize         _labelDimensions;
     unsigned int _labelWidth;
     unsigned int _labelHeight;
     CCTextAlignment _hAlignment;
     CCVerticalTextAlignment _vAlignment;
 
     int           _currNumLines;
-    std::u16string _currentUTF16String;
+    unsigned short* _currentUTF16String;
     std::string          _originalUTF8String;
 
     float _fontScale;
@@ -381,33 +392,37 @@ protected:
     bool _useA8Shader;
 
     LabelEffect _currLabelEffect;
-    Color4B _effectColor;
-    Color4F _effectColorF;
+    ccColor4B _effectColor;
+    ccColor4F _effectColorF;
 
     GLuint _uniformEffectColor;
     GLuint _uniformTextColor;
-    CustomCommand _customCommand;   
+//    CustomCommand _customCommand;   
 
     bool    _shadowDirty;
     bool    _shadowEnabled;
-    Size    _shadowOffset;
+    CCSize    _shadowOffset;
     int     _shadowBlurRadius;
-    Mat4  _shadowTransform;
-    Color3B _shadowColor;
+    CCAffineTransform  _shadowTransform;
+    ccColor3B _shadowColor;
+    ccColor4F _shadowColorF;
     float   _shadowOpacity;
-    Sprite*   _shadowNode;
+    CCSprite*   _shadowNode;
 
     int     _outlineSize;
 
-    Color4B _textColor;
-    Color4F _textColorF;
+    ccColor4B _textColor;
+    ccColor4F _textColorF;
 
     bool _clipEnabled;
     bool _blendFuncDirty;
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
 
 private:
-    CC_DISALLOW_COPY_AND_ASSIGN(Label);
+    //CC_DISALLOW_COPY_AND_ASSIGN(Label);
+    
+    Label(const Label&);
+    Label& operator =(const Label&);
 
     friend class LabelTextFormatter;
 };

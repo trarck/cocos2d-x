@@ -28,7 +28,7 @@
 
 #include <map>
 
-#include "2d/CCLabel.h"
+#include "CCLabel.h"
 
 NS_CC_BEGIN
 
@@ -38,10 +38,10 @@ class CC_DLL FontAtlasCache
 {  
 public:
     static FontAtlas * getFontAtlasTTF(const TTFConfig & config);
-    static FontAtlas * getFontAtlasFNT(const std::string& fontFileName, const Vec2& imageOffset = Vec2::ZERO);
+    static FontAtlas * getFontAtlasFNT(const std::string& fontFileName, const CCPoint& imageOffset = CCPointZero);
 
     static FontAtlas * getFontAtlasCharMap(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
-    static FontAtlas * getFontAtlasCharMap(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);
+    static FontAtlas * getFontAtlasCharMap(CCTexture2D* texture, int itemWidth, int itemHeight, int startCharMap);
     static FontAtlas * getFontAtlasCharMap(const std::string& plistFile);
     
     static bool releaseFontAtlas(FontAtlas *atlas);

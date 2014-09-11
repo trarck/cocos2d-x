@@ -27,6 +27,7 @@
 #include "CCFontFreeType.h"
 #include "support/ccUTF8.h"
 #include "CCDirector.h"
+#include "textures/CCTexture2D.h"
 
 //#include "base/CCEventListenerCustom.h"
 //#include "base/CCEventDispatcher.h"
@@ -179,7 +180,7 @@ void FontAtlas::addLetterDefinition(const FontLetterDefinition &letterDefinition
 //bool FontAtlas::getLetterDefinitionForChar(char16_t letteCharUTF16, FontLetterDefinition &outDefinition)
 bool FontAtlas::getLetterDefinitionForChar(unsigned short letteCharUTF16, FontLetterDefinition &outDefinition)
 {
-    auto outIterator = _fontLetterDefinitions.find(letteCharUTF16);
+    std::map<unsigned short, FontLetterDefinition>::iterator outIterator = _fontLetterDefinitions.find(letteCharUTF16);
 
     if (outIterator != _fontLetterDefinitions.end())
     {
@@ -224,7 +225,7 @@ bool FontAtlas::prepareLetterDefinitions(unsigned short* utf16String)
         {  
             existNewLetter = true;
 
-            auto bitmap = fontTTf->getGlyphBitmap(utf16String[i],bitmapWidth,bitmapHeight,tempRect,tempDef.xAdvance);
+            unsigned char* bitmap = fontTTf->getGlyphBitmap(utf16String[i],bitmapWidth,bitmapHeight,tempRect,tempDef.xAdvance);
             if (bitmap)
             {
                 tempDef.validDefinition = true;
@@ -258,7 +259,7 @@ bool FontAtlas::prepareLetterDefinitions(unsigned short* utf16String)
                         _currentPageOrigY = 0;
                         memset(_currentPageData, 0, _currentPageDataSize);
                         _currentPage++;
-                        auto tex = new (std::nothrow) Texture2D;
+                        CCTexture2D* tex = new CCTexture2D();
                         if (_antialiasEnabled)
                         {
                             tex->setAntiAliasTexParameters();
@@ -267,8 +268,7 @@ bool FontAtlas::prepareLetterDefinitions(unsigned short* utf16String)
                         {
                             tex->setAliasTexParameters();
                         }
-                        tex->initWithData(_currentPageData, _currentPageDataSize, 
-                            pixelFormat, CacheTextureWidth, CacheTextureHeight, Size(CacheTextureWidth,CacheTextureHeight) );
+                        tex->initWithData(_currentPageData,pixelFormat, CacheTextureWidth, CacheTextureHeight, CCSize(CacheTextureWidth,CacheTextureHeight));
                         addTexture(tex,_currentPage);
                         tex->release();
                     }  
@@ -311,13 +311,13 @@ bool FontAtlas::prepareLetterDefinitions(unsigned short* utf16String)
     {
         if (_rendererRecreate)
         {
-            _atlasTextures[_currentPage]->initWithData(_currentPageData, _currentPageDataSize, 
-                pixelFormat, CacheTextureWidth, CacheTextureHeight, Size(CacheTextureWidth,CacheTextureHeight) );
+            _atlasTextures[_currentPage]->initWithData(_currentPageData,
+                pixelFormat, CacheTextureWidth, CacheTextureHeight, CCSize(CacheTextureWidth,CacheTextureHeight) );
         } 
         else
         {
             unsigned char *data = NULL;
-            if(pixelFormat == Texture2D::PixelFormat::AI88)
+            if(pixelFormat == kCCTexture2DPixelFormat_AI88)
             {
                 data = _currentPageData + CacheTextureWidth * (int)startY * 2;
             }
@@ -338,7 +338,7 @@ void FontAtlas::addTexture(CCTexture2D *texture, int slot)
     _atlasTextures[slot] = texture;
 }
 
-Texture2D* FontAtlas::getTexture(int slot)
+CCTexture2D* FontAtlas::getTexture(int slot)
 {
     return _atlasTextures[slot];
 }

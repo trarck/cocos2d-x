@@ -74,4 +74,12 @@ const GLchar * ccPositionColorLengthTexture_frag =
 const GLchar * ccPositionColorLengthTexture_vert =
 #include "ccShader_PositionColorLengthTexture_vert.h"
 
+#define STRINGIFY(A)  #A
+
+#include "ccShader_Label.vert"
+#include "ccShader_Label_df.frag"
+#include "ccShader_Label_df_glow.frag"
+#include "ccShader_Label_normal.frag"
+#include "ccShader_Label_outline.frag"
+
 NS_CC_END

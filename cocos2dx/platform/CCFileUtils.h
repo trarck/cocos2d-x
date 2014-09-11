@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CCPlatformMacros.h"
 #include "ccTypes.h"
 #include "ccTypeInfo.h"
+#include "cocoa/CCData.h"
 
 NS_CC_BEGIN
 
@@ -85,6 +86,17 @@ public:
      *        this method should be invoked to clean the file search cache.
      */
     virtual void purgeCachedEntries();
+    
+    /**
+     *  Gets string from a file.
+     */
+    virtual std::string getStringFromFile(const std::string& filename);
+    
+    /**
+     *  Creates binary data from a file.
+     *  @return A data object.
+     */
+    virtual Data getDataFromFile(const std::string& filename);
     
     /**
      *  Gets resource file data

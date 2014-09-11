@@ -26,7 +26,7 @@
 #ifndef _CCFontCharMap_h_
 #define _CCFontCharMap_h_
 
-#include "2d/CCFont.h"
+#include "CCFont.h"
 
 NS_CC_BEGIN
 
@@ -34,7 +34,7 @@ class FontCharMap : public Font
 {  
 public:
     static FontCharMap * create(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap);
-    static FontCharMap * create(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap);
+    static FontCharMap * create(CCTexture2D* texture, int itemWidth, int itemHeight, int startCharMap);
     static FontCharMap * create(const std::string& plistFile);
     
     //virtual int* getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const;
@@ -42,7 +42,7 @@ public:
     virtual FontAtlas *createFontAtlas();
     
 protected:    
-    FontCharMap(Texture2D* texture,int itemWidth, int itemHeight, int startCharMap)
+    FontCharMap(CCTexture2D* texture,int itemWidth, int itemHeight, int startCharMap)
         :_texture(texture)
         ,_mapStartChar(startCharMap)
         ,_itemWidth(itemWidth)
@@ -55,7 +55,7 @@ protected:
     virtual ~FontCharMap();
     
 private:
-    Texture2D* _texture;
+    CCTexture2D* _texture;
     int _mapStartChar;
     int _itemWidth;
     int _itemHeight;

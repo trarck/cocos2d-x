@@ -23,30 +23,33 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "2d/CCFontCharMap.h"
-#include "2d/CCFontAtlas.h"
+#include "CCFontCharMap.h"
+#include "ccMacros.h"
+#include "CCFontAtlas.h"
 #include "platform/CCFileUtils.h"
-#include "base/CCDirector.h"
-#include "renderer/CCTextureCache.h"
+#include "CCDirector.h"
+#include "textures/CCTextureCache.h"
+#include "cocoa/CCInteger.h"
+#include "support/ccUTF8.h"
 
 NS_CC_BEGIN
 
 FontCharMap * FontCharMap::create(const std::string& plistFile)
 {
-    std::string pathStr = FileUtils::getInstance()->fullPathForFilename(plistFile);
+    std::string pathStr = CCFileUtils::sharedFileUtils()->fullPathForFilename(plistFile.c_str());
     std::string relPathStr = pathStr.substr(0, pathStr.find_last_of("/"))+"/";
 
-    ValueMap dict = FileUtils::getInstance()->getValueMapFromFile(pathStr.c_str());
+    CCDictionary* dict = CCDictionary::createWithContentsOfFile(pathStr.c_str());
 
-    CCASSERT(dict["version"].asInt() == 1, "Unsupported version. Upgrade cocos2d version");
+    CCAssert(dict->objectForKey("version") && static_cast<CCInteger*>(dict->objectForKey("version"))->getValue() == 1, "Unsupported version. Upgrade cocos2d version");
 
-    std::string textureFilename = relPathStr + dict["textureFilename"].asString();
+    std::string textureFilename = relPathStr + static_cast<CCString*>(dict->objectForKey("textureFilename"))->getCString();
 
-    unsigned int width = dict["itemWidth"].asInt() / CC_CONTENT_SCALE_FACTOR();
-    unsigned int height = dict["itemHeight"].asInt() / CC_CONTENT_SCALE_FACTOR();
-    unsigned int startChar = dict["firstChar"].asInt();
+    unsigned int width = static_cast<CCInteger*>(dict->objectForKey("itemWidth"))->getValue() / CC_CONTENT_SCALE_FACTOR();
+    unsigned int height = static_cast<CCInteger*>(dict->objectForKey("itemHeight"))->getValue() / CC_CONTENT_SCALE_FACTOR();
+    unsigned int startChar = static_cast<CCInteger*>(dict->objectForKey("firstChar"))->getValue();
 
-    Texture2D *tempTexture = Director::getInstance()->getTextureCache()->addImage(textureFilename);
+    CCTexture2D *tempTexture = CCTextureCache::sharedTextureCache()->addImage(textureFilename.c_str());
     if (!tempTexture)
     {
         return NULL;
@@ -64,7 +67,7 @@ FontCharMap * FontCharMap::create(const std::string& plistFile)
 
 FontCharMap* FontCharMap::create(const std::string& charMapFile, int itemWidth, int itemHeight, int startCharMap)
 {
-    Texture2D *tempTexture = Director::getInstance()->getTextureCache()->addImage(charMapFile);
+    CCTexture2D *tempTexture = CCTextureCache::sharedTextureCache()->addImage(charMapFile.c_str());
 
     if (!tempTexture)
     {
@@ -81,7 +84,7 @@ FontCharMap* FontCharMap::create(const std::string& charMapFile, int itemWidth, 
     return tempFont;
 }
 
-FontCharMap* FontCharMap::create(Texture2D* texture, int itemWidth, int itemHeight, int startCharMap)
+FontCharMap* FontCharMap::create(CCTexture2D* texture, int itemWidth, int itemHeight, int startCharMap)
 {
     FontCharMap *tempFont =  new FontCharMap(texture,itemWidth,itemHeight,startCharMap);
 
@@ -101,7 +104,7 @@ FontCharMap::~FontCharMap()
 //int * FontCharMap::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
 int * FontCharMap::getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const
 {
-    outNumLetters = static_cast<int>(text.length());
+    outNumLetters =cc_wcslen((const unsigned short*)text);
     
     if (!outNumLetters)
         return 0;
@@ -120,11 +123,11 @@ int * FontCharMap::getHorizontalKerningForTextUTF16(unsigned short* text, int &o
 
 FontAtlas * FontCharMap::createFontAtlas()
 {
-    FontAtlas *tempAtlas = new (std::nothrow) FontAtlas(*this);
+    FontAtlas *tempAtlas = new FontAtlas(*this);
     if (!tempAtlas)
         return NULL;
     
-    Size s = _texture->getContentSize();
+    CCSize s = _texture->getContentSize();
 
     int itemsPerColumn = (int)(s.height / _itemHeight);
     int itemsPerRow = (int)(s.width / _itemWidth);

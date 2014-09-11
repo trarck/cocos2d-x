@@ -64,7 +64,7 @@ public:
 //    virtual int         * getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const;
     virtual int         * getHorizontalKerningForTextUTF16(unsigned short* text, int &outNumLetters) const;
     
-    unsigned char       * getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, Rect &outRect,int &xAdvance);
+    unsigned char       * getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, CCRect &outRect,int &xAdvance);
     
     virtual int           getFontMaxHeight() const;  
     virtual int           getFontAscender() const;

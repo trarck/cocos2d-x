@@ -23,10 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "2d/CCFontFreeType.h"
+#include "CCFontFreeType.h"
 
-#include "base/CCDirector.h"
-#include "base/ccUTF8.h"
+#include "CCDirector.h"
+#include "support/ccUTF8.h"
 #include "platform/CCFileUtils.h"
 #include "edtaa3func.h"
 #include FT_BBOX_H
@@ -116,7 +116,7 @@ bool FontFreeType::createFontObject(const std::string &fontName, int fontSize)
     // save font name locally
     _fontName = fontName;
 
-    auto it = s_cacheFontData.find(fontName);
+    std::map<std::string, DataRef>::iterator it = s_cacheFontData.find(fontName);
     if (it != s_cacheFontData.end())
     {
         (*it).second.referenceCount += 1;
@@ -124,7 +124,7 @@ bool FontFreeType::createFontObject(const std::string &fontName, int fontSize)
     else
     {
         s_cacheFontData[fontName].referenceCount = 1;
-        s_cacheFontData[fontName].data = FileUtils::getInstance()->getDataFromFile(fontName);    
+        s_cacheFontData[fontName].data = CCFileUtils::sharedFileUtils()->getDataFromFile(fontName);
 
         if (s_cacheFontData[fontName].data.isNull())
         {
@@ -175,8 +175,8 @@ FontAtlas * FontFreeType::createFontAtlas()
     FontAtlas *atlas = new (std::nothrow) FontAtlas(*this);
     if (_usedGlyphs != kGlyphCollectionDYNAMIC)
     {
-        std::u16string utf16;
-        if (StringUtils::UTF8ToUTF16(getCurrentGlyphCollection(), utf16))
+        unsigned short* utf16=cc_utf8_to_utf16(getCurrentGlyphCollection());
+        if (utf16)
         {
             atlas->prepareLetterDefinitions(utf16);
         }
@@ -191,7 +191,7 @@ int * FontFreeType::getHorizontalKerningForTextUTF16(unsigned short* text, int &
     if (!_fontRef)
         return NULL;
     
-    outNumLetters = static_cast<int>(text.length());
+    outNumLetters = cc_wcslen(text);
 
     if (!outNumLetters)
         return NULL;
@@ -245,7 +245,7 @@ int FontFreeType::getFontAscender() const
     return (static_cast<int>(_fontRef->size->metrics.ascender >> 6));
 }
 
-unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, Rect &outRect,int &xAdvance)
+unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWidth, long &outHeight, CCRect &outRect,int &xAdvance)
 {
     bool invalidChar = true;
     unsigned char * ret = NULL;
@@ -255,7 +255,7 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
         if (!_fontRef)
             break;
 
-        auto glyphIndex = FT_Get_Char_Index(_fontRef, theChar);
+        FT_UInt glyphIndex = FT_Get_Char_Index(_fontRef, theChar);
         if(!glyphIndex)
             break;
 
@@ -283,11 +283,11 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
 
         if (_outlineSize > 0)
         {
-            auto copyBitmap = new unsigned char[outWidth * outHeight];
+            unsigned char* copyBitmap = new unsigned char[outWidth * outHeight];
             memcpy(copyBitmap,ret,outWidth * outHeight * sizeof(unsigned char));
 
             FT_BBox bbox;
-            auto outlineBitmap = getGlyphBitmapWithOutline(theChar,bbox);
+            unsigned char * outlineBitmap = getGlyphBitmapWithOutline(theChar,bbox);
             if(outlineBitmap == NULL)
             {
                 ret = NULL;
@@ -295,18 +295,18 @@ unsigned char* FontFreeType::getGlyphBitmap(unsigned short theChar, long &outWid
                 break;
             }
 
-            auto outlineWidth = (bbox.xMax - bbox.xMin)>>6;
-            auto outlineHeight = (bbox.yMax - bbox.yMin)>>6;
+            FT_Pos outlineWidth = (bbox.xMax - bbox.xMin)>>6;
+            FT_Pos outlineHeight = (bbox.yMax - bbox.yMin)>>6;
 
-            auto blendWidth = outlineWidth > outWidth ? outlineWidth : outWidth;
-            auto blendHeight = outlineHeight > outHeight ? outlineHeight : outHeight;
+            FT_Pos blendWidth = outlineWidth > outWidth ? outlineWidth : outWidth;
+            FT_Pos blendHeight = outlineHeight > outHeight ? outlineHeight : outHeight;
 
             long index,index2;
-            auto blendImage = new unsigned char[blendWidth * blendHeight * 2];
+            unsigned char* blendImage = new unsigned char[blendWidth * blendHeight * 2];
             memset(blendImage, 0, blendWidth * blendHeight * 2);
 
-            auto px = (blendWidth - outlineWidth) / 2;
-            auto py = (blendHeight - outlineHeight) / 2;
+            FT_Pos px = (blendWidth - outlineWidth) / 2;
+            FT_Pos py = (blendHeight - outlineHeight) / 2;
             for (int x = 0; x < outlineWidth; ++x)
             {
                 for (int y = 0; y < outlineHeight; ++y)
@@ -494,7 +494,7 @@ void FontFreeType::renderCharAt(unsigned char *dest,int posX, int posY, unsigned
 
     if (_distanceFieldEnabled)
     {
-        auto distanceMap = makeDistanceMap(bitmap,bitmapWidth,bitmapHeight);
+        unsigned char * distanceMap = makeDistanceMap(bitmap,bitmapWidth,bitmapHeight);
 
         bitmapWidth += 2 * DistanceMapSpread;
         bitmapHeight += 2 * DistanceMapSpread;

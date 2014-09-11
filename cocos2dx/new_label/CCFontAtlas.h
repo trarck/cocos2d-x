@@ -43,15 +43,15 @@ class EventListenerCustom;
 struct FontLetterDefinition
 {
     unsigned short  letteCharUTF16;
-    float U;
-    float V;
-    float width;
-    float height;
-    float offsetX;
-    float offsetY;
+    float U;//point //TODO change to piexls
+    float V;//point
+    float width;//point
+    float height;//point
+    float offsetX;//piexls
+    float offsetY;//piexls
     int textureID;
     bool validDefinition;
-    int xAdvance;
+    int xAdvance;//piexls
 
     int clipBottom;
 };

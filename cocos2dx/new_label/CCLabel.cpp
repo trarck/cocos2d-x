@@ -966,6 +966,20 @@ void Label::draw(/*Renderer *renderer, const Mat4 &transform, uint32_t flags*/)
     onDraw();
 }
 
+void Label::setColor(const ccColor3B& color3)
+{
+    _displayedColor = _realColor = color3;
+    
+    ccColor3B parentColor = ccWHITE;
+    CCRGBAProtocol *parent = dynamic_cast<CCRGBAProtocol*>(m_pParent);
+    if (parent && parent->isCascadeColorEnabled())
+    {
+        parentColor = parent->getDisplayedColor();
+    }
+    
+    updateDisplayedColor(parentColor);
+}
+
 void Label::createSpriteWithFontDefinition()
 {
     _currentLabelType = kLabelTypeSTRING_TEXTURE;

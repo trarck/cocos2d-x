@@ -269,6 +269,8 @@ public:
 
     virtual void visit();
     virtual void draw();
+    
+    virtual void setColor(const ccColor3B& color3);
 
     CC_DEPRECATED_ATTRIBUTE static Label* create(const std::string& text, const std::string& font, float fontSize,
         const CCSize& dimensions = CCSizeZero, CCTextAlignment hAlignment = kCCTextAlignmentLeft,

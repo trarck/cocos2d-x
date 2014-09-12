@@ -21,6 +21,18 @@ class CCLabelTTF : public CCSprite
 
     const char* getFontName();
     void setFontName(const char *fontName);
+	
+    void enableShadow(const CCSize &shadowOffset, float shadowOpacity, float shadowBlur, bool mustUpdateTexture = true);
+    
+    void enableShadow(const CCSize &shadowOffset, float shadowOpacity, float shadowBlur,const ccColor3B &shadowColor,bool mustUpdateTexture = true);
+    
+    void disableShadow(bool mustUpdateTexture = true);
+    
+    void enableStroke(const ccColor3B &strokeColor, float strokeSize, bool mustUpdateTexture = true);
+    
+    void disableStroke(bool mustUpdateTexture = true);
+    
+    void setFontFillColor(const ccColor3B &tintColor, bool mustUpdateTexture = true);
 
     static CCLabelTTF * create(const char *str, const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment);
     static CCLabelTTF * create(const char *str, const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment);

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: Cocos2d
-** Generated automatically by tolua++-1.0.92 on Wed Sep  3 19:03:59 2014.
+** Generated automatically by tolua++-1.0.92 on Fri Sep 12 15:03:43 2014.
 */
 
 /****************************************************************************
@@ -41916,6 +41916,219 @@ static int tolua_Cocos2d_CCLabelTTF_setFontName00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
+/* method: enableShadow of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_enableShadow00
+static int tolua_Cocos2d_CCLabelTTF_enableShadow00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"const CCSize",0,&tolua_err)) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,5,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,6,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  const CCSize* shadowOffset = ((const CCSize*)  tolua_tousertype(tolua_S,2,0));
+  float shadowOpacity = ((float)  tolua_tonumber(tolua_S,3,0));
+  float shadowBlur = ((float)  tolua_tonumber(tolua_S,4,0));
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,5,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'enableShadow'", NULL);
+#endif
+  {
+   self->enableShadow(*shadowOffset,shadowOpacity,shadowBlur,mustUpdateTexture);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'enableShadow'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: enableShadow of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_enableShadow01
+static int tolua_Cocos2d_CCLabelTTF_enableShadow01(lua_State* tolua_S)
+{
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"const CCSize",0,&tolua_err)) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,4,0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,5,&tolua_err) || !tolua_isusertype(tolua_S,5,"const ccColor3B",0,&tolua_err)) ||
+     !tolua_isboolean(tolua_S,6,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,7,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  const CCSize* shadowOffset = ((const CCSize*)  tolua_tousertype(tolua_S,2,0));
+  float shadowOpacity = ((float)  tolua_tonumber(tolua_S,3,0));
+  float shadowBlur = ((float)  tolua_tonumber(tolua_S,4,0));
+  const ccColor3B* shadowColor = ((const ccColor3B*)  tolua_tousertype(tolua_S,5,0));
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,6,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'enableShadow'", NULL);
+#endif
+  {
+   self->enableShadow(*shadowOffset,shadowOpacity,shadowBlur,*shadowColor,mustUpdateTexture);
+  }
+ }
+ return 0;
+tolua_lerror:
+ return tolua_Cocos2d_CCLabelTTF_enableShadow00(tolua_S);
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: disableShadow of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_disableShadow00
+static int tolua_Cocos2d_CCLabelTTF_disableShadow00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,2,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'disableShadow'", NULL);
+#endif
+  {
+   self->disableShadow(mustUpdateTexture);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'disableShadow'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: enableStroke of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_enableStroke00
+static int tolua_Cocos2d_CCLabelTTF_enableStroke00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"const ccColor3B",0,&tolua_err)) ||
+     !tolua_isnumber(tolua_S,3,0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,4,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,5,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  const ccColor3B* strokeColor = ((const ccColor3B*)  tolua_tousertype(tolua_S,2,0));
+  float strokeSize = ((float)  tolua_tonumber(tolua_S,3,0));
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,4,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'enableStroke'", NULL);
+#endif
+  {
+   self->enableStroke(*strokeColor,strokeSize,mustUpdateTexture);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'enableStroke'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: disableStroke of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_disableStroke00
+static int tolua_Cocos2d_CCLabelTTF_disableStroke00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     !tolua_isboolean(tolua_S,2,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,2,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'disableStroke'", NULL);
+#endif
+  {
+   self->disableStroke(mustUpdateTexture);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'disableStroke'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: setFontFillColor of class  CCLabelTTF */
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_setFontFillColor00
+static int tolua_Cocos2d_CCLabelTTF_setFontFillColor00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"CCLabelTTF",0,&tolua_err) ||
+     (tolua_isvaluenil(tolua_S,2,&tolua_err) || !tolua_isusertype(tolua_S,2,"const ccColor3B",0,&tolua_err)) ||
+     !tolua_isboolean(tolua_S,3,1,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,4,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  CCLabelTTF* self = (CCLabelTTF*)  tolua_tousertype(tolua_S,1,0);
+  const ccColor3B* tintColor = ((const ccColor3B*)  tolua_tousertype(tolua_S,2,0));
+  bool mustUpdateTexture = ((bool)  tolua_toboolean(tolua_S,3,true));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'setFontFillColor'", NULL);
+#endif
+  {
+   self->setFontFillColor(*tintColor,mustUpdateTexture);
+  }
+ }
+ return 0;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'setFontFillColor'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
 /* method: create of class  CCLabelTTF */
 #ifndef TOLUA_DISABLE_tolua_Cocos2d_CCLabelTTF_create00
 static int tolua_Cocos2d_CCLabelTTF_create00(lua_State* tolua_S)
@@ -70063,6 +70276,12 @@ TOLUA_API int tolua_Cocos2d_open (lua_State* tolua_S)
    tolua_function(tolua_S,"setFontSize",tolua_Cocos2d_CCLabelTTF_setFontSize00);
    tolua_function(tolua_S,"getFontName",tolua_Cocos2d_CCLabelTTF_getFontName00);
    tolua_function(tolua_S,"setFontName",tolua_Cocos2d_CCLabelTTF_setFontName00);
+   tolua_function(tolua_S,"enableShadow",tolua_Cocos2d_CCLabelTTF_enableShadow00);
+   tolua_function(tolua_S,"enableShadow",tolua_Cocos2d_CCLabelTTF_enableShadow01);
+   tolua_function(tolua_S,"disableShadow",tolua_Cocos2d_CCLabelTTF_disableShadow00);
+   tolua_function(tolua_S,"enableStroke",tolua_Cocos2d_CCLabelTTF_enableStroke00);
+   tolua_function(tolua_S,"disableStroke",tolua_Cocos2d_CCLabelTTF_disableStroke00);
+   tolua_function(tolua_S,"setFontFillColor",tolua_Cocos2d_CCLabelTTF_setFontFillColor00);
    tolua_function(tolua_S,"create",tolua_Cocos2d_CCLabelTTF_create00);
    tolua_function(tolua_S,"create",tolua_Cocos2d_CCLabelTTF_create01);
    tolua_function(tolua_S,"create",tolua_Cocos2d_CCLabelTTF_create02);

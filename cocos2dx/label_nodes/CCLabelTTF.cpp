@@ -48,6 +48,7 @@ CCLabelTTF::CCLabelTTF()
 , m_shadowEnabled(false)
 , m_strokeEnabled(false)
 , m_textFillColor(ccWHITE)
+, m_shadowColor(ccc3(0, 0, 0))
 {
 }
 
@@ -372,6 +373,53 @@ void CCLabelTTF::enableShadow(const CCSize &shadowOffset, float shadowOpacity, f
     
 }
 
+void CCLabelTTF::enableShadow(const CCSize &shadowOffset, float shadowOpacity, float shadowBlur,const ccColor3B &shadowColor,bool mustUpdateTexture)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    
+    bool valueChanged = false;
+    
+    if (false == m_shadowEnabled)
+    {
+        m_shadowEnabled = true;
+        valueChanged    = true;
+    }
+    
+    if ( (m_shadowOffset.width != shadowOffset.width) || (m_shadowOffset.height!=shadowOffset.height) )
+    {
+        m_shadowOffset.width  = shadowOffset.width;
+        m_shadowOffset.height = shadowOffset.height;
+        
+        valueChanged = true;
+    }
+    
+    if (m_shadowOpacity != shadowOpacity )
+    {
+        m_shadowOpacity = shadowOpacity;
+        valueChanged = true;
+    }
+    
+    if (m_shadowBlur    != shadowBlur)
+    {
+        m_shadowBlur = shadowBlur;
+        valueChanged = true;
+    }
+    
+    if ( (m_shadowColor.r != shadowColor.r) || (m_shadowColor.g != shadowColor.g) || (m_shadowColor.b != shadowColor.b) ){
+        m_shadowColor=shadowColor ;
+        valueChanged=true;
+    }
+    
+    if ( valueChanged && mustUpdateTexture )
+    {
+        this->updateTexture();
+    }
+    
+#else
+    CCLOGERROR("Currently only supported on iOS and Android!");
+#endif
+}
+
 void CCLabelTTF::disableShadow(bool updateTexture)
 {
     #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
@@ -547,6 +595,7 @@ ccFontDefinition CCLabelTTF::_prepareTextDefinition(bool adjustForResolution)
         texDef.m_shadow.m_shadowEnabled         = true;
         texDef.m_shadow.m_shadowBlur            = m_shadowBlur;
         texDef.m_shadow.m_shadowOpacity         = m_shadowOpacity;
+        texDef.m_shadow.m_shadowColor           = m_shadowColor;
         
         if (adjustForResolution)
             texDef.m_shadow.m_shadowOffset = CC_SIZE_POINTS_TO_PIXELS(m_shadowOffset);

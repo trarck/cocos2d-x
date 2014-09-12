@@ -96,7 +96,7 @@ public class Cocos2dxBitmap {
 		//
 		createTextBitmapShadowStroke( pString, pFontName, pFontSize, 1.0f, 1.0f, 1.0f,   	// text font and color
 									  pAlignment, pWidth, pHeight,							// alignment and size
-									  false, 0.0f, 0.0f, 0.0f,								// no shadow
+									  false, 0.0f, 0.0f, 0.0f,0.0f,0.0f,0.0f,0.0f,			// no shadow
 									  false, 1.0f, 1.0f, 1.0f, 1.0f);						// no stroke
 									 
 	}
@@ -104,8 +104,9 @@ public class Cocos2dxBitmap {
 	public static void createTextBitmapShadowStroke(String pString,  final String pFontName, final int pFontSize,
 													final float fontTintR, final float fontTintG, final float fontTintB,
 													final int pAlignment, final int pWidth, final int pHeight, final boolean shadow,
-													final float shadowDX, final float shadowDY, final float shadowBlur, final boolean stroke,
-													final float strokeR, final float strokeG, final float strokeB, final float strokeSize) {
+													final float shadowDX, final float shadowDY, final float shadowBlur, final float shadowIntensity, 
+													final float shadowColorR, final float shadowColorG, final float shadowColorB, 
+													final boolean stroke,final float strokeR, final float strokeG, final float strokeB, final float strokeSize) {
 
 		
 		final int horizontalAlignment = pAlignment & 0x0F;
@@ -128,7 +129,12 @@ public class Cocos2dxBitmap {
 		
 		if ( shadow ) {
 
-			int shadowColor = 0xff7d7d7d;
+			// int shadowColor = 0xff7d7d7d;
+			int shadowColor = ((int)(shadowIntensity*255) << 24) |
+							  ((int)(shadowColorR*255) << 16)    |
+							  ((int)(shadowColorG*255) << 8)    |
+							  (int)(shadowColorB*255)
+			
 			paint.setShadowLayer(shadowBlur, shadowDX, shadowDY, shadowColor);
 	
 			bitmapPaddingX = Math.abs(shadowDX);

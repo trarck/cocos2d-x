@@ -146,12 +146,14 @@ public:
                                             float shadowOffsetY         = 0.0,
                                             float shadowOpacity         = 0.0,
                                             float shadowBlur            = 0.0,
+                                            float shadowR               = 0.0,
+                                            float shadowG               = 0.0,
+                                            float shadowB               = 0.0,
                                             bool  stroke                =  false,
                                             float strokeR               = 1,
                                             float strokeG               = 1,
                                             float strokeB               = 1,
                                             float strokeSize            = 1
-                                        
                                         );
     
     #endif

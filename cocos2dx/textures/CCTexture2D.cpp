@@ -733,7 +733,10 @@ bool CCTexture2D::initWithString(const char *text, ccFontDefinition *textDefinit
         float shadowDY      = 0.0f;
         float shadowBlur    = 0.0f;
         float shadowOpacity = 0.0f;
-        
+        float shadowColorR = 0.0f;
+        float shadowColorG = 0.0f;
+        float shadowColorB = 0.0f;
+    
         if ( textDefinition->m_shadow.m_shadowEnabled )
         {
             shadowEnabled =  true;
@@ -741,6 +744,9 @@ bool CCTexture2D::initWithString(const char *text, ccFontDefinition *textDefinit
             shadowDY      = textDefinition->m_shadow.m_shadowOffset.height;
             shadowBlur    = textDefinition->m_shadow.m_shadowBlur;
             shadowOpacity = textDefinition->m_shadow.m_shadowOpacity;
+            shadowColorR  = textDefinition->m_shadow.m_shadowColor.r/255.0f;
+            shadowColorG  = textDefinition->m_shadow.m_shadowColor.g/255.0f;
+            shadowColorB  = textDefinition->m_shadow.m_shadowColor.b/255.0f;
         }
         
         // handle stroke parameters
@@ -778,6 +784,9 @@ bool CCTexture2D::initWithString(const char *text, ccFontDefinition *textDefinit
                                                       shadowDY,
                                                       shadowOpacity,
                                                       shadowBlur,
+                                                      shadowColorR,
+                                                      shadowColorG,
+                                                      shadowColorB,
                                                       strokeEnabled,
                                                       strokeColorR,
                                                       strokeColorG,

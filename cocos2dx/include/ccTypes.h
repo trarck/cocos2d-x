@@ -382,6 +382,8 @@ public:
 	float  m_shadowBlur;
     // shadow opacity
 	float  m_shadowOpacity;
+    // shadow color
+	ccColor3B   m_shadowColor;
     
 } ccFontShadow;
 

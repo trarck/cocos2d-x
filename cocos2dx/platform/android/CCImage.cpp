@@ -73,6 +73,9 @@ public:
     									float shadowDeltaY 		= 0.0,
     									float shadowBlur 		= 0.0,
     									float shadowIntensity 	= 0.0,
+										float shadowColorR		= 0.0,
+                                        float shadowColorG		= 0.0,
+                                        float shadowColorB		= 0.0,
     									bool stroke 			= false,
     									float strokeColorR 		= 0.0,
     									float strokeColorG 		= 0.0,
@@ -110,7 +113,9 @@ public:
            jstring jstrFont = methodInfo.env->NewStringUTF(fullPathOrFontName.c_str());
 
            methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jstrText,
-               jstrFont, (int)fontSize, textTintR, textTintG, textTintB, eAlignMask, nWidth, nHeight, shadow, shadowDeltaX, -shadowDeltaY, shadowBlur, stroke, strokeColorR, strokeColorG, strokeColorB, strokeSize);
+               jstrFont, (int)fontSize, textTintR, textTintG, textTintB, eAlignMask, nWidth, nHeight,
+			   shadow, shadowDeltaX, -shadowDeltaY, shadowBlur, shadowIntensity,shadowColorR,shadowColorG,shadowColorB
+			   stroke, strokeColorR, strokeColorG, strokeColorB, strokeSize);
 
            methodInfo.env->DeleteLocalRef(jstrText);
            methodInfo.env->DeleteLocalRef(jstrFont);
@@ -193,6 +198,9 @@ bool CCImage::initWithStringShadowStroke(
                                          float shadowOffsetY,
                                          float shadowOpacity,
                                          float shadowBlur,
+										 float shadowR,
+                                         float shadowG,
+                                         float shadowB,
                                          bool  stroke,
                                          float strokeR,
                                          float strokeG,
@@ -209,7 +217,7 @@ bool CCImage::initWithStringShadowStroke(
 
 	        CC_BREAK_IF(! dc.getBitmapFromJavaShadowStroke(pText, nWidth, nHeight, eAlignMask, pFontName,
 	        											   nSize, textTintR, textTintG, textTintB, shadow,
-	        											   shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity,
+	        											   shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity,shadowR,shadowG,shadowB
 	        											   stroke, strokeR, strokeG, strokeB, strokeSize ));
 
 

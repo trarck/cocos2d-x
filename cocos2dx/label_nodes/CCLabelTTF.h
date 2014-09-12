@@ -120,6 +120,8 @@ public:
     /** enable or disable shadow for the label */
     void enableShadow(const CCSize &shadowOffset, float shadowOpacity, float shadowBlur, bool mustUpdateTexture = true);
     
+    void enableShadow(const CCSize &shadowOffset, float shadowOpacity, float shadowBlur,const ccColor3B &shadowColor,bool mustUpdateTexture = true);
+    
     /** disable shadow rendering */
     void disableShadow(bool mustUpdateTexture = true);
     
@@ -188,7 +190,7 @@ protected:
     CCSize  m_shadowOffset;
     float   m_shadowOpacity;
     float   m_shadowBlur;
-    
+    ccColor3B   m_shadowColor;
     
     /** font stroke */
     bool        m_strokeEnabled;

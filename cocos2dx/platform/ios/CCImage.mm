@@ -43,6 +43,9 @@ typedef struct
     CGSize       shadowOffset;
     float        shadowBlur;
     float        shadowOpacity;
+    float        shadowColorR;
+    float        shadowColorG;
+    float        shadowColorB;
     bool         hasStroke;
     float        strokeColorR;
     float        strokeColorG;
@@ -345,7 +348,9 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
             CGSize offset;
             offset.height = pInfo->shadowOffset.height;
             offset.width  = pInfo->shadowOffset.width;
-            CGContextSetShadow(context, offset, pInfo->shadowBlur);
+//            CGContextSetShadow(context, offset, pInfo->shadowBlur);
+            UIColor* shadowColor= [UIColor colorWithRed:pInfo->shadowColorR green:pInfo->shadowColorG blue:pInfo->shadowColorB alpha:pInfo->shadowOpacity];
+            CGContextSetShadowWithColor(context, offset, pInfo->shadowBlur,[shadowColor CGColor]);
         }
         
         
@@ -583,6 +588,9 @@ bool CCImage::initWithStringShadowStroke(
                                          float shadowOffsetY,
                                          float shadowOpacity,
                                          float shadowBlur,
+                                         float shadowR,
+                                         float shadowG,
+                                         float shadowB,
                                          bool  stroke,
                                          float strokeR,
                                          float strokeG,
@@ -600,8 +608,11 @@ bool CCImage::initWithStringShadowStroke(
     info.shadowOffset.height    = shadowOffsetY;
     info.shadowBlur             = shadowBlur;
     info.shadowOpacity          = shadowOpacity;
-    info.hasStroke              =  stroke;
-    info.strokeColorR           =  strokeR;
+    info.shadowColorR           = shadowR;
+    info.shadowColorG           = shadowG;
+    info.shadowColorB           = shadowB;
+    info.hasStroke              = stroke;
+    info.strokeColorR           = strokeR;
     info.strokeColorG           = strokeG;
     info.strokeColorB           = strokeB;
     info.strokeSize             = strokeSize;

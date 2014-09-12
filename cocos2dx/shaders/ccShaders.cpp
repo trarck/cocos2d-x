@@ -81,6 +81,7 @@ const GLchar * ccPositionColorLengthTexture_vert =
 #include "ccShader_Label_df_glow.frag"
 #include "ccShader_Label_normal.frag"
 #include "ccShader_Label_outline.frag"
+#include "ccShader_Label_Blur.frag"
 
 #include "ccShader_Blur.vert"
 #include "ccShader_Blur.frag"

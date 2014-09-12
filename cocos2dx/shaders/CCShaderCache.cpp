@@ -47,6 +47,7 @@ enum {
     kCCShaderType_LabelDistanceFieldGlow,
     kCCShaderType_LabelNormal,
     kCCShaderType_LabelOutline,
+    kCCShaderType_LabelBlur,
     
     kCCShaderType_Blur,
     
@@ -205,6 +206,14 @@ void CCShaderCache::loadDefaultShaders()
     p->release();
     
     //
+    //label blur
+    //
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_LabelBlur);
+    m_pPrograms->setObject( p,kCCSHADER_LABEL_BLUR);
+    p->release();
+    
+    //
     //blur
     //
     p = new CCGLProgram();
@@ -299,6 +308,13 @@ void CCShaderCache::reloadDefaultShaders()
     p = programForKey(kCCShader_LABEL_OUTLINE);
     p->reset();
     loadDefaultShader(p, kCCShaderType_LabelOutline);
+    
+    //
+    //label normal
+    //
+    p = programForKey(kCCSHADER_LABEL_BLUR);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_LabelBlur);
     
     //
     //blur
@@ -401,6 +417,14 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             break;
         case kCCShaderType_LabelNormal:
             p->initWithVertexShaderByteArray(ccLabel_vert, ccLabelNormal_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
+            break;
+        case kCCShaderType_LabelBlur:
+            p->initWithVertexShaderByteArray(ccBlur_vert, ccLabelBlur_frag);
             
             p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
             p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);

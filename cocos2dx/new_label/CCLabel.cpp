@@ -263,6 +263,11 @@ Label::Label(FontAtlas *atlas /* = NULL */, CCTextAlignment hAlignment /* = kCCT
 , _useA8Shader(useA8Shader)
 , _fontScale(1.0f)
 , _uniformEffectColor(0)
+, _uniformTextColor(0)
+, _uniformBlurResolution(0)
+, _uniformBlurRadius(0)
+, _uniformBlurSampleNum(0)
+, _uniformBlurTextColor(0)
 , _currNumLines(-1)
 , _textSprite(NULL)
 , _contentDirty(false)
@@ -804,9 +809,17 @@ void Label::enableShadow(const ccColor4B& shadowColor /* = Color4B::BLACK */,con
     float contentScaleFactor = CC_CONTENT_SCALE_FACTOR();
     _shadowOffset.width = offset.width * contentScaleFactor;
     _shadowOffset.height = offset.height * contentScaleFactor;
-    //TODO: support blur for shadow
+    
     _shadowBlurRadius = 0;
 
+    if (_shadowBlurRadius>0) {
+        GLuint programId=CCShaderCache::sharedShaderCache()->programForKey(kCCSHADER_LABEL_BLUR)->getProgram();
+        _uniformBlurResolution=glGetUniformLocation(programId, "resolution");
+        _uniformBlurRadius=glGetUniformLocation(programId, "blurRadius");
+        _uniformBlurSampleNum=glGetUniformLocation(programId, "sampleNum");
+        _uniformBlurTextColor=glGetUniformLocation(programId, "u_textColor");
+    }
+    
     if (_textSprite && _shadowNode)
     {
         _shadowNode->setColor(_shadowColor);
@@ -863,13 +876,18 @@ void Label::onDraw(/*const CCAffineTransform& transform, bool transformUpdated*/
     }
 
     CCGLProgram* glprogram = getShaderProgram();
+    
     glprogram->use();
     
     ccGLBlendFunc(m_blendFunc.src,m_blendFunc.dst);
 
-    if(_shadowEnabled && _shadowBlurRadius <= 0)
+    if(_shadowEnabled)
     {
-        drawShadowWithoutBlur();
+        if (_shadowBlurRadius <= 0 ) {
+            drawShadowWithoutBlur();
+        }else{
+            drawShadowWithBlur();
+        }
     }
     
     if (_currentLabelType == kLabelTypeTTF)
@@ -886,6 +904,7 @@ void Label::onDraw(/*const CCAffineTransform& transform, bool transformUpdated*/
 
     glprogram->setUniformsForBuiltins();
 
+    CHECK_GL_ERROR_DEBUG();
     
 //    CCNode* child = NULL;
 //    unsigned int i = 0;
@@ -947,6 +966,62 @@ void Label::drawShadowWithoutBlur()
     
     _displayedOpacity = oldOPacity;
     setColor(oldColor);
+}
+
+void Label::drawShadowWithBlur()
+{
+   
+    ccColor3B oldColor = _realColor;
+    GLubyte oldOPacity = _displayedOpacity;
+    _displayedOpacity = _shadowOpacity * _displayedOpacity;
+    setColor(_shadowColor);
+    
+    CCGLProgram* normalProgram=getShaderProgram();
+    
+    CCGLProgram* blurProgram=CCShaderCache::sharedShaderCache()->programForKey(kCCSHADER_LABEL_BLUR);
+    
+//    setShaderProgram(blurProgram);
+    
+    kmGLPushMatrix();
+    
+    shadowTransform();
+    
+    blurProgram->use();
+    blurProgram->setUniformsForBuiltins();
+    
+    ccGLBlendFunc(m_blendFunc.src,m_blendFunc.dst);
+    
+    blurProgram->setUniformLocationWith4f(_uniformBlurTextColor,
+                                                 _shadowColorF.r,_shadowColorF.g,_shadowColorF.b,_shadowColorF.a);
+    
+    CCSize textureSize=getTextureAtlas()->getTexture()->getContentSizeInPixels();
+    
+//    CCLOG("size:%f,%f",textureSize.width,textureSize.height);
+    
+    blurProgram->setUniformLocationWith2f(_uniformBlurResolution, textureSize.width,textureSize.height);
+    CHECK_GL_ERROR_DEBUG();
+    
+    blurProgram->setUniformLocationWith1f(_uniformBlurRadius, (float)4);
+    blurProgram->setUniformLocationWith1f(_uniformBlurSampleNum, (float)6);
+    
+    CHECK_GL_ERROR_DEBUG();
+    
+    for (std::vector<CCSpriteBatchNode*>::iterator batchNodeIter=_batchNodes.begin();batchNodeIter!=_batchNodes.end();++batchNodeIter)
+    {
+        (*batchNodeIter)->getTextureAtlas()->drawQuads();
+    }
+    
+    kmGLPopMatrix();
+    
+    setShaderProgram(normalProgram);
+
+    
+    _displayedOpacity = oldOPacity;
+    setColor(oldColor);
+    
+    normalProgram->use();
+    normalProgram->setUniformsForBuiltins();
+    
 }
 
 void Label::draw(/*Renderer *renderer, const Mat4 &transform, uint32_t flags*/)

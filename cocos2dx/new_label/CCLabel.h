@@ -338,6 +338,8 @@ protected:
     virtual void updateShaderProgram();
 
     void drawShadowWithoutBlur();
+    
+    void drawShadowWithBlur();
 
     void drawTextSprite();
 
@@ -399,6 +401,11 @@ protected:
 
     GLuint _uniformEffectColor;
     GLuint _uniformTextColor;
+    
+    GLuint _uniformBlurResolution;
+    GLuint _uniformBlurRadius;
+    GLuint _uniformBlurSampleNum;
+    GLuint _uniformBlurTextColor;
 //    CustomCommand _customCommand;   
 
     bool    _shadowDirty;

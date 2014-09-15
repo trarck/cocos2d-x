@@ -417,4 +417,14 @@ CCSpriteFrame* CCSpriteFrameCache::spriteFrameByName(const char *pszName)
     return frame;
 }
 
+void CCSpriteFrameCache::gc(float delta)
+{
+	
+}
+
+void CCSpriteFrameCache::setGcTime(float time)
+{
+	
+}
+
 NS_CC_END

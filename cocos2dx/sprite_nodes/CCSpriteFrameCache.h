@@ -152,6 +152,10 @@ public:
 
     /** Purges the cache. It releases all the Sprite Frames and the retained instance. */
     static void purgeSharedSpriteFrameCache(void);
+	
+	void gc(float delta,unsigned int);
+	
+	void setGcTime(float time);
 
 private:
     // MARMALADE: Made this protected not private, as deriving from this class is pretty useful

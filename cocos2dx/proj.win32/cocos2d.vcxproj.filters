@@ -103,6 +103,9 @@
     <Filter Include="support\component">
       <UniqueIdentifier>{485f1c18-d463-48d0-bcaa-a10e32aa3332}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cache">
+      <UniqueIdentifier>{2db81430-59fa-4a32-bbc4-b7f458349dc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\base_nodes\CCAtlasNode.cpp">
@@ -477,6 +480,12 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="..\support\zip_support\ioapi_mem.cpp">
       <Filter>support\zip_support</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cache\CCCacheDictionary.cpp">
+      <Filter>cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cache\CCCacheObject.cpp">
+      <Filter>cache</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -959,6 +968,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="..\support\zip_support\ioapi_mem.h">
       <Filter>support\zip_support</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cache\CCCacheDictionary.h">
+      <Filter>cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cache\CCCacheObject.h">
+      <Filter>cache</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

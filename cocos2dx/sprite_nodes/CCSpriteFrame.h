@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "CCProtocols.h"
 #include "cocoa/CCObject.h"
 #include "cocoa/CCGeometry.h"
+#include "cache/CCCacheObject.h"
 
 NS_CC_BEGIN
 
@@ -52,7 +53,7 @@ class CCZone;
     CCSpriteFrame *frame = CCSpriteFrame::frameWithTexture(texture, rect, offset);
     sprite->setDisplayFrame(frame);
  */
-class CC_DLL CCSpriteFrame : public CCObject
+class CC_DLL CCSpriteFrame : public CCCacheObject
 {
 public:
     // attributes

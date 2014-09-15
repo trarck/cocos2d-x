@@ -63,8 +63,8 @@ void CCSpriteFrameCache::purgeSharedSpriteFrameCache(void)
 
 bool CCSpriteFrameCache::init(void)
 {
-    m_pSpriteFrames= new CCDictionary();
-    m_pSpriteFramesAliases = new CCDictionary();
+    m_pSpriteFrames= new CCCacheDictionary();
+    m_pSpriteFramesAliases = new CCCacheDictionary();
     m_pLoadedFileNames = new std::set<std::string>();
     return true;
 }
@@ -419,12 +419,24 @@ CCSpriteFrame* CCSpriteFrameCache::spriteFrameByName(const char *pszName)
 
 void CCSpriteFrameCache::gc(float delta)
 {
-	
+	if (m_pSpriteFrames){
+		m_pSpriteFrames->gc(delta,kCCacheDictionaryDefaultRemoveCount);
+	}
+
+	if (m_pSpriteFramesAliases){
+		m_pSpriteFramesAliases->gc(delta,kCCacheDictionaryDefaultRemoveCount);
+	}
 }
 
-void CCSpriteFrameCache::setGcTime(float time)
+void CCSpriteFrameCache::setGCTime(float time)
 {
-	
+	if (m_pSpriteFrames){
+		m_pSpriteFrames->setGCTime(time);
+	}
+
+	if (m_pSpriteFramesAliases){
+		m_pSpriteFramesAliases->setGCTime(time);
+	}
 }
 
 NS_CC_END

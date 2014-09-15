@@ -1,13 +1,13 @@
 #ifndef __CCCACHEOBJECT_H__
 #define __CCCACHEOBJECT_H__
 
-#include "CCObject.h"
+#include "cocoa/CCObject.h"
 
 NS_CC_BEGIN
 
 
 
-class CCCacheObject:public CCObject
+class CC_DLL CCCacheObject:public CCObject
 {
 public:
 	

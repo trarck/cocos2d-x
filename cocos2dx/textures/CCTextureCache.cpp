@@ -218,7 +218,7 @@ CCTextureCache::CCTextureCache()
 {
     CCAssert(g_sharedTextureCache == NULL, "Attempted to allocate a second instance of a singleton.");
     
-    m_pTextures = new CCDictionary();
+    m_pTextures = new CCCacheDictionary();
 }
 
 CCTextureCache::~CCTextureCache()
@@ -788,6 +788,16 @@ void CCTextureCache::dumpCachedTextureInfo()
     }
 
     CCLOG("cocos2d: CCTextureCache dumpDebugInfo: %ld textures, for %lu KB (%.2f MB)", (long)count, (long)totalBytes / 1024, totalBytes / (1024.0f*1024.0f));
+}
+
+void CCTextureCache::gc(float delta)
+{
+
+}
+	
+void CCTextureCache::setGCTime(float time)
+{
+
 }
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA

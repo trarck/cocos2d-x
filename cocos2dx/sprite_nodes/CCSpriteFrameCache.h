@@ -39,6 +39,7 @@ THE SOFTWARE.
 #include "cocoa/CCObject.h"
 #include <set>
 #include <string>
+#include "cache/CCCacheDictionary.h"
 
 NS_CC_BEGIN
 
@@ -153,16 +154,16 @@ public:
     /** Purges the cache. It releases all the Sprite Frames and the retained instance. */
     static void purgeSharedSpriteFrameCache(void);
 	
-	void gc(float delta,unsigned int);
+	void gc(float delta);
 	
-	void setGcTime(float time);
+	void setGCTime(float time);
 
 private:
     // MARMALADE: Made this protected not private, as deriving from this class is pretty useful
 //    CCSpriteFrameCache(void) : m_pSpriteFrames(NULL), m_pSpriteFramesAliases(NULL){}
 protected:
-    CCDictionary* m_pSpriteFrames;
-    CCDictionary* m_pSpriteFramesAliases;
+    CCCacheDictionary* m_pSpriteFrames;//0x14 0x is virtual table ccobject size 16
+    CCCacheDictionary* m_pSpriteFramesAliases;//0x18
     std::set<std::string>*  m_pLoadedFileNames;
 };
 

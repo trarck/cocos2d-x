@@ -34,6 +34,8 @@ THE SOFTWARE.
 #include "base_nodes/CCGLBufferedNode.h"
 #endif // EMSCRIPTEN
 
+#include "cache/CCCacheObject.h"
+
 NS_CC_BEGIN
 
 class CCImage;
@@ -106,7 +108,7 @@ typedef struct _ccTexParams {
 * Depending on how you create the CCTexture2D object, the actual image area of the texture might be smaller than the texture dimensions i.e. "contentSize" != (pixelsWide, pixelsHigh) and (maxS, maxT) != (1.0, 1.0).
 * Be aware that the content of the generated textures will be upside-down!
 */
-class CC_DLL CCTexture2D : public CCObject
+class CC_DLL CCTexture2D : public CCCacheObject
 #ifdef EMSCRIPTEN
 , public CCGLBufferedNode
 #endif // EMSCRIPTEN

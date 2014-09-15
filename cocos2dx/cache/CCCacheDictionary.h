@@ -1,11 +1,13 @@
 #ifndef __CCCACHEDICTIONARY_H__
 #define __CCCACHEDICTIONARY_H__
 
-#include "CCDictionary.h"
+#include "cocoa/CCDictionary.h"
 
 NS_CC_BEGIN
 
-class CCCacheDictionary:public CCDictionary
+#define kCCacheDictionaryDefaultRemoveCount 10
+
+class CC_DLL CCCacheDictionary:public CCDictionary
 {
 
 public:
@@ -16,7 +18,7 @@ public:
 	
 	void gc(float delta,unsigned int removeCount);
 	
-	setGCTime(float gcTime)
+	void setGCTime(float gcTime)
 	{
 		m_gcTime=gcTime;
 	}

@@ -39,6 +39,8 @@ THE SOFTWARE.
     #include <list>
 #endif
 
+#include "cache/CCCacheDictionary.h"
+
 NS_CC_BEGIN
 
 class CCLock;
@@ -56,7 +58,7 @@ class CCImage;
 class CC_DLL CCTextureCache : public CCObject
 {
 protected:
-    CCDictionary* m_pTextures;
+    CCCacheDictionary* m_pTextures;
     //pthread_mutex_t                *m_pDictLock;
 
 
@@ -190,6 +192,10 @@ public:
     It's only useful when the value of CC_ENABLE_CACHE_TEXTURE_DATA is 1
     */
     static void reloadAllTextures();
+
+	void gc(float delta);
+	
+	void setGCTime(float time);
 };
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA

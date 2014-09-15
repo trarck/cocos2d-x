@@ -1,4 +1,5 @@
 #include "CCCacheDictionary.h"
+#include <list>
 #include "CCCacheObject.h"
 
 NS_CC_BEGIN
@@ -19,7 +20,7 @@ void CCCacheDictionary::gc(float delta,unsigned int removeCount)
 		
 		if(m_elapsed > m_interval){
 			
-			list<CCDictElement*> elementToRemove;
+			std::list<CCDictElement*> elementToRemove;
 			CCDictElement *pElement, *tmp;
 			
 			CCCacheObject* cacheObject=NULL;
@@ -28,7 +29,7 @@ void CCCacheDictionary::gc(float delta,unsigned int removeCount)
 			
 	        HASH_ITER(hh, m_pElements, pElement, tmp) 
 	        {
-				cacheObject=(CCCacheObject*)pElement->m_pObject;
+				cacheObject=(CCCacheObject*)pElement->getObject();
 				if(cacheObject){
 					cacheObject->updateLastDrawTime(m_elapsed);
 					lastDrawTime=cacheObject->getLastDrawTime();
@@ -42,7 +43,7 @@ void CCCacheDictionary::gc(float delta,unsigned int removeCount)
 				}
 	        }
 			
-	        for (list<CCDictElement*>::iterator iter = elementToRemove.begin(); iter != elementToRemove.end(); ++iter)
+	        for (std::list<CCDictElement*>::iterator iter = elementToRemove.begin(); iter != elementToRemove.end(); ++iter)
 	        {
 	            removeObjectForElememt(*iter);
 	        }

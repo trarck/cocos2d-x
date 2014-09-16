@@ -16,4 +16,7 @@ class CCTextureCache : public CCObject
     static CCTextureCache * sharedTextureCache();
     static void reloadAllTextures();
     static void purgeSharedTextureCache();
+	
+	void gc(float delta);
+	void setGCTime(float time);
 };

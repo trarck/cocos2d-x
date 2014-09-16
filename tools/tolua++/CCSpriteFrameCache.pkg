@@ -18,4 +18,7 @@ class CCSpriteFrameCache : public CCObject
 
     static CCSpriteFrameCache* sharedSpriteFrameCache(void);
     static void purgeSharedSpriteFrameCache(void);
+	
+	void gc(float delta);
+	void setGCTime(float time);
 };

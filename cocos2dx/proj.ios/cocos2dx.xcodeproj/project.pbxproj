@@ -315,6 +315,10 @@
 		4EF8999916E207E70040A527 /* CCTMXTiledMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 4EF8998D16E207E70040A527 /* CCTMXTiledMap.h */; };
 		4EF8999A16E207E70040A527 /* CCTMXXMLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EF8998E16E207E70040A527 /* CCTMXXMLParser.cpp */; };
 		4EF8999B16E207E70040A527 /* CCTMXXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 4EF8998F16E207E70040A527 /* CCTMXXMLParser.h */; };
+		57B4B3B119C7E3BE00EC3A21 /* CCCacheDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 57B4B3AD19C7E3BE00EC3A21 /* CCCacheDictionary.cpp */; };
+		57B4B3B219C7E3BE00EC3A21 /* CCCacheDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B4B3AE19C7E3BE00EC3A21 /* CCCacheDictionary.h */; };
+		57B4B3B319C7E3BE00EC3A21 /* CCCacheObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 57B4B3AF19C7E3BE00EC3A21 /* CCCacheObject.cpp */; };
+		57B4B3B419C7E3BE00EC3A21 /* CCCacheObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 57B4B3B019C7E3BE00EC3A21 /* CCCacheObject.h */; };
 		57D85645197E682B0038F43D /* ioapi_mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 57D85643197E682B0038F43D /* ioapi_mem.cpp */; };
 		57D85646197E682B0038F43D /* ioapi_mem.h in Headers */ = {isa = PBXBuildFile; fileRef = 57D85644197E682B0038F43D /* ioapi_mem.h */; };
 		D43F7F8A15C7D8BA00D713FC /* CCTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */; };
@@ -632,6 +636,10 @@
 		4EF8998D16E207E70040A527 /* CCTMXTiledMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTMXTiledMap.h; sourceTree = "<group>"; };
 		4EF8998E16E207E70040A527 /* CCTMXXMLParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTMXXMLParser.cpp; sourceTree = "<group>"; };
 		4EF8998F16E207E70040A527 /* CCTMXXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTMXXMLParser.h; sourceTree = "<group>"; };
+		57B4B3AD19C7E3BE00EC3A21 /* CCCacheDictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCCacheDictionary.cpp; sourceTree = "<group>"; };
+		57B4B3AE19C7E3BE00EC3A21 /* CCCacheDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCacheDictionary.h; sourceTree = "<group>"; };
+		57B4B3AF19C7E3BE00EC3A21 /* CCCacheObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCCacheObject.cpp; sourceTree = "<group>"; };
+		57B4B3B019C7E3BE00EC3A21 /* CCCacheObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCacheObject.h; sourceTree = "<group>"; };
 		57D85643197E682B0038F43D /* ioapi_mem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ioapi_mem.cpp; sourceTree = "<group>"; };
 		57D85644197E682B0038F43D /* ioapi_mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi_mem.h; sourceTree = "<group>"; };
 		D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTouch.cpp; sourceTree = "<group>"; };
@@ -692,6 +700,7 @@
 				1A4646D816DC8FB700DE131F /* ccFPSImages.h */,
 				1551A37D158F2ADE00E66CFE /* CCScheduler.cpp */,
 				1551A37E158F2ADE00E66CFE /* CCScheduler.h */,
+				57B4B3AC19C7E3BE00EC3A21 /* cache */,
 				1551A37F158F2ADE00E66CFE /* cocoa */,
 				1551A395158F2ADE00E66CFE /* cocos2d.cpp */,
 				15FBEE65164BBA97008CB2C3 /* draw_nodes */,
@@ -1299,6 +1308,17 @@
 			path = user_default;
 			sourceTree = "<group>";
 		};
+		57B4B3AC19C7E3BE00EC3A21 /* cache */ = {
+			isa = PBXGroup;
+			children = (
+				57B4B3AD19C7E3BE00EC3A21 /* CCCacheDictionary.cpp */,
+				57B4B3AE19C7E3BE00EC3A21 /* CCCacheDictionary.h */,
+				57B4B3AF19C7E3BE00EC3A21 /* CCCacheObject.cpp */,
+				57B4B3B019C7E3BE00EC3A21 /* CCCacheObject.h */,
+			);
+			path = cache;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1313,6 +1333,7 @@
 				1551A631158F2ADE00E66CFE /* CCActionGrid.h in Headers */,
 				1551A633158F2ADE00E66CFE /* CCActionGrid3D.h in Headers */,
 				1551A635158F2ADE00E66CFE /* CCActionInstant.h in Headers */,
+				57B4B3B219C7E3BE00EC3A21 /* CCCacheDictionary.h in Headers */,
 				1551A637158F2ADE00E66CFE /* CCActionInterval.h in Headers */,
 				1551A639158F2ADE00E66CFE /* CCActionManager.h in Headers */,
 				1551A63B158F2ADE00E66CFE /* CCActionPageTurn3D.h in Headers */,
@@ -1343,6 +1364,7 @@
 				1551A6B3158F2ADE00E66CFE /* ccMacros.h in Headers */,
 				1551A6B4158F2ADE00E66CFE /* CCProtocols.h in Headers */,
 				1551A6B5158F2ADE00E66CFE /* ccTypes.h in Headers */,
+				57B4B3B419C7E3BE00EC3A21 /* CCCacheObject.h in Headers */,
 				1551A6B6158F2ADE00E66CFE /* cocos2d.h in Headers */,
 				1551A6B8158F2ADE00E66CFE /* aabb.h in Headers */,
 				1551A6B9158F2ADE00E66CFE /* mat4stack.h in Headers */,
@@ -1556,6 +1578,7 @@
 				1551A650158F2ADE00E66CFE /* CCAffineTransform.cpp in Sources */,
 				1551A652158F2ADE00E66CFE /* CCArray.cpp in Sources */,
 				1551A654158F2ADE00E66CFE /* CCAutoreleasePool.cpp in Sources */,
+				57B4B3B119C7E3BE00EC3A21 /* CCCacheDictionary.cpp in Sources */,
 				1551A656158F2ADE00E66CFE /* CCDictionary.cpp in Sources */,
 				1551A658158F2ADE00E66CFE /* CCGeometry.cpp in Sources */,
 				1551A65B158F2ADE00E66CFE /* CCNS.cpp in Sources */,
@@ -1667,6 +1690,7 @@
 				46A393F916E5D01B00210B16 /* CCUserDefaultAndroid.cpp in Sources */,
 				1A5428FF1720F0650074EC5C /* CCDataVisitor.cpp in Sources */,
 				4698CFA9174CBB700066A57B /* CCTextureETC.cpp in Sources */,
+				57B4B3B319C7E3BE00EC3A21 /* CCCacheObject.cpp in Sources */,
 				37EEEBF8175DDF3A003C1193 /* CCComponent.cpp in Sources */,
 				37EEEBFA175DDF3A003C1193 /* CCComponentContainer.cpp in Sources */,
 			);

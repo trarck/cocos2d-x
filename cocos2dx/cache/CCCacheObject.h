@@ -19,7 +19,11 @@ public:
     
 	void updateLastDrawTime(float delta)
 	{
-		m_drawTime+=delta;
+        if (m_uReference==1) {
+            m_drawTime+=delta;
+        }else{
+            m_drawTime=0;
+        }
 	}
     
 	float getLastDrawTime()

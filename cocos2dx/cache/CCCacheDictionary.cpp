@@ -42,6 +42,8 @@ void CCCacheDictionary::gc(float delta,unsigned int removeCount)
 					}
 				}
 	        }
+            
+            m_elapsed=0;
 			
 	        for (std::list<CCDictElement*>::iterator iter = elementToRemove.begin(); iter != elementToRemove.end(); ++iter)
 	        {

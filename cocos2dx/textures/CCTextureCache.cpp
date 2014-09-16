@@ -792,12 +792,12 @@ void CCTextureCache::dumpCachedTextureInfo()
 
 void CCTextureCache::gc(float delta)
 {
-
+    m_pTextures->gc(delta, kCCCacheDictionaryDefaultRemoveCount);
 }
 	
 void CCTextureCache::setGCTime(float time)
 {
-
+    m_pTextures->setGCTime(time);
 }
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA

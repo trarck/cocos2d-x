@@ -420,11 +420,11 @@ CCSpriteFrame* CCSpriteFrameCache::spriteFrameByName(const char *pszName)
 void CCSpriteFrameCache::gc(float delta)
 {
 	if (m_pSpriteFrames){
-		m_pSpriteFrames->gc(delta,kCCacheDictionaryDefaultRemoveCount);
+		m_pSpriteFrames->gc(delta,kCCCacheDictionaryDefaultRemoveCount);
 	}
 
 	if (m_pSpriteFramesAliases){
-		m_pSpriteFramesAliases->gc(delta,kCCacheDictionaryDefaultRemoveCount);
+		m_pSpriteFramesAliases->gc(delta,kCCCacheDictionaryDefaultRemoveCount);
 	}
 }
 

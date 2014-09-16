@@ -5,7 +5,7 @@
 
 NS_CC_BEGIN
 
-#define kCCacheDictionaryDefaultRemoveCount 10
+#define kCCCacheDictionaryDefaultRemoveCount 10
 
 class CC_DLL CCCacheDictionary:public CCDictionary
 {

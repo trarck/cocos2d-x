@@ -67,6 +67,10 @@ public:
      **/
     static LoadingBar* create(const std::string& textureName, float percentage = 0);
     
+    static LoadingBar* create(const std::string& textureName,
+                              TextureResType texType,
+                              float percentage = 0);
+    
     /**
      * Changes the progress direction of loadingbar.
      *
@@ -130,7 +134,7 @@ public:
     virtual void ignoreContentAdaptWithSize(bool ignore) override;
     
     //override "getVirtualRendererSize" method of widget.
-    virtual const Size& getVirtualRendererSize() const override;
+    virtual Size getVirtualRendererSize() const override;
     
     //override "getVirtualRenderer" method of widget.
     virtual Node* getVirtualRenderer() override;

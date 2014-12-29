@@ -32,12 +32,12 @@
 #include "3d/CCAABB.h"
 
 #include "base/CCRef.h"
-#include "base/ccTypes.h"
+#include "base/CCVector.h"
 #include "math/CCMath.h"
 #include "renderer/CCGLProgram.h"
 #include "renderer/CCVertexIndexData.h"
 #include "renderer/CCVertexIndexBuffer.h"
-#include "3d/3dExport.h"
+
 
 NS_CC_BEGIN
 
@@ -114,8 +114,7 @@ public:
 CC_CONSTRUCTOR_ACCESS:
     MeshVertexData();
     virtual ~MeshVertexData();
-    
-    static const AABB& calculateAABB(const std::vector<float>& vertex, int stride, const std::vector<unsigned short>& index);
+
 protected:
     VertexData*          _vertexData; //mesh vertex data
     VertexBuffer*        _vertexBuffer; // vertex buffer

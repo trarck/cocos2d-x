@@ -25,7 +25,6 @@
 #ifndef __CCSPRITE3D_H__
 #define __CCSPRITE3D_H__
 
-#include <vector>
 #include <unordered_map>
 
 #include "base/CCVector.h"
@@ -33,26 +32,22 @@
 #include "base/CCProtocols.h"
 #include "2d/CCNode.h"
 #include "renderer/CCMeshCommand.h"
+#include "renderer/CCGLProgramState.h"
+#include "3d/CCSkeleton3D.h" // need to include for lua-binding
 #include "3d/CCAABB.h"
 #include "3d/CCBundle3DData.h"
-#include "3d/CCMesh.h"
 #include "3d/CCMeshVertexIndexData.h"
-#include "3d/3dExport.h"
 
 
 NS_CC_BEGIN
 
-class GLProgramState;
 class Mesh;
 class Texture2D;
 class MeshSkin;
 class AttachNode;
-class SubMeshState;
-class Skeleton3D;
 struct NodeData;
-class SubMesh;
 /** Sprite3D: A sprite can be loaded from 3D model files, .obj, .c3t, .c3b, then can be drawed as sprite */
-class CC_3D_DLL Sprite3D : public Node, public BlendProtocol
+class CC_DLL Sprite3D : public Node, public BlendProtocol
 {
 public:
     /** creates a Sprite3D*/
@@ -61,18 +56,36 @@ public:
     // creates a Sprite3D. It only supports one texture, and overrides the internal texture with 'texturePath'
     static Sprite3D* create(const std::string &modelPath, const std::string &texturePath);
     
+    /** create 3d sprite asynchronously
+     * If the 3d model was previously loaded, it will create a new 3d sprite and the callback will be called at once.
+     * Otherwise it will load the model file in a new thread, and when the 3d sprite is loaded, the callback will be called with the created Sprite3D and a userdefined parameter.
+     * The callback will be called from the main thread, so it is safe to create any cocos2d object from the callback.
+     * @param modelPath model to be loaded
+     * @param callback callback after loading
+     * @param callbackparam user defined parameter for the callback
+     */
+    static void createAsync(const std::string &modelPath, const std::function<void(Sprite3D*, void*)>& callback, void* callbackparam);
+    
+    static void createAsync(const std::string &modelPath, const std::string &texturePath, const std::function<void(Sprite3D*, void*)>& callback, void* callbackparam);
+    
     /**set texture, set the first if multiple textures exist*/
     void setTexture(const std::string& texFile);
     void setTexture(Texture2D* texture);
     
-    /**get SubMeshState by index*/
+    /**get Mesh by index*/
     Mesh* getMeshByIndex(int index) const;
     
-    /**get SubMeshState by Name */
+    /**get Mesh by Name, it returns the first one if there are more than one mesh with the same name */
     Mesh* getMeshByName(const std::string& name) const;
+    
+    /** get mesh array by name, returns all meshes with the given name */
+    std::vector<Mesh*> getMeshArrayByName(const std::string& name) const;
 
     /**get mesh*/
     Mesh* getMesh() const { return _meshes.at(0); }
+    
+    /** get mesh count */
+    ssize_t getMeshCount() const { return _meshes.size(); }
     
     /**get skin*/
     CC_DEPRECATED_ATTRIBUTE MeshSkin* getSkin() const;
@@ -116,6 +129,10 @@ public:
     void setCullFace(GLenum cullFace);
     // set cull face enable or not
     void setCullFaceEnabled(bool enable);
+    
+    /** light mask getter & setter, light works only when _lightmask & light's flag is true, default value of _lightmask is 0xffff */
+    void setLightMask(unsigned int mask) { _lightMask = mask; }
+    unsigned int getLightMask() const { return _lightMask; }
 
 CC_CONSTRUCTOR_ACCESS:
     
@@ -128,17 +145,14 @@ CC_CONSTRUCTOR_ACCESS:
     /**load sprite3d from cache, return true if succeed, false otherwise*/
     bool loadFromCache(const std::string& path);
     
-    /**.mtl file should at the same directory with the same name if exist*/
-    bool loadFromObj(const std::string& path);
-    
-    /**load from .c3b or .c3t*/
-    bool loadFromC3x(const std::string& path);
+    /** load file and set it to meshedatas, nodedatas and materialdatas, obj file .mtl file should be at the same directory if exist */
+    bool loadFromFile(const std::string& path, NodeDatas* nodedatas, MeshDatas* meshdatas,  MaterialDatas* materialdatas);
 
     /**draw*/
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
     
     /**generate default GLProgramState*/
-    void genGLProgramState();
+    void genGLProgramState(bool useLight = false);
 
     void createNode(NodeData* nodedata, Node* root, const MaterialDatas& matrialdatas, bool singleSprite);
     void createAttachSprite3DNode(NodeData* nodedata,const MaterialDatas& matrialdatas);
@@ -150,6 +164,8 @@ CC_CONSTRUCTOR_ACCESS:
     void  addMesh(Mesh* mesh);
     
     void onAABBDirty() { _aabbDirty = true; }
+    
+    void afterAsyncLoad(void* param);
     
 protected:
 
@@ -166,15 +182,31 @@ protected:
     mutable AABB                 _aabb;                 // cache current aabb
     mutable Mat4                 _nodeToWorldTransform; // cache the matrix
     bool                         _aabbDirty;
+    unsigned int                 _lightMask;
+    bool                         _shaderUsingLight; // is current shader using light ?
+    
+    struct AsyncLoadParam
+    {
+        std::function<void(Sprite3D*, void*)> afterLoadCallback; // callback after load
+        void*                           callbackParam;
+        bool                            result; // sprite load result
+        std::string                     modlePath;
+        std::string                     texPath; //
+        MeshDatas* meshdatas;
+        MaterialDatas* materialdatas;
+        NodeDatas*   nodeDatas;
+    };
+    AsyncLoadParam             _asyncLoadParam;
 };
 
 ///////////////////////////////////////////////////////
-class Sprite3DCache
+class CC_DLL Sprite3DCache
 {
 public:
     struct Sprite3DData
     {
         Vector<MeshVertexData*>   meshVertexDatas;
+        Vector<GLProgramState*>   glProgramStates;
         NodeDatas*      nodedatas;
         MaterialDatas*  materialdatas;
         ~Sprite3DData()
@@ -184,6 +216,7 @@ public:
             if (materialdatas)
                 delete materialdatas;
             meshVertexDatas.clear();
+            glProgramStates.clear();
         }
     };
     
@@ -210,7 +243,7 @@ protected:
     std::unordered_map<std::string, Sprite3DData*> _spriteDatas; //cached sprite datas
 };
 
-extern std::string CC_3D_DLL s_attributeNames[];//attribute names array
+extern std::string CC_DLL s_attributeNames[];//attribute names array
 
 NS_CC_END
 #endif // __SPRITE3D_H_

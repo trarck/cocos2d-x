@@ -153,7 +153,7 @@ LuaStack::~LuaStack()
 
 LuaStack *LuaStack::create(void)
 {
-    LuaStack *stack = new LuaStack();
+    LuaStack *stack = new (std::nothrow) LuaStack();
     stack->init();
     stack->autorelease();
     return stack;
@@ -161,7 +161,7 @@ LuaStack *LuaStack::create(void)
 
 LuaStack *LuaStack::attach(lua_State *L)
 {
-    LuaStack *stack = new LuaStack();
+    LuaStack *stack = new (std::nothrow) LuaStack();
     stack->initWithLuaState(L);
     stack->autorelease();
     return stack;
@@ -177,7 +177,7 @@ bool LuaStack::init(void)
     const luaL_reg global_functions [] = {
         {"print", lua_print},
         {"release_print",lua_release_print},
-        {NULL, NULL}
+        {nullptr, nullptr}
     };
     luaL_register(_state, "_G", global_functions);
 
@@ -186,6 +186,7 @@ bool LuaStack::init(void)
     tolua_opengl_open(_state);
     register_all_cocos2dx_manual(_state);
     register_all_cocos2dx_module_manual(_state);
+    register_all_cocos2dx_math_manual(_state);
     register_all_cocos2dx_experimental(_state);
     register_all_cocos2dx_experimental_manual(_state);
 
@@ -273,10 +274,20 @@ int LuaStack::executeString(const char *codes)
 
 int LuaStack::executeScriptFile(const char* filename)
 {
-    std::string code("require \"");
-    code.append(filename);
-    code.append("\"");
-    return executeString(code.c_str());
+    CCAssert(filename, "CCLuaStack::executeScriptFile() - invalid filename");
+
+    FileUtils *utils = FileUtils::getInstance();
+    std::string fullPath = utils->fullPathForFilename(filename);
+    Data data = utils->getDataFromFile(fullPath);
+    int rn = 0;
+    if (!data.isNull())
+    {
+        if (luaLoadBuffer(_state, (const char*)data.getBytes(), (int)data.getSize(), fullPath.c_str()) == 0)
+        {
+            rn = executeFunction(0);
+        }
+    }
+    return rn;
 }
 
 int LuaStack::executeGlobalFunction(const char* functionName)
@@ -584,7 +595,7 @@ int LuaStack::executeFunctionReturnArray(int handler,int numArgs,int numResults,
                 
             }else{
                 
-                resultArray.addObject(static_cast<Ref*>(tolua_tousertype(_state, -1, NULL)));
+                resultArray.addObject(static_cast<Ref*>(tolua_tousertype(_state, -1, nullptr)));
             }
             // remove return value from stack
             lua_pop(_state, 1);                                                /* L: ... [G] ret1 ret2 ... ret*/
@@ -729,6 +740,97 @@ void LuaStack::cleanupXXTEAKeyAndSign()
         _xxteaSign = nullptr;
         _xxteaSignLen = 0;
     }
+}
+
+int LuaStack::loadChunksFromZIP(const char *zipFilePath)
+{
+    pushString(zipFilePath);
+    luaLoadChunksFromZIP(_state);
+    int ret = lua_toboolean(_state, -1);
+    lua_pop(_state, 1);
+    return ret;
+}
+
+int LuaStack::luaLoadChunksFromZIP(lua_State *L)
+{
+    if (lua_gettop(L) < 1) {
+        CCLOG("luaLoadChunksFromZIP() - invalid arguments");
+        return 0;
+    }
+    
+    const char *zipFilename = lua_tostring(L, -1);
+    lua_settop(L, 0);
+    FileUtils *utils = FileUtils::getInstance();
+    std::string zipFilePath = utils->fullPathForFilename(zipFilename);
+    
+    LuaStack *stack = this;
+    
+    do {
+        ssize_t size = 0;
+        void *buffer = nullptr;
+        unsigned char *zipFileData = utils->getFileData(zipFilePath.c_str(), "rb", &size);
+        ZipFile *zip = nullptr;
+        
+        bool isXXTEA = stack && stack->_xxteaEnabled && zipFileData;
+        for (int i = 0; isXXTEA && i < stack->_xxteaSignLen && i < size; ++i) {
+            isXXTEA = zipFileData[i] == stack->_xxteaSign[i];
+        }
+        
+        if (isXXTEA) { // decrypt XXTEA
+            xxtea_long len = 0;
+            buffer = xxtea_decrypt(zipFileData + stack->_xxteaSignLen,
+                                   (xxtea_long)size - (xxtea_long)stack->_xxteaSignLen,
+                                   (unsigned char*)stack->_xxteaKey,
+                                   (xxtea_long)stack->_xxteaKeyLen,
+                                   &len);
+            free(zipFileData);
+            zipFileData = nullptr;
+            zip = ZipFile::createWithBuffer(buffer, len);
+        } else {
+            if (zipFileData) {
+                zip = ZipFile::createWithBuffer(zipFileData, size);
+            }
+        }
+        
+        if (zip) {
+            CCLOG("lua_loadChunksFromZIP() - load zip file: %s%s", zipFilePath.c_str(), isXXTEA ? "*" : "");
+            lua_getglobal(L, "package");
+            lua_getfield(L, -1, "preload");
+            
+            int count = 0;
+            std::string filename = zip->getFirstFilename();
+            while (filename.length()) {
+                ssize_t bufferSize = 0;
+                unsigned char *zbuffer = zip->getFileData(filename.c_str(), &bufferSize);
+                if (bufferSize) {
+                    if (stack->luaLoadBuffer(L, (char*)zbuffer, (int)bufferSize, filename.c_str()) == 0) {
+                        lua_setfield(L, -2, filename.c_str());
+                        ++count;
+                    }
+                    free(zbuffer);
+                }
+                filename = zip->getNextFilename();
+            }
+            CCLOG("lua_loadChunksFromZIP() - loaded chunks count: %d", count);
+            lua_pop(L, 2);
+            lua_pushboolean(L, 1);
+            
+            delete zip;
+        } else {
+            CCLOG("lua_loadChunksFromZIP() - not found or invalid zip file: %s", zipFilePath.c_str());
+            lua_pushboolean(L, 0);
+        }
+        
+        if (zipFileData) {
+            free(zipFileData);
+        }
+        
+        if (buffer) {
+            free(buffer);
+        }
+    } while (0);
+    
+    return 1;
 }
 
 int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName)

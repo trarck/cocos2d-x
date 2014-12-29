@@ -30,14 +30,16 @@ THE SOFTWARE.
 
 #include <vector>
 
-#include "2d/CCNode.h"
 #include "2d/CCAction.h"
-#include "2d/CCSpriteFrame.h"
 #include "2d/CCAnimation.h"
 #include "base/CCProtocols.h"
 #include "base/CCVector.h"
 
 NS_CC_BEGIN
+
+class Node;
+class SpriteFrame;
+class EventCustom;
 
 /**
  * @addtogroup actions
@@ -425,6 +427,7 @@ class CC_DLL MoveBy : public ActionInterval
 public:
     /** creates the action */
     static MoveBy* create(float duration, const Vec2& deltaPosition);
+    static MoveBy* create(float duration, const Vec3& deltaPosition);
 
     //
     // Overrides
@@ -435,16 +438,18 @@ public:
     virtual void update(float time) override;
     
 CC_CONSTRUCTOR_ACCESS:
-    MoveBy() {}
+    MoveBy():_is3D(false) {}
     virtual ~MoveBy() {}
 
     /** initializes the action */
     bool initWithDuration(float duration, const Vec2& deltaPosition);
+    bool initWithDuration(float duration, const Vec3& deltaPosition);
 
 protected:
-    Vec2 _positionDelta;
-    Vec2 _startPosition;
-    Vec2 _previousPosition;
+    bool _is3D;
+    Vec3 _positionDelta;
+    Vec3 _startPosition;
+    Vec3 _previousPosition;
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(MoveBy);
@@ -460,6 +465,7 @@ class CC_DLL MoveTo : public MoveBy
 public:
     /** creates the action */
     static MoveTo* create(float duration, const Vec2& position);
+    static MoveTo* create(float duration, const Vec3& position);
 
     //
     // Overrides
@@ -473,9 +479,10 @@ CC_CONSTRUCTOR_ACCESS:
 
     /** initializes the action */
     bool initWithDuration(float duration, const Vec2& position);
+    bool initWithDuration(float duration, const Vec3& position);
 
 protected:
-    Vec2 _endPosition;
+    Vec3 _endPosition;
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(MoveTo);

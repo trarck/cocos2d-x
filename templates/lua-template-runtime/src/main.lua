@@ -1,6 +1,9 @@
 
-require "Cocos2d"
-require "extern"
+cc.FileUtils:getInstance():addSearchPath("src")
+cc.FileUtils:getInstance():addSearchPath("res")
+
+-- CC_USE_DEPRECATED_API = true
+require "cocos.init"
 
 -- cclog
 local cclog = function(...)
@@ -21,20 +24,27 @@ local function main()
     -- avoid memory leak
     collectgarbage("setpause", 100)
     collectgarbage("setstepmul", 5000)
+
+    -- initialize director
+    local director = cc.Director:getInstance()
+
+    --turn on display FPS
+    director:setDisplayStats(true)
+
+    --set FPS. the default value is 1.0/60 if you don't call this
+    director:setAnimationInterval(1.0 / 60)
     
-    cc.FileUtils:getInstance():addSearchPath("src")
-    cc.FileUtils:getInstance():addSearchPath("res")
-    cc.Director:getInstance():getOpenGLView():setDesignResolutionSize(480, 320, 0)
+    director:getOpenGLView():setDesignResolutionSize(480, 320, 1)
     
     --create scene 
     local scene = require("GameScene")
     local gameScene = scene.create()
     gameScene:playBgMusic()
     
-    if cc.Director:getInstance():getRunningScene() then
-        cc.Director:getInstance():replaceScene(gameScene)
+    if director:getRunningScene() then
+        director:replaceScene(gameScene)
     else
-        cc.Director:getInstance():runWithScene(gameScene)
+        director:runWithScene(gameScene)
     end
 
 end

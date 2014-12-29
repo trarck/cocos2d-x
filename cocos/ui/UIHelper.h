@@ -26,8 +26,9 @@ THE SOFTWARE.
 #define __UIHELPER_H__
 
 #include <string>
-#include "base/CCPlatformMacros.h"
+#include "platform/CCPlatformMacros.h"
 #include "ui/GUIExport.h"
+#include "2d/CCNode.h"
 
 NS_CC_BEGIN
 
@@ -69,7 +70,7 @@ public:
     
     /**
      * @brief Get a UTF8 substring from a std::string with a given start position and length
-     *  Sample:  std::string str = "中国中国中国”;  substr = getSubStringOfUTF8String(str,0,2) will = "中国"
+     *  Sample:  std::string str = "中国中国中国";  substr = getSubStringOfUTF8String(str,0,2) will = "中国"
      * @param start The start position of the substring.
      * @param length The length of the substring in UTF8 count
      * @return a UTF8 substring
@@ -77,7 +78,25 @@ public:
     static std::string getSubStringOfUTF8String(const std::string& str,
                                    std::string::size_type start,
                                    std::string::size_type length);
+    
+    /**
+     * Refresh object and it's children layout state
+     *
+     *@param rootNode   object which will be changed
+     *
+     */
+    static void doLayout(Node *rootNode);
 
+    static void changeLayoutSystemActiveState(bool bActive);
+    
+    /**
+     *@brief  restrict capInsetSize, when the capInsets's width is larger than the textureSize, it will restrict to 0,
+     *        the height goes the same way as width.
+     *@param  capInsets A user defined capInsets.
+     *@param  textureSize  The size of a scale9enabled texture
+     *@return a restricted capInset.
+     */
+    static Rect restrictCapInsetRect(const Rect& capInsets, const Size& textureSize);
 };
 }
 

@@ -85,7 +85,7 @@ extern "C"
 #include "base/ccUtils.h"
 #include "base/ZipUtils.h"
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "android/CCFileUtilsAndroid.h"
+#include "android/CCFileUtils-android.h"
 #endif
 
 #define CC_GL_ATC_RGB_AMD                                          0x8C92
@@ -471,7 +471,7 @@ Image::~Image()
 {
     if(_unpack)
     {
-        for (unsigned int i = 0; i < _numberOfMipmaps; ++i)
+        for (int i = 0; i < _numberOfMipmaps; ++i)
             CC_SAFE_DELETE_ARRAY(_mipmaps[i].address);
     }
     else
@@ -835,7 +835,6 @@ bool Image::initWithJpgData(const unsigned char * data, ssize_t dataLen)
     /* libjpeg data structure for storing one row, that is, scanline of an image */
     JSAMPROW row_pointer[1] = {0};
     unsigned long location = 0;
-    unsigned int i = 0;
 
     bool ret = false;
     do 
@@ -885,8 +884,6 @@ bool Image::initWithJpgData(const unsigned char * data, ssize_t dataLen)
         _width  = cinfo.output_width;
         _height = cinfo.output_height;
         _hasPremultipliedAlpha = false;
-        row_pointer[0] = static_cast<unsigned char*>(malloc(cinfo.output_width*cinfo.output_components * sizeof(unsigned char)));
-        CC_BREAK_IF(! row_pointer[0]);
 
         _dataLen = cinfo.output_width*cinfo.output_height*cinfo.output_components;
         _data = static_cast<unsigned char*>(malloc(_dataLen * sizeof(unsigned char)));
@@ -896,28 +893,22 @@ bool Image::initWithJpgData(const unsigned char * data, ssize_t dataLen)
         /* read one scan line at a time */
         while (cinfo.output_scanline < cinfo.output_height)
         {
-            jpeg_read_scanlines( &cinfo, row_pointer, 1 );
-            for (i=0; i<cinfo.output_width*cinfo.output_components; i++)
-            {
-                _data[location++] = row_pointer[0][i];
-            }
+            row_pointer[0] = _data + location;
+            location += cinfo.output_width*cinfo.output_components;
+            jpeg_read_scanlines(&cinfo, row_pointer, 1);
         }
 
-		/* When read image file with broken data, jpeg_finish_decompress() may cause error.
-		 * Besides, jpeg_destroy_decompress() shall deallocate and release all memory associated
-		 * with the decompression object.
-		 * So it doesn't need to call jpeg_finish_decompress().
-		 */
-		//jpeg_finish_decompress( &cinfo );
+	/* When read image file with broken data, jpeg_finish_decompress() may cause error.
+	 * Besides, jpeg_destroy_decompress() shall deallocate and release all memory associated
+	 * with the decompression object.
+	 * So it doesn't need to call jpeg_finish_decompress().
+	 */
+	//jpeg_finish_decompress( &cinfo );
         jpeg_destroy_decompress( &cinfo );
         /* wrap up decompression, destroy objects, free pointers and close open files */        
         ret = true;
     } while (0);
 
-    if (row_pointer[0] != nullptr)
-    {
-        free(row_pointer[0]);
-    };
     return ret;
 #else
     return false;
@@ -1736,14 +1727,17 @@ bool Image::initWithTGAData(tImageTGA* tgaData)
     
     if (ret)
     {
-        const unsigned char tgaSuffix[] = ".tga";
-        for(int i = 0; i < 4; ++i)
+        if (_filePath.length() > 0)
         {
-            if (tolower(_filePath[_filePath.length() - i - 1]) != tgaSuffix[3 - i])
+            const unsigned char tgaSuffix [] = ".tga";
+            for (int i = 0; i < 4; ++i)
             {
-                CCLOG("Image WARNING: the image file suffix is not tga, but parsed as a tga image file. FILE: %s", _filePath.c_str());
-                break;
-            };
+                if (tolower(_filePath[_filePath.length() - i - 1]) != tgaSuffix[3 - i])
+                {
+                    CCLOG("Image WARNING: the image file suffix is not tga, but parsed as a tga image file. FILE: %s", _filePath.c_str());
+                    break;
+                };
+            }
         }
     }
     else
@@ -2047,6 +2041,9 @@ bool Image::initWithWebpData(const unsigned char * data, ssize_t dataLen)
         _renderFormat = Texture2D::PixelFormat::RGBA8888;
         _width    = config.input.width;
         _height   = config.input.height;
+        
+        //webp doesn't have premultipliedAlpha
+        _hasPremultipliedAlpha = false;
         
         _dataLen = _width * _height * 4;
         _data = static_cast<unsigned char*>(malloc(_dataLen * sizeof(unsigned char)));

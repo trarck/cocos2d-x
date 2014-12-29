@@ -2,8 +2,8 @@
 -- @module cc
 
 --------------------------------------------------------
--- the cc Mesh
--- @field [parent=#cc] Mesh#Mesh Mesh preloaded module
+-- the cc Skeleton3D
+-- @field [parent=#cc] Skeleton3D#Skeleton3D Skeleton3D preloaded module
 
 
 --------------------------------------------------------
@@ -12,8 +12,8 @@
 
 
 --------------------------------------------------------
--- the cc Skeleton3D
--- @field [parent=#cc] Skeleton3D#Skeleton3D Skeleton3D preloaded module
+-- the cc Mesh
+-- @field [parent=#cc] Mesh#Mesh Mesh preloaded module
 
 
 --------------------------------------------------------
@@ -29,6 +29,11 @@
 --------------------------------------------------------
 -- the cc AttachNode
 -- @field [parent=#cc] AttachNode#AttachNode AttachNode preloaded module
+
+
+--------------------------------------------------------
+-- the cc BillBoard
+-- @field [parent=#cc] BillBoard#BillBoard BillBoard preloaded module
 
 
 return nil

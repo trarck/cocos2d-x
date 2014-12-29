@@ -25,15 +25,8 @@
 #ifndef __CCATTACHNODE_H__
 #define __CCATTACHNODE_H__
 
-#include <vector>
-
-#include "base/CCVector.h"
-#include "base/ccTypes.h"
-#include "base/CCProtocols.h"
 #include "math/CCMath.h"
 #include "2d/CCNode.h"
-#include "renderer/CCMeshCommand.h"
-#include "3d/3dExport.h"
 
 NS_CC_BEGIN
 
@@ -46,7 +39,7 @@ class Bone3D;
  *        auto attachNode = sprite->getAttachNode("left hand");
  *        attachNode->addChild(weapon);
  */
-class CC_3D_DLL AttachNode : public Node
+class CC_DLL AttachNode : public Node
 {
 public:
     /** 
@@ -56,6 +49,7 @@ public:
     static AttachNode* create(Bone3D* attachBone);
     
     virtual Mat4 getWorldToNodeTransform() const override;
+    virtual Mat4 getNodeToWorldTransform() const override;
     virtual void visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags) override;
 
 CC_CONSTRUCTOR_ACCESS:

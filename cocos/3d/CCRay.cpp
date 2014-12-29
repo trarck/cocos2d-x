@@ -20,9 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "CCRay.h"
-#include "CCAABB.h"
-#include "CCOBB.h"
+#include "3d/CCRay.h"
 
 NS_CC_BEGIN
 
@@ -142,10 +140,26 @@ bool Ray::intersects(const OBB& obb) const
     return ray.intersects(aabb);
 }
 
+float Ray::dist(const Plane& plane) const
+{
+    float ndd = Vec3::dot(plane.getNormal(), _direction);
+    if(ndd == 0)
+        return 0.0f;
+    float ndo = Vec3::dot(plane.getNormal(), _origin);
+    return (plane.getDist() - ndo) / ndd;
+}
+
+Vec3 Ray::intersects(const Plane& plane) const
+{
+    float dis = this->dist(plane);
+    return _origin + dis * _direction;
+}
+
 void Ray::set(const Vec3& origin, const Vec3& direction)
 {
     _origin = origin;
     _direction = direction;
+    _direction.normalize();
 }
 
 void Ray::transform(const Mat4& matrix)

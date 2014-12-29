@@ -1,3 +1,5 @@
+
+
 /****************************************************************************
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2009      Valentin Milea
@@ -34,15 +36,9 @@ THE SOFTWARE.
 
 #include "base/CCDirector.h"
 #include "base/CCScheduler.h"
-#include "base/CCTouch.h"
 #include "base/CCEventDispatcher.h"
-#include "base/CCEvent.h"
-#include "base/CCEventTouch.h"
-#include "base/ccCArray.h"
-#include "base/CCCamera.h"
-#include "2d/CCGrid.h"
+#include "2d/CCCamera.h"
 #include "2d/CCActionManager.h"
-#include "base/CCScriptSupport.h"
 #include "2d/CCScene.h"
 #include "2d/CCComponent.h"
 #include "2d/CCComponentContainer.h"
@@ -54,6 +50,7 @@ THE SOFTWARE.
 
 #if CC_USE_PHYSICS
 #include "physics/CCPhysicsBody.h"
+#include "physics/CCPhysicsWorld.h"
 #endif
 
 
@@ -62,6 +59,8 @@ THE SOFTWARE.
 #else
 #define RENDER_IN_SUBPIXEL(__ARGS__) (ceil(__ARGS__))
 #endif
+
+extern int g_physicsSceneCount;
 
 NS_CC_BEGIN
 
@@ -72,8 +71,10 @@ bool nodeComparisonLess(Node* n1, Node* n2)
            );
 }
 
-// XXX: Yes, nodes might have a sort problem once every 15 days if the game runs at 60 FPS and each frame sprites are reordered.
+// FIXME:: Yes, nodes might have a sort problem once every 15 days if the game runs at 60 FPS and each frame sprites are reordered.
 int Node::s_globalOrderOfArrival = 1;
+
+// MARK: Constructor, Destructor, Init
 
 Node::Node(void)
 : _rotationX(0.0f)
@@ -83,16 +84,19 @@ Node::Node(void)
 , _scaleX(1.0f)
 , _scaleY(1.0f)
 , _scaleZ(1.0f)
-, _positionZ(0.0f)
 , _position(Vec2::ZERO)
+, _positionZ(0.0f)
+, _usingNormalizedPosition(false)
+, _normalizedPositionDirty(false)
 , _skewX(0.0f)
 , _skewY(0.0f)
 , _anchorPointInPoints(Vec2::ZERO)
 , _anchorPoint(Vec2::ZERO)
 , _contentSize(Size::ZERO)
-, _useAdditionalTransform(false)
+, _contentSizeDirty(true)
 , _transformDirty(true)
 , _inverseDirty(true)
+, _useAdditionalTransform(false)
 , _transformUpdated(true)
 // children (lazy allocs)
 // lazy alloc
@@ -101,6 +105,8 @@ Node::Node(void)
 , _parent(nullptr)
 // "whole screen" objects. like Scenes and Layers, should set _ignoreAnchorPointForPosition to true
 , _tag(Node::INVALID_TAG)
+, _name("")
+, _hashOfName(0)
 // userData is always inited as nil
 , _userData(nullptr)
 , _userObject(nullptr)
@@ -126,9 +132,6 @@ Node::Node(void)
 , _realColor(Color3B::WHITE)
 , _cascadeColorEnabled(false)
 , _cascadeOpacityEnabled(false)
-, _usingNormalizedPosition(false)
-, _name("")
-, _hashOfName(0)
 , _cameraMask(1)
 {
     // set default scheduler and actionManager
@@ -145,6 +148,20 @@ Node::Node(void)
     _scriptType = engine != nullptr ? engine->getScriptType() : kScriptTypeNone;
 #endif
     _transform = _inverse = _additionalTransform = Mat4::IDENTITY;
+}
+
+Node * Node::create()
+{
+    Node * ret = new (std::nothrow) Node();
+    if (ret && ret->init())
+    {
+        ret->autorelease();
+    }
+    else
+    {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
 }
 
 Node::~Node()
@@ -197,6 +214,34 @@ bool Node::init()
     return true;
 }
 
+void Node::cleanup()
+{
+    // actions
+    this->stopAllActions();
+    this->unscheduleAllCallbacks();
+
+#if CC_ENABLE_SCRIPT_BINDING
+    if ( _scriptType != kScriptTypeNone)
+    {
+        int action = kNodeOnCleanup;
+        BasicScriptData data(this,(void*)&action);
+        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
+        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
+    }
+#endif // #if CC_ENABLE_SCRIPT_BINDING
+
+    // timers
+    for( const auto &child: _children)
+        child->cleanup();
+}
+
+std::string Node::getDescription() const
+{
+    return StringUtils::format("<Node | Tag = %d", _tag);
+}
+
+// MARK: getters / setters
+
 float Node::getSkewX() const
 {
     return _skewX;
@@ -239,14 +284,6 @@ void Node::setSkewY(float skewY)
     _transformUpdated = _transformDirty = _inverseDirty = true;
 }
 
-
-/// zOrder setter : private method
-/// used internally to alter the zOrder variable. DON'T call this method manually 
-void Node::_setLocalZOrder(int z)
-{
-    _localZOrder = z;
-}
-
 void Node::setLocalZOrder(int z)
 {
     if (_localZOrder == z)
@@ -259,6 +296,13 @@ void Node::setLocalZOrder(int z)
     }
 
     _eventDispatcher->setDirtyForNode(this);
+}
+
+/// zOrder setter : private method
+/// used internally to alter the zOrder variable. DON'T call this method manually
+void Node::_setLocalZOrder(int z)
+{
+    _localZOrder = z;
 }
 
 void Node::setGlobalZOrder(float globalZOrder)
@@ -384,7 +428,13 @@ void Node::setScale(float scale)
     _transformUpdated = _transformDirty = _inverseDirty = true;
     
 #if CC_USE_PHYSICS
-    updatePhysicsBodyTransform(getScene());
+    if(g_physicsSceneCount == 0)
+        return;
+    auto scene = getScene();
+    if (!scene || scene->getPhysicsWorld())
+    {
+        updatePhysicsBodyTransform(scene);
+    }
 #endif
 }
 
@@ -405,7 +455,14 @@ void Node::setScale(float scaleX,float scaleY)
     _transformUpdated = _transformDirty = _inverseDirty = true;
     
 #if CC_USE_PHYSICS
-    updatePhysicsBodyTransform(getScene());
+    if(g_physicsSceneCount == 0)
+        return;
+    
+    auto scene = getScene();
+    if (!scene || scene->getPhysicsWorld())
+    {
+        updatePhysicsBodyTransform(scene);
+    }
 #endif
 }
 
@@ -419,7 +476,14 @@ void Node::setScaleX(float scaleX)
     _transformUpdated = _transformDirty = _inverseDirty = true;
     
 #if CC_USE_PHYSICS
-    updatePhysicsBodyTransform(getScene());
+    if(g_physicsSceneCount == 0)
+        return;
+    
+    auto scene = getScene();
+    if (!scene || scene->getPhysicsWorld())
+    {
+        updatePhysicsBodyTransform(scene);
+    }
 #endif
 }
 
@@ -462,7 +526,14 @@ void Node::setScaleY(float scaleY)
     _transformUpdated = _transformDirty = _inverseDirty = true;
     
 #if CC_USE_PHYSICS
-    updatePhysicsBodyTransform(getScene());
+    if (g_physicsSceneCount == 0)
+        return;
+    
+    auto scene = getScene();
+    if (!scene || scene->getPhysicsWorld())
+    {
+        updatePhysicsBodyTransform(scene);
+    }
 #endif
 }
 
@@ -476,19 +547,7 @@ const Vec2& Node::getPosition() const
 /// position setter
 void Node::setPosition(const Vec2& position)
 {
-    if (_position.equals(position))
-        return;
-    
-    _position = position;
-    _transformUpdated = _transformDirty = _inverseDirty = true;
-    _usingNormalizedPosition = false;
-
-#if CC_USE_PHYSICS
-    if (!_physicsBody || !_physicsBody->_positionResetTag)
-    {
-        updatePhysicsBodyPosition(getScene());
-    }
-#endif
+    setPosition(position.x, position.y);
 }
 
 void Node::getPosition(float* x, float* y) const
@@ -499,22 +558,32 @@ void Node::getPosition(float* x, float* y) const
 
 void Node::setPosition(float x, float y)
 {
-    setPosition(Vec2(x, y));
+    if (_position.x == x && _position.y == y)
+        return;
+    
+    _position.x = x;
+    _position.y = y;
+    
+    _transformUpdated = _transformDirty = _inverseDirty = true;
+    _usingNormalizedPosition = false;
+    
+#if CC_USE_PHYSICS
+    if (!_physicsBody || !_physicsBody->_positionResetTag)
+    {
+        updatePhysicsBodyPosition(getScene());
+    }
+#endif
 }
 
 void Node::setPosition3D(const Vec3& position)
 {
-    _positionZ = position.z;
-    setPosition(Vec2(position.x, position.y));
+    setPositionZ(position.z);
+    setPosition(position.x, position.y);
 }
 
 Vec3 Node::getPosition3D() const
 {
-    Vec3 ret;
-    ret.x = _position.x;
-    ret.y = _position.y;
-    ret.z = _positionZ;
-    return ret;
+    return Vec3(_position.x, _position.y, _positionZ);
 }
 
 float Node::getPositionX() const
@@ -524,7 +593,7 @@ float Node::getPositionX() const
 
 void Node::setPositionX(float x)
 {
-    setPosition(Vec2(x, _position.y));
+    setPosition(x, _position.y);
 }
 
 float Node::getPositionY() const
@@ -534,7 +603,7 @@ float Node::getPositionY() const
 
 void Node::setPositionY(float y)
 {
-    setPosition(Vec2(_position.x, y));
+    setPosition(_position.x, y);
 }
 
 float Node::getPositionZ() const
@@ -551,7 +620,7 @@ void Node::setPositionZ(float positionZ)
 
     _positionZ = positionZ;
 
-    // XXX BUG
+    // FIXME: BUG
     // Global Z Order should based on the modelViewTransform
     setGlobalZOrder(positionZ);
 }
@@ -570,6 +639,7 @@ void Node::setNormalizedPosition(const Vec2& position)
 
     _normalizedPosition = position;
     _usingNormalizedPosition = true;
+    _normalizedPositionDirty = true;
     _transformUpdated = _transformDirty = _inverseDirty = true;
 }
 
@@ -590,7 +660,8 @@ void Node::setVisible(bool visible)
     if(visible != _visible)
     {
         _visible = visible;
-        if(_visible) _transformUpdated = _transformDirty = _inverseDirty = true;
+        if(_visible)
+            _transformUpdated = _transformDirty = _inverseDirty = true;
     }
 }
 
@@ -615,10 +686,10 @@ void Node::setAnchorPoint(const Vec2& point)
     }
 #endif
     
-    if( ! point.equals(_anchorPoint))
+    if (! point.equals(_anchorPoint))
     {
         _anchorPoint = point;
-        _anchorPointInPoints = Vec2(_contentSize.width * _anchorPoint.x, _contentSize.height * _anchorPoint.y );
+        _anchorPointInPoints = Vec2(_contentSize.width * _anchorPoint.x, _contentSize.height * _anchorPoint.y);
         _transformUpdated = _transformDirty = _inverseDirty = true;
     }
 }
@@ -631,11 +702,11 @@ const Size& Node::getContentSize() const
 
 void Node::setContentSize(const Size & size)
 {
-    if ( ! size.equals(_contentSize))
+    if (! size.equals(_contentSize))
     {
         _contentSize = size;
 
-        _anchorPointInPoints = Vec2(_contentSize.width * _anchorPoint.x, _contentSize.height * _anchorPoint.y );
+        _anchorPointInPoints = Vec2(_contentSize.width * _anchorPoint.x, _contentSize.height * _anchorPoint.y);
         _transformUpdated = _transformDirty = _inverseDirty = _contentSizeDirty = true;
     }
 }
@@ -723,7 +794,8 @@ GLProgramState* Node::getGLProgramState() const
 
 void Node::setGLProgramState(cocos2d::GLProgramState *glProgramState)
 {
-    if(glProgramState != _glProgramState) {
+    if (glProgramState != _glProgramState)
+    {
         CC_SAFE_RELEASE(_glProgramState);
         _glProgramState = glProgramState;
         CC_SAFE_RETAIN(_glProgramState);
@@ -747,58 +819,25 @@ GLProgram * Node::getGLProgram() const
 
 Scene* Node::getScene() const
 {
-    if(!_parent)
+    if (!_parent)
         return nullptr;
     
-    return _parent->getScene();
+    auto sceneNode = _parent;
+    while (sceneNode->_parent)
+    {
+        sceneNode = sceneNode->_parent;
+    }
+
+    return dynamic_cast<Scene*>(sceneNode);
 }
 
 Rect Node::getBoundingBox() const
 {
-    Rect rect = Rect(0, 0, _contentSize.width, _contentSize.height);
+    Rect rect(0, 0, _contentSize.width, _contentSize.height);
     return RectApplyAffineTransform(rect, getNodeToParentAffineTransform());
 }
 
-Node * Node::create()
-{
-	Node * ret = new Node();
-    if (ret && ret->init())
-    {
-        ret->autorelease();
-    }
-    else
-    {
-        CC_SAFE_DELETE(ret);
-    }
-	return ret;
-}
-
-void Node::cleanup()
-{
-    // actions
-    this->stopAllActions();
-    this->unscheduleAllSelectors();
-    
-#if CC_ENABLE_SCRIPT_BINDING
-    if ( _scriptType != kScriptTypeNone)
-    {
-        int action = kNodeOnCleanup;
-        BasicScriptData data(this,(void*)&action);
-        ScriptEvent scriptEvent(kNodeEvent,(void*)&data);
-        ScriptEngineManager::getInstance()->getScriptEngine()->sendEvent(&scriptEvent);
-    }
-#endif // #if CC_ENABLE_SCRIPT_BINDING
-    
-    // timers
-    for( const auto &child: _children)
-        child->cleanup();
-}
-
-
-std::string Node::getDescription() const
-{
-    return StringUtils::format("<Node | Tag = %d", _tag);
-}
+// MARK: Children logic
 
 // lazy allocs
 void Node::childrenAlloc()
@@ -810,7 +849,7 @@ Node* Node::getChildByTag(int tag) const
 {
     CCASSERT( tag != Node::INVALID_TAG, "Invalid tag");
 
-    for (auto& child : _children)
+    for (const auto& child : _children)
     {
         if(child && child->_tag == tag)
             return child;
@@ -988,8 +1027,8 @@ void Node::addChildHelper(Node* child, int localZOrder, int tag, const std::stri
     
 #if CC_USE_PHYSICS
     // Recursive add children with which have physics body.
-    Scene* scene = this->getScene();
-    if (scene != nullptr && scene->getPhysicsWorld() != nullptr)
+    auto scene = this->getScene();
+    if (scene && scene->getPhysicsWorld())
     {
         child->updatePhysicsBodyTransform(scene);
         scene->addChildToPhysicsWorld(child);
@@ -1000,7 +1039,8 @@ void Node::addChildHelper(Node* child, int localZOrder, int tag, const std::stri
     {
         child->onEnter();
         // prevent onEnterTransitionDidFinish to be called twice when a node is added in onEnter
-        if (_isTransitionFinished) {
+        if (_isTransitionFinished)
+        {
             child->onEnterTransitionDidFinish();
         }
     }
@@ -1095,10 +1135,25 @@ void Node::removeAllChildren()
     this->removeAllChildrenWithCleanup(true);
 }
 
+#if CC_USE_PHYSICS
+void Node::removeFromPhysicsWorld()
+{
+    if (_physicsBody != nullptr)
+    {
+        _physicsBody->removeFromWorld();
+    }
+
+    for (auto child : _children)
+    {
+        child->removeFromPhysicsWorld();
+    }
+}
+#endif
+
 void Node::removeAllChildrenWithCleanup(bool cleanup)
 {
     // not using detachChild improves speed here
-    for (auto& child : _children)
+    for (const auto& child : _children)
     {
         // IMPORTANT:
         //  -1st do onExit
@@ -1110,10 +1165,7 @@ void Node::removeAllChildrenWithCleanup(bool cleanup)
         }
 
 #if CC_USE_PHYSICS
-        if (child->_physicsBody != nullptr)
-        {
-            child->_physicsBody->removeFromWorld();
-        }
+        child->removeFromPhysicsWorld();
 #endif
 
         if (cleanup)
@@ -1139,11 +1191,7 @@ void Node::detachChild(Node *child, ssize_t childIndex, bool doCleanup)
     }
     
 #if CC_USE_PHYSICS
-    if (child->_physicsBody != nullptr)
-    {
-        child->_physicsBody->removeFromWorld();
-    }
-    
+    child->removeFromPhysicsWorld();
 #endif
 
     // If you don't do cleanup, the child's actions will not get removed and the
@@ -1166,7 +1214,7 @@ void Node::insertChild(Node* child, int z)
     _transformUpdated = true;
     _reorderChildDirty = true;
     _children.pushBack(child);
-    child->_setLocalZOrder(z);
+    child->_localZOrder = z;
 }
 
 void Node::reorderChild(Node *child, int zOrder)
@@ -1174,16 +1222,19 @@ void Node::reorderChild(Node *child, int zOrder)
     CCASSERT( child != nullptr, "Child must be non-nil");
     _reorderChildDirty = true;
     child->setOrderOfArrival(s_globalOrderOfArrival++);
-    child->_setLocalZOrder(zOrder);
+    child->_localZOrder = zOrder;
 }
 
 void Node::sortAllChildren()
 {
-    if( _reorderChildDirty ) {
-        std::sort( std::begin(_children), std::end(_children), nodeComparisonLess );
+    if (_reorderChildDirty)
+    {
+        std::sort(std::begin(_children), std::end(_children), nodeComparisonLess);
         _reorderChildDirty = false;
     }
 }
+
+// MARK: draw / visit
 
 void Node::draw()
 {
@@ -1198,23 +1249,29 @@ void Node::draw(Renderer* renderer, const Mat4 &transform, uint32_t flags)
 void Node::visit()
 {
     auto renderer = Director::getInstance()->getRenderer();
-    Mat4 parentTransform = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    auto& parentTransform = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     visit(renderer, parentTransform, true);
 }
 
 uint32_t Node::processParentFlags(const Mat4& parentTransform, uint32_t parentFlags)
 {
+    if(_usingNormalizedPosition)
+    {
+        CCASSERT(_parent, "setNormalizedPosition() doesn't work with orphan nodes");
+        if ((parentFlags & FLAGS_CONTENT_SIZE_DIRTY) || _normalizedPositionDirty)
+        {
+            auto& s = _parent->getContentSize();
+            _position.x = _normalizedPosition.x * s.width;
+            _position.y = _normalizedPosition.y * s.height;
+            _transformUpdated = _transformDirty = _inverseDirty = true;
+            _normalizedPositionDirty = false;
+        }
+    }
+    
     uint32_t flags = parentFlags;
     flags |= (_transformUpdated ? FLAGS_TRANSFORM_DIRTY : 0);
     flags |= (_contentSizeDirty ? FLAGS_CONTENT_SIZE_DIRTY : 0);
-
-    if(_usingNormalizedPosition && (flags & FLAGS_CONTENT_SIZE_DIRTY)) {
-        CCASSERT(_parent, "setNormalizedPosition() doesn't work with orphan nodes");
-        auto s = _parent->getContentSize();
-        _position.x = _normalizedPosition.x * s.width;
-        _position.y = _normalizedPosition.y * s.height;
-        _transformUpdated = _transformDirty = _inverseDirty = true;
-    }
+    
 
     if(flags & FLAGS_DIRTY_MASK)
         _modelViewTransform = this->transform(parentTransform);
@@ -1261,7 +1318,7 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
         {
             auto node = _children.at(i);
 
-            if ( node && node->_localZOrder < 0 )
+            if (node && node->_localZOrder < 0)
                 node->visit(renderer, _modelViewTransform, flags);
             else
                 break;
@@ -1288,10 +1345,10 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
 
 Mat4 Node::transform(const Mat4& parentTransform)
 {
-    Mat4 ret = this->getNodeToParentTransform();
-    ret  = parentTransform * ret;
-    return ret;
+    return parentTransform * this->getNodeToParentTransform();
 }
+
+// MARK: events
 
 void Node::onEnter()
 {
@@ -1413,13 +1470,16 @@ void Node::setEventDispatcher(EventDispatcher* dispatcher)
 
 void Node::setActionManager(ActionManager* actionManager)
 {
-    if( actionManager != _actionManager ) {
+    if( actionManager != _actionManager )
+    {
         this->stopAllActions();
         CC_SAFE_RETAIN(actionManager);
         CC_SAFE_RELEASE(_actionManager);
         _actionManager = actionManager;
     }
 }
+
+// MARK: actions
 
 Action * Node::runAction(Action* action)
 {
@@ -1444,6 +1504,12 @@ void Node::stopActionByTag(int tag)
     _actionManager->removeActionByTag(tag, this);
 }
 
+void Node::stopAllActionsByTag(int tag)
+{
+    CCASSERT( tag != Action::INVALID_TAG, "Invalid tag");
+    _actionManager->removeAllActionsByTag(tag, this);
+}
+
 Action * Node::getActionByTag(int tag)
 {
     CCASSERT( tag != Action::INVALID_TAG, "Invalid tag");
@@ -1455,12 +1521,13 @@ ssize_t Node::getNumberOfRunningActions() const
     return _actionManager->getNumberOfRunningActionsInTarget(this);
 }
 
-// Node - Callbacks
+// MARK: Callbacks
 
 void Node::setScheduler(Scheduler* scheduler)
 {
-    if( scheduler != _scheduler ) {
-        this->unscheduleAllSelectors();
+    if( scheduler != _scheduler )
+    {
+        this->unscheduleAllCallbacks();
         CC_SAFE_RETAIN(scheduler);
         CC_SAFE_RELEASE(_scheduler);
         _scheduler = scheduler;
@@ -1470,6 +1537,11 @@ void Node::setScheduler(Scheduler* scheduler)
 bool Node::isScheduled(SEL_SCHEDULE selector)
 {
     return _scheduler->isScheduled(selector, this);
+}
+
+bool Node::isScheduled(const std::string &key)
+{
+    return _scheduler->isScheduled(key, this);
 }
 
 void Node::scheduleUpdate()
@@ -1508,12 +1580,12 @@ void Node::unscheduleUpdate()
 
 void Node::schedule(SEL_SCHEDULE selector)
 {
-    this->schedule(selector, 0.0f, kRepeatForever, 0.0f);
+    this->schedule(selector, 0.0f, CC_REPEAT_FOREVER, 0.0f);
 }
 
 void Node::schedule(SEL_SCHEDULE selector, float interval)
 {
-    this->schedule(selector, interval, kRepeatForever, 0.0f);
+    this->schedule(selector, interval, CC_REPEAT_FOREVER, 0.0f);
 }
 
 void Node::schedule(SEL_SCHEDULE selector, float interval, unsigned int repeat, float delay)
@@ -1524,9 +1596,29 @@ void Node::schedule(SEL_SCHEDULE selector, float interval, unsigned int repeat, 
     _scheduler->schedule(selector, this, interval , repeat, delay, !_running);
 }
 
+void Node::schedule(const std::function<void(float)> &callback, const std::string &key)
+{
+    _scheduler->schedule(callback, this, 0, !_running, key);
+}
+
+void Node::schedule(const std::function<void(float)> &callback, float interval, const std::string &key)
+{
+    _scheduler->schedule(callback, this, interval, !_running, key);
+}
+
+void Node::schedule(const std::function<void(float)>& callback, float interval, unsigned int repeat, float delay, const std::string &key)
+{
+    _scheduler->schedule(callback, this, interval, repeat, delay, !_running, key);
+}
+
 void Node::scheduleOnce(SEL_SCHEDULE selector, float delay)
 {
     this->schedule(selector, 0.0f, 0, delay);
+}
+
+void Node::scheduleOnce(const std::function<void(float)> &callback, float delay, const std::string &key)
+{
+    _scheduler->schedule(callback, this, 0, 0, delay, !_running, key);
 }
 
 void Node::unschedule(SEL_SCHEDULE selector)
@@ -1538,7 +1630,12 @@ void Node::unschedule(SEL_SCHEDULE selector)
     _scheduler->unschedule(selector, this);
 }
 
-void Node::unscheduleAllSelectors()
+void Node::unschedule(const std::string &key)
+{
+    _scheduler->unschedule(key, this);
+}
+
+void Node::unscheduleAllCallbacks()
 {
     _scheduler->unscheduleAllForTarget(this);
 }
@@ -1586,6 +1683,8 @@ void Node::update(float fDelta)
     }
 }
 
+// MARK: coordinates
+
 AffineTransform Node::getNodeToParentAffineTransform() const
 {
     AffineTransform ret;
@@ -1625,9 +1724,7 @@ const Mat4& Node::getNodeToParentTransform() const
 
         bool needsSkewMatrix = ( _skewX || _skewY );
 
-        Vec2 anchorPoint;
-        anchorPoint.x = _anchorPointInPoints.x * _scaleX;
-        anchorPoint.y = _anchorPointInPoints.y * _scaleY;
+        Vec2 anchorPoint(_anchorPointInPoints.x * _scaleX, _anchorPointInPoints.y * _scaleY);
 
         // optimization:
         // inline anchor point calculation if skew is not needed
@@ -1653,15 +1750,17 @@ const Mat4& Node::getNodeToParentTransform() const
             _transform.translate(anchorPoint.x, anchorPoint.y, 0);
         }
         
-        // XXX
+        // FIXME:
         // FIX ME: Expensive operation.
         // FIX ME: It should be done together with the rotationZ
-        if(_rotationY) {
+        if(_rotationY)
+        {
             Mat4 rotY;
             Mat4::createRotationY(CC_DEGREES_TO_RADIANS(_rotationY), &rotY);
             _transform = _transform * rotY;
         }
-        if(_rotationX) {
+        if(_rotationX)
+        {
             Mat4 rotX;
             Mat4::createRotationX(CC_DEGREES_TO_RADIANS(_rotationX), &rotX);
             _transform = _transform * rotX;
@@ -1672,22 +1771,26 @@ const Mat4& Node::getNodeToParentTransform() const
             _transform.translate(-anchorPoint.x, -anchorPoint.y, 0);
         }
         
-        // XXX: Try to inline skew
+        // FIXME:: Try to inline skew
         // If skew is needed, apply skew and then anchor point
         if (needsSkewMatrix)
         {
-            Mat4 skewMatrix(1, (float)tanf(CC_DEGREES_TO_RADIANS(_skewY)), 0, 0,
-                              (float)tanf(CC_DEGREES_TO_RADIANS(_skewX)), 1, 0, 0,
-                              0,  0,  1, 0,
-                              0,  0,  0, 1);
+            float skewMatArray[16] =
+            {
+                1, (float)tanf(CC_DEGREES_TO_RADIANS(_skewY)), 0, 0,
+                (float)tanf(CC_DEGREES_TO_RADIANS(_skewX)), 1, 0, 0,
+                0,  0,  1, 0,
+                0,  0,  0, 1
+            };
+            Mat4 skewMatrix(skewMatArray);
 
             _transform = _transform * skewMatrix;
 
             // adjust anchor point
             if (!_anchorPointInPoints.equals(Vec2::ZERO))
             {
-                // XXX: Argh, Mat4 needs a "translate" method.
-                // XXX: Although this is faster than multiplying a vec4 * mat4
+                // FIXME:: Argh, Mat4 needs a "translate" method.
+                // FIXME:: Although this is faster than multiplying a vec4 * mat4
                 _transform.m[12] += _transform.m[0] * -_anchorPointInPoints.x + _transform.m[4] * -_anchorPointInPoints.y;
                 _transform.m[13] += _transform.m[1] * -_anchorPointInPoints.x + _transform.m[5] * -_anchorPointInPoints.y;
             }
@@ -1720,9 +1823,12 @@ void Node::setAdditionalTransform(const AffineTransform& additionalTransform)
 
 void Node::setAdditionalTransform(Mat4* additionalTransform)
 {
-    if(additionalTransform == nullptr) {
+    if (additionalTransform == nullptr)
+    {
         _useAdditionalTransform = false;
-    } else {
+    }
+    else
+    {
         _additionalTransform = *additionalTransform;
         _useAdditionalTransform = true;
     }
@@ -1733,15 +1839,15 @@ void Node::setAdditionalTransform(Mat4* additionalTransform)
 AffineTransform Node::getParentToNodeAffineTransform() const
 {
     AffineTransform ret;
-    Mat4 ret4 = getParentToNodeTransform();
 
-    GLToCGAffine(ret4.m,&ret);
+    GLToCGAffine(getParentToNodeTransform().m,&ret);
     return ret;
 }
 
 const Mat4& Node::getParentToNodeTransform() const
 {
-    if ( _inverseDirty ) {
+    if ( _inverseDirty )
+    {
         _inverse = _transform.getInversed();
         _inverseDirty = false;
     }
@@ -1752,7 +1858,7 @@ const Mat4& Node::getParentToNodeTransform() const
 
 AffineTransform Node::getNodeToWorldAffineTransform() const
 {
-    AffineTransform t = this->getNodeToParentAffineTransform();
+    AffineTransform t(this->getNodeToParentAffineTransform());
 
     for (Node *p = _parent; p != nullptr; p = p->getParent())
         t = AffineTransformConcat(t, p->getNodeToParentAffineTransform());
@@ -1762,7 +1868,7 @@ AffineTransform Node::getNodeToWorldAffineTransform() const
 
 Mat4 Node::getNodeToWorldTransform() const
 {
-    Mat4 t = this->getNodeToParentTransform();
+    Mat4 t(this->getNodeToParentTransform());
 
     for (Node *p = _parent; p != nullptr; p = p->getParent())
     {
@@ -1804,27 +1910,25 @@ Vec2 Node::convertToWorldSpace(const Vec2& nodePoint) const
 
 Vec2 Node::convertToNodeSpaceAR(const Vec2& worldPoint) const
 {
-    Vec2 nodePoint = convertToNodeSpace(worldPoint);
+    Vec2 nodePoint(convertToNodeSpace(worldPoint));
     return nodePoint - _anchorPointInPoints;
 }
 
 Vec2 Node::convertToWorldSpaceAR(const Vec2& nodePoint) const
 {
-    Vec2 pt = nodePoint + _anchorPointInPoints;
-    return convertToWorldSpace(pt);
+    return convertToWorldSpace(nodePoint + _anchorPointInPoints);
 }
 
 Vec2 Node::convertToWindowSpace(const Vec2& nodePoint) const
 {
-    Vec2 worldPoint = this->convertToWorldSpace(nodePoint);
+    Vec2 worldPoint(this->convertToWorldSpace(nodePoint));
     return Director::getInstance()->convertToUI(worldPoint);
 }
 
 // convenience methods which take a Touch instead of Vec2
 Vec2 Node::convertTouchToNodeSpace(Touch *touch) const
 {
-    Vec2 point = touch->getLocation();
-    return this->convertToNodeSpace(point);
+    return this->convertToNodeSpace(touch->getLocation());
 }
 
 Vec2 Node::convertTouchToNodeSpaceAR(Touch *touch) const
@@ -1840,43 +1944,53 @@ void Node::updateTransform()
         child->updateTransform();
 }
 
+// MARK: components
+
 Component* Node::getComponent(const std::string& name)
 {
-    if( _componentContainer )
+    if (_componentContainer)
         return _componentContainer->get(name);
+    
     return nullptr;
 }
 
 bool Node::addComponent(Component *component)
 {
     // lazy alloc
-    if( !_componentContainer )
-        _componentContainer = new ComponentContainer(this);
+    if (!_componentContainer)
+        _componentContainer = new (std::nothrow) ComponentContainer(this);
+    
     return _componentContainer->add(component);
 }
 
 bool Node::removeComponent(const std::string& name)
 {
-    if( _componentContainer )
+    if (_componentContainer)
         return _componentContainer->remove(name);
+    
     return false;
 }
 
 bool Node::removeComponent(Component *component)
 {
-    if (_componentContainer) {
+    if (_componentContainer)
+    {
         return _componentContainer->remove(component);
     }
+    
     return false;
 }
 
 void Node::removeAllComponents()
 {
-    if( _componentContainer )
+    if (_componentContainer)
         _componentContainer->removeAll();
 }
 
 #if CC_USE_PHYSICS
+
+// MARK: Physics
+
 void Node::updatePhysicsBodyTransform(Scene* scene)
 {
     updatePhysicsBodyScale(scene);
@@ -1888,14 +2002,14 @@ void Node::updatePhysicsBodyPosition(Scene* scene)
 {
     if (_physicsBody != nullptr)
     {
-        if (scene != nullptr && scene->getPhysicsWorld() != nullptr)
+        if (scene && scene->getPhysicsWorld())
         {
-            Vec2 pos = getParent() == scene ? getPosition() : scene->convertToNodeSpace(_parent->convertToWorldSpace(getPosition()));
+            Vec2 pos = _parent == scene ? _position : scene->convertToNodeSpace(_parent->convertToWorldSpace(_position));
             _physicsBody->setPosition(pos);
         }
         else
         {
-            _physicsBody->setPosition(getPosition());
+            _physicsBody->setPosition(_position);
         }
     }
     
@@ -1912,7 +2026,7 @@ void Node::updatePhysicsBodyRotation(Scene* scene)
         if (scene != nullptr && scene->getPhysicsWorld() != nullptr)
         {
             float rotation = _rotationZ_X;
-            for (Node* parent = _parent; parent != scene; parent = parent->getParent())
+            for (Node* parent = _parent; parent != scene; parent = parent->_parent)
             {
                 rotation += parent->getRotation();
             }
@@ -1939,10 +2053,10 @@ void Node::updatePhysicsBodyScale(Scene* scene)
         {
             float scaleX = _scaleX / _physicsScaleStartX;
             float scaleY = _scaleY / _physicsScaleStartY;
-            for (Node* parent = _parent; parent != scene; parent = parent->getParent())
+            for (Node* parent = _parent; parent != scene; parent = parent->_parent)
             {
-                scaleX *= parent->getScaleX();
-                scaleY *= parent->getScaleY();
+                scaleX *= parent->_scaleX;
+                scaleY *= parent->_scaleY;
             }
             _physicsBody->setScale(scaleX, scaleY);
         }
@@ -1952,7 +2066,7 @@ void Node::updatePhysicsBodyScale(Scene* scene)
         }
     }
     
-    for (auto child : _children)
+    for (const auto& child : _children)
     {
         child->updatePhysicsBodyScale(scene);
     }
@@ -2030,6 +2144,8 @@ PhysicsBody* Node::getPhysicsBody() const
 }
 #endif //CC_USE_PHYSICS
 
+// MARK: Opacity and Color
+
 GLubyte Node::getOpacity(void) const
 {
 	return _realOpacity;
@@ -2054,7 +2170,8 @@ void Node::updateDisplayedOpacity(GLubyte parentOpacity)
     
     if (_cascadeOpacityEnabled)
     {
-        for(auto child : _children){
+        for(const auto& child : _children)
+        {
             child->updateDisplayedOpacity(_displayedOpacity);
         }
     }
@@ -2100,7 +2217,8 @@ void Node::disableCascadeOpacity()
 {
     _displayedOpacity = _realOpacity;
     
-    for(auto child : _children){
+    for(const auto& child : _children)
+    {
         child->updateDisplayedOpacity(255);
     }
 }
@@ -2131,7 +2249,8 @@ void Node::updateDisplayedColor(const Color3B& parentColor)
     
     if (_cascadeColorEnabled)
     {
-        for(const auto &child : _children){
+        for(const auto &child : _children)
+        {
             child->updateDisplayedColor(_displayedColor);
         }
     }
@@ -2174,21 +2293,26 @@ void Node::updateCascadeColor()
 
 void Node::disableCascadeColor()
 {
-    for(auto child : _children){
+    for(const auto& child : _children)
+    {
         child->updateDisplayedColor(Color3B::WHITE);
     }
 }
 
+// MARK: Camera
 void Node::setCameraMask(unsigned short mask, bool applyChildren)
 {
     _cameraMask = mask;
     if (applyChildren)
     {
-        for (auto child : _children) {
+        for (const auto& child : _children)
+        {
             child->setCameraMask(mask, applyChildren);
         }
     }
 }
+
+// MARK: Deprecated
 
 __NodeRGBA::__NodeRGBA()
 {

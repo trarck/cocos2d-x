@@ -1,34 +1,25 @@
-# cocos2d-x v3.3alpha0 Release Notes #
+# cocos2d-x v3.4 Release Notes #
 
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [cocos2d-x v3.2 Release Notes](#user-content-cocos2d-x-v32-release-notes)
-- [Misc Information](#user-content-misc-information)
-- [Requirements](#user-content-requirements)
-	- [Runtime Requirements](#user-content-runtime-requirements)
-	- [Compiler Requirements](#user-content-compiler-requirements)
-	- [How to run tests](#user-content-how-to-run-tests)
-		- [Mac OSX & iOS](#user-content-mac-osx--ios)
-		- [Android](#user-content-android)
-		- [Windows](#user-content-windows)
-		- [Linux](#user-content-linux)
-	- [How to start a new game](#user-content-how-to-start-a-new-game)
-- [Highlights of v3.2](#user-content-highlights-of-v32)
-- [Documents](#user-content-documents)
-- [Toolchain requirement changed](#user-content-toolchain-requirement-changed)
-- [atof issue on Android](#user-content-atof-issue-on-android)
-- [Features in detail](#user-content-features-in-detail)
-	- [Sprite3D & Animation3D](#user-content-sprite3d--animation3d)
-		- [fbx-conv usage](#user-content-fbx-conv-usage)
-	- [Game controller](#user-content-game-controller)
-	- [Fast tilemap](#user-content-fast-tilemap)
-	- [Node::enumerateChildren](#user-content-nodeenumeratechildren)
-	- [utils::findChildren](#user-content-utilsfindchildren)
-	- [Node::setNormalizedPosition](#user-content-nodesetnormalizedposition)
+- [cocos2d-x v3.4 Release Notes](#)
+- [Misc Information](#)
+- [Requirements](#)
+	- [Runtime Requirements](#)
+	- [Compiler Requirements](#)
+	- [How to run tests](#)
+		- [Mac OSX & iOS](#)
+		- [Android](#)
+		- [Windows](#)
+		- [Linux](#)
+	- [How to start a new game](#)
+- [v3.4beta0](#)
+	- [Highlights of v3.4beta0](#)
+	- [Features in detail](#)
 
 # Misc Information
 
-* Full Changelog: https://github.com/cocos2d/cocos2d-x/blob/cocos2d-x-3.3alpha0/CHANGELOG
+* Full Changelog: https://github.com/cocos2d/cocos2d-x/blob/cocos2d-x-3.3/CHANGELOG
 * v3.0 Release Notes can be found here: [v3.0 Release Notes](https://github.com/cocos2d/cocos2d-x/blob/cocos2d-x-3.0/docs/RELEASE_NOTES.md)
 
 # Requirements
@@ -41,13 +32,12 @@
 * Windows 7 or newer
 * Windows Phone 8 or newer
 * Linux Ubuntu 14.04 or newer
-* ~~Browsers via Emscripten~~ N/A for the moment
 
 ## Compiler Requirements
 
 * Xcode 5.1 or newer for iOS or Mac
 * gcc 4.9 or newer for Linux
-* ndk-r9d for Android
+* ndk-r10c for Android
 * Visual Studio 2012  or newer for Windows (win32)
 * Visual Studio 2012  or newer for Windows Phone 8
 
@@ -115,168 +105,33 @@ Run
 
 Please refer to this document: [ReadMe](../README.md)
 
-# Highlights of v3.3alpha0
 
-* 3d: `Camera`, 'Reskin', 'Attachment', 'Better support for FBX', 'New fbx-conv', `AABB`, `OBB` and `Ray`
-* ui: added `Scale9Sprite`
-* FileUitls: added `isDirectoryExist()`, `createDirectory()`, `removeDirectory()`, `removeFile()`, `renameFile()` and `getFileSize()`
-* Device: added `setKeepScreenOn()` on iOS and Android 
-* Added c++11 random support
-* RenderTexture: added a call back function for `saveToFile()`
-* SpriteFrameCache: support loading from plist file content data
-* Many other small features added and many bugs fixed
+# v3.4beta0
 
-# Features in detail
+## Highlights of v3.4beta0
 
-## Camera
 
-This version of camera is powerful then previous one. And you can add it as a child anywhere. If you want to let a Node to be visited by a camera, Node's camera mask should include Camera's flag:
+
+## Features in detail
+
+### Create Sprite3D asynchronously
+
+It allows to load Sprite3D in another thread so that you can process more logic in the main thread. And it notifies you using a custom callback after creating is finished.
+
+`modelPath` is the file to be loaded, `AsyncLoadSprite3DTest::asyncLoad_Callback` is the user's callback function, `userParam` is the parameter that the callback function is wanted.
 
 ```c++
-// let sprite to be visited by a camera
-auto sprite = Sprite::create("myFile.png");
-sprite->setCameraMask(CameraFlag::USER1);
-auto camera = Camera::createPerspective(60, winSize.width/winSize.height, 1, 1000);
-camera->setCameraFlag(CameraFlag::USER1);
-scene->addChild(camera);
+Sprite3D::createAsync(modelPath, CC_CALLBACK_2(AsyncLoadSprite3DTest::asyncLoad_Callback, this), (void*)userParam);
 ```
 
-If you have many Nodes that want to be visited by a camera, there is a convenient way:
+The callback function is called after loading Sprite3D, the callback function can be something like this,
 
 ```c++
-auto layer = Layer::create();
-auto sprite1 = Sprite::create();
-auto sprite2 = Sprite::create();
-layer->addChild(sprite1);
-layer->addChild(sprite2);
-// it will set camera mask for all its children
-layer->setCameraMask(CameraFlg::USER1); 
-
-auto camera = Camera::createPerspective();
-camera->setCameraFlag(CameraFlag::USER1);
-scene->addChild(camera);
-```
-
-Full test case please  refer to `tests/cpp-tests/res/Camera3DTest/Camera3DTest.cpp`.
-
-## Reskin
-
-It is a powerful feature, all the user change the appearance of character.
-
-For example, there a model named girl.c3b, which has two coats, coat0 and coat1. 
-The character's coat can be changed like this,
-
-```c++
-//load the girl from file
-auto sprite3d = Sprite3D::create("girl.c3b");
-//get the mesh named coat0
-auto mesh0 = sprite3d->getMeshByName("coat0");
-//you can change texture of this mesh if you like
-mesh0->setTexture("cloth.png");
-//you can change visibility for this mesh, too
-mesh0->setVisible(true);
-//hide coat1
-auto mesh1 = sprite3d->getMeshByName("coat1");
-mesh1->setVisible(false);
-```
-
-Full test case please refer to 'tests/cpp-tests/Classes/Spret3DTest/Sprite3DTest.cpp'
-
-## Attachment
-
-Allows to attach a node to a bone
-
-Usage,
-
-```c++
-auto sprite = Sprite3D::create("girl.c3b");
-auto weapon = Sprite::create("weapon.c3b");
-auto attachNode = sprite->getAttachNode("left_hand");
-attachNode->addChild(weapon);
-```
-
-Full test case please refer to 'tests/cpp-tests/Classes/Spret3DTest/Sprite3DTest.cpp'
-
-## Better support for FBX
-
-support multiple mesh
-support multiple material
-bones bind to each mesh limited to 40. But the FBX model can contain more meshes. So the model can contain much more bones.
-
-## New fbx-conv
-
-It can export more complex model, which contains multiple meshes and multiple materials.
-
-## AABB, OBB and Ray
-
-AABB means Axis Aligned Bounding Box
-OBB means Oriented Bounding Box
-Ray has a origin position and direction
-
-Each Sprite3D or Mesh has its own AABB.
-AABB and OBB can be picked by Ray.
-
-Usage,
-
-```c++
-//get ray from camera
-Vec3 nearP(location.x, location.y, -1.0f), farP(location.x, location.y, 1.0f); 
-auto size = Director::getInstance()->getWinSize();
-camera->unproject(size, &nearP, &nearP);
-camera->unproject(size, &farP, &farP);
-ray._origin = nearP;
-ray._direction = farP - nearP;
-ray.intersects(sprite3d->getAABB( ) );
-```
-
-Full test case please refer to 'tests/cpp-tests/Classes/Spret3DTest/Sprite3DTest.cpp'
-
-## ui::Scale9Sprite
-
-Now we have implemented a new Scale9Sprite class under ui module. Its internal implementation is concise than the previous one plus more features.
-The main reason of reimplementing this class is that the Scale9Sprite is heavily used in ui module. Now the ui module is not dependent from extension module.
-By applying the new ui::Scale9Sprite, the code inside many widget classes are more cleaner and elegant.
-
-We could manually toggle "slice 9" feature by one function call:
-
-```c++
-//ui::Scale9Sprite is slice 9 enabled on default
-auto sprite = ui::Scale9Sprite::create("foo.png");
-sprite->setScale9Enabled(false);
-```
-
-It also supports Flipping now.
-
-```c++
-auto sprite = ui::Scale9Sprite::create("bar.png");
-sprite->setFlippedX(true);
-sprite->setFlippedY(false);
-```
-
-Since the ui::Scale9Sprite is a Node rather than a Sprite, so you can't add it to a batch node. If you do want to do some actions on the internal sprite, 
-you could call `sprite->getSprite()` to access it. 
-
-Full test case please refer to `tests/cpp-tests/Classes/UITests/CocostudioGUITest/UIScale9SpriteTest.cpp`.
-
-## c++11 random support
-
-Since `rand()` is not good(refer to [this document](http://c-faq.com/lib/randrange.html)), we use c++11 random library to do generate random number, and provide a function to easily using:
-
-```c++
-int randInt = cocos2d::random(1, 10);
-float randFloat = cocos2d::random(1.f, 10.f);
-```
-
-## RenderTexture save function
-
-`RenderTexture::saveToFile()` will not save rendertexture when the function returns, because it just send render command to renderer. The file will be saved after render command is executed. It is not convenient if you want to use the saved file to do some work. So we added a parameter in `RenderTexture::saveToFile()` to set a call back function when the file is saved.
-
-```c++
-renderTexture->begin();
-...
-renderTexture->end();
-
-renderTexture->saveToFile("myFile.png", true, callback);
-
+void AsyncLoadSprite3DTest::asyncLoad_Callback(Sprite3D* sprite, void* param)
+{
+    //sprite is the loaded sprite
+    sprite->setPosition(point);
+    addChild(sprite);
+}
 ```
 

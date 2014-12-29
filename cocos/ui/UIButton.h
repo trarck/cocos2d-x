@@ -170,10 +170,16 @@ public:
     virtual void ignoreContentAdaptWithSize(bool ignore) override;
 
     //override "getVirtualRendererSize" method of widget.
-    virtual const Size& getVirtualRendererSize() const override;
+    virtual Size getVirtualRendererSize() const override;
 
     //override "getVirtualRenderer" method of widget.
     virtual Node* getVirtualRenderer() override;
+    
+    /**
+     * Return the inner title renderer of Button
+     * @since v3.3
+     */
+    Label* getTitleRenderer()const;
 
     /**
      * Returns the "class name" of widget.
@@ -190,10 +196,12 @@ public:
     const std::string& getTitleFontName() const;
     /** When user pressed the button, the button will zoom to a scale.
      * The final scale of the button  equals (button original scale + _zoomScale)
+     * @since v3.3
      */
     void setZoomScale(float scale);
     /**
      * @brief Return a zoom scale 
+     * @since v3.3
      */
     float getZoomScale()const;
     
@@ -212,19 +220,18 @@ protected:
     virtual void onPressStateChangedToDisabled() override;
     virtual void onSizeChanged() override;
   
-    virtual void updateFlippedX() override;
-    virtual void updateFlippedY() override;
-        
     void normalTextureScaleChangedWithSize();
     void pressedTextureScaleChangedWithSize();
     void disabledTextureScaleChangedWithSize();
     
     virtual void adaptRenderers() override;
     void updateTitleLocation();
+    void updateContentSize();
     
     virtual Widget* createCloneInstance() override;
     virtual void copySpecialProperties(Widget* model) override;
    
+    virtual Size getNormalSize() const;
 protected:
     Scale9Sprite* _buttonNormalRenderer;
     Scale9Sprite* _buttonClickedRenderer;

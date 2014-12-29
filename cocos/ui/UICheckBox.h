@@ -95,6 +95,13 @@ public:
                             const std::string& backGroundDisabled,
                             const std::string& frontCrossDisabled,
                             TextureResType texType = TextureResType::LOCAL);
+    
+    /**
+     * use less resource to create a CheckBox
+     */
+    static CheckBox* create(const std::string& backGround,
+                            const std::string& cross,
+                            TextureResType texType = TextureResType::LOCAL);
 
     /**
      * Load textures for checkbox.
@@ -184,7 +191,7 @@ public:
 
 
     //override "getVirtualRendererSize" method of widget.
-    virtual const Size& getVirtualRendererSize() const override;
+    virtual Size getVirtualRendererSize() const override;
 
     //override "getVirtualRenderer" method of widget.
     virtual Node* getVirtualRenderer() override;
@@ -193,6 +200,17 @@ public:
      * Returns the "class name" of widget.
      */
     virtual std::string getDescription() const override;
+    
+    /** When user pressed the button, the button will zoom to a scale.
+     * The final scale of the button  equals (button original scale + _zoomScale)
+     * @since v3.3
+     */
+    void setZoomScale(float scale);
+    /**
+     * @brief Return a zoom scale
+     * @since v3.3
+     */
+    float getZoomScale()const;
     
 CC_CONSTRUCTOR_ACCESS:
     virtual bool init() override;
@@ -215,9 +233,6 @@ protected:
     virtual void releaseUpEvent();
     
     virtual void onSizeChanged() override;
-  
-    virtual void updateFlippedX() override;
-    virtual void updateFlippedY() override;
     
     void backGroundTextureScaleChangedWithSize();
     void backGroundSelectedTextureScaleChangedWithSize();
@@ -259,6 +274,9 @@ protected:
     TextureResType _backGroundDisabledTexType;
     TextureResType _frontCrossDisabledTexType;
 
+    float _zoomScale;
+    float _backgroundTextureScaleX;
+    float _backgroundTextureScaleY;
     std::string _backGroundFileName;
     std::string _backGroundSelectedFileName;
     std::string _frontCrossFileName;

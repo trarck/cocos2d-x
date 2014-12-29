@@ -25,18 +25,9 @@
 #ifndef __CCBUNDLE3D_H__
 #define __CCBUNDLE3D_H__
 
-#include <map>
-#include <list>
-
 #include "3d/CCBundle3DData.h"
-
-#include "base/ccMacros.h"
-#include "base/CCRef.h"
-#include "base/ccTypes.h"
-
+#include "3d/CCBundleReader.h"
 #include "json/document.h"
-#include "CCBundleReader.h"
-#include "3d/3dExport.h"
 
 NS_CC_BEGIN
 class Animation3D;
@@ -48,15 +39,13 @@ class Data;
  * c3t text file
  * c3b binary file
  */
-class CC_3D_DLL Bundle3D
+class CC_DLL Bundle3D
 {
 public:
-    /**you can define yourself bundle and set it, use default bundle otherwise*/
-    static void setBundleInstance(Bundle3D* bundleInstance);
+    // create a new bundle, destroy it when finish using it
+    static Bundle3D* createBundle();
     
-    static Bundle3D* getInstance();
-    
-    static void destroyInstance();
+    static void destroyBundle(Bundle3D* bundle);
     
 	virtual void clear();
 
@@ -68,22 +57,10 @@ public:
     virtual bool load(const std::string& path);
     
     /**
-     * load mesh data from bundle
-     * @param id The ID of the mesh, load the first Mesh in the bundle if it is empty
-     */
-    virtual bool loadMeshData(const std::string& id, MeshData* meshdata);
-    
-    /**
      * load skin data from bundle
      * @param id The ID of the skin, load the first Skin in the bundle if it is empty
      */
     virtual bool loadSkinData(const std::string& id, SkinData* skindata);
-    
-    /**
-     * load material data from bundle
-     * @param id The ID of the material, load the first Material in the bundle if it is empty
-     */
-    virtual bool loadMaterialData(const std::string& id, MaterialData* materialdata);
     
     /**
      * load material data from bundle
@@ -100,10 +77,14 @@ public:
     
     //load .obj file
     static bool loadObj(MeshDatas& meshdatas, MaterialDatas& materialdatas, NodeDatas& nodedatas, const std::string& fullPath, const char* mtl_basepath = nullptr);
+    
+    //calculate aabb
+    static AABB calculateAABB(const std::vector<float>& vertex, int stride, const std::vector<unsigned short>& index);
   
 protected:
 
     bool loadJson(const std::string& path);
+    bool loadBinary(const std::string& path);
     bool loadMeshDatasJson(MeshDatas& meshdatas);
     bool loadMeshDataJson_0_1(MeshDatas& meshdatas);
     bool loadMeshDataJson_0_2(MeshDatas& meshdatas);
@@ -120,43 +101,12 @@ protected:
     bool loadMeshDataJson_0_1(MeshData* meshdata){return true;}
     bool loadMeshDataJson_0_2(MeshData* meshdata){return true;}
     bool loadSkinDataJson(SkinData* skindata);
+    bool loadSkinDataBinary(SkinData* skindata);
     bool loadMaterialDataJson(MaterialData* materialdata){return true;}
     bool loadMaterialDataJson_0_1(MaterialData* materialdata){return true;}
     bool loadMaterialDataJson_0_2(MaterialData* materialdata){return true;}
-    bool loadAnimationDataJson(Animation3DData* animationdata);
-    /**
-     * load data in binary
-     * @param path The c3b file path
-     */
-    bool loadBinary(const std::string& path);
-
-    /**
-     * load mesh data in binary
-     * @param meshdata The mesh data pointer
-     */
-    bool loadMeshDataBinary(MeshData* meshdata);
-    bool loadMeshDataBinary_0_1(MeshData* meshdata);
-    bool loadMeshDataBinary_0_2(MeshData* meshdata);
-
-    /**
-     * load skin data in binary
-     * @param skindata The skin data pointer
-     */
-    bool loadSkinDataBinary(SkinData* skindata);
-
-    /**
-     * load material data in binary
-     * @param materialdata The material pointer 
-     */
-    bool loadMaterialDataBinary(MaterialData* materialdata);
-
-    /**
-     * load animation data in binary
-     * @param animationdata The animation data pointer
-     */
-    bool loadAnimationDataBinary(Animation3DData* animationdata);
-
-    bool checkIsBone(const std::string& name);
+    bool loadAnimationDataJson(const std::string& id,Animation3DData* animationdata);
+    bool loadAnimationDataBinary(const std::string& id,Animation3DData* animationdata);
 
     /**
      * load nodes of json
@@ -195,22 +145,19 @@ protected:
     void getModelRelativePath(const std::string& path);
 
     /*
-    * set the read position in buffer to the target type
-    * @param The data type
-    */
-    Reference* seekToFirstType(unsigned int type);
+     * set the read position in buffer to the target type
+     * @param The data type
+     * @param The data id
+     */
+    Reference* seekToFirstType(unsigned int type, const std::string& id = "");
 
 CC_CONSTRUCTOR_ACCESS:
     Bundle3D();
     virtual ~Bundle3D();
     
 protected:
-    
-    static Bundle3D* _instance;
-    
     std::string _modelPath;
-    std::string         _path;
-    
+    std::string _path;
     std::string _version;// the c3b or c3t version
     
     // for json reading

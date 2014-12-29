@@ -33,7 +33,7 @@ THE SOFTWARE.
 #endif
 
 #include "base/CCConsole.h"
-#include "CCStdC.h"
+#include "platform/CCStdC.h"
 
 #ifndef CCASSERT
 #if COCOS2D_DEBUG > 0
@@ -55,7 +55,7 @@ THE SOFTWARE.
 
 #define GP_ASSERT(cond) CCASSERT(cond, "")
 
-// XXX: Backward compatible
+// FIXME:: Backward compatible
 #define CCAssert CCASSERT
 #endif  // CCASSERT
 
@@ -63,6 +63,7 @@ THE SOFTWARE.
 
 /** @def CC_SWAP
 simple macro that swaps 2 variables
+ @deprecated use std::swap() instead
 */
 #define CC_SWAP(x, y, type)    \
 {    type temp = (x);        \
@@ -91,7 +92,8 @@ simple macro that swaps 2 variables
  */
 #define CC_RADIANS_TO_DEGREES(__ANGLE__) ((__ANGLE__) * 57.29577951f) // PI * 180
 
-#define kRepeatForever (UINT_MAX -1)
+#define CC_REPEAT_FOREVER (UINT_MAX -1)
+#define kRepeatForever CC_REPEAT_FOREVER
 
 /** @def CC_BLEND_SRC
 default gl blend src function. Compatible with premultiplied alpha images.

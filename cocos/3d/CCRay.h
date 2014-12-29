@@ -25,15 +25,14 @@
 #ifndef __CC_RAY_H_
 #define __CC_RAY_H_
 
-#include "base/ccMacros.h"
 #include "math/CCMath.h"
-#include "CCAABB.h"
-#include "CCOBB.h"
-#include "3d/3dExport.h"
+#include "3d/CCAABB.h"
+#include "3d/CCOBB.h"
+#include "3d/CCPlane.h"
 
 NS_CC_BEGIN
 
-class CC_3D_DLL Ray
+class CC_DLL Ray
 {
 public:
     /**
@@ -69,6 +68,9 @@ public:
      */
     bool intersects(const OBB& obb) const;
 
+    float dist(const Plane& plane) const;
+    Vec3 intersects(const Plane& plane) const;
+    
     /**
      * Sets this ray to the specified values.
      *

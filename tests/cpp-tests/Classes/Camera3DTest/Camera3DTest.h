@@ -27,12 +27,14 @@ THE SOFTWARE.
 
 #include "../testBasic.h"
 #include "../BaseTest.h"
+#include "../Sprite3DTest/DrawNode3D.h"
 #include <string>
-#include "base/CCCamera.h"
+
 namespace cocos2d {
     class Sprite3D;
     class Delay;
 }
+
 enum State
 {
     State_None = 0,
@@ -56,7 +58,7 @@ public:
     CREATE_FUNC(Camera3DTestDemo);
     Camera3DTestDemo(void);
     virtual ~Camera3DTestDemo(void);
-
+    
     void restartCallback(Ref* sender);
     void nextCallback(Ref* sender);
     void backCallback(Ref* sender);
@@ -77,6 +79,16 @@ public:
     void updateState(float elapsedTime);
     bool isState(unsigned int state,unsigned int bit) const;
     void reachEndCallBack();
+    
+    bool onTouchesZoomOut(Touch* touch, Event* event);
+    void onTouchesZoomOutEnd(Touch* touch, Event* event);
+    bool onTouchesZoomIn(Touch* touch, Event* event);
+    void onTouchesZoomInEnd(Touch* touch, Event* event);
+    
+    bool onTouchesRotateLeft(Touch* touch, Event* event);
+    void onTouchesRotateLeftEnd(Touch* touch, Event* event);
+    bool onTouchesRotateRight(Touch* touch, Event* event);
+    void onTouchesRotateRightEnd(Touch* touch, Event* event);
 protected:
     std::string    _title;
     Layer*         _layer3D;
@@ -88,7 +100,54 @@ protected:
     unsigned int   _curState;
     Camera*      _camera;
     MoveTo* _moveAction;
+    bool _bZoomOut;
+    bool _bZoomIn;
+    bool _bRotateLeft;
+    bool _bRotateRight;
+    Label* _RotateRightlabel;
+    Label* _RotateLeftlabel;
+    Label* _ZoomInlabel;
+    Label* _ZoomOutlabel;
 };
+
+class CameraClippingDemo : public BaseTest
+{
+public:
+    CREATE_FUNC(CameraClippingDemo);
+    CameraClippingDemo(void);
+    virtual ~CameraClippingDemo(void);
+    
+    void restartCallback(Ref* sender);
+    void nextCallback(Ref* sender);
+    void backCallback(Ref* sender);
+    
+    virtual void onEnter() override;
+    virtual void onExit() override;
+    
+    virtual void update(float dt) override;
+    
+    // overrides
+    virtual std::string title() const override;
+    void reachEndCallBack();
+    void switchViewCallback(Ref* sender);
+    void addSpriteCallback(Ref* sender);
+    void delSpriteCallback(Ref* sender);
+
+    void drawCameraFrustum();
+    
+protected:
+    Label*                  _labelSprite3DCount;
+    Layer*                  _layer3D;
+    std::vector<Sprite3D*>  _objects;
+    CameraType              _cameraType;
+    Camera*                 _cameraFirst;
+    Camera*                 _cameraThird;
+    MoveBy*                 _moveAction;
+    DrawNode3D*             _drawAABB;
+    DrawNode3D*             _drawFrustum;
+    int                     _row;
+};
+
 class Camera3DTestScene : public TestScene
 {
 public:

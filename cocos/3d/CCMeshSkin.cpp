@@ -25,10 +25,7 @@
 #include "3d/CCMeshSkin.h"
 #include "3d/CCSkeleton3D.h"
 #include "3d/CCBundle3D.h"
-
-#include "base/ccMacros.h"
-#include "base/CCPlatformMacros.h"
-#include "platform/CCFileUtils.h"
+#include "3d/CCSkeleton3D.h"
 
 NS_CC_BEGIN
 
@@ -36,8 +33,8 @@ static int PALETTE_ROWS = 3;
 
 MeshSkin::MeshSkin()
 : _rootBone(nullptr)
-, _matrixPalette(nullptr)
 , _skeleton(nullptr)
+, _matrixPalette(nullptr)
 {
     
 }
@@ -50,7 +47,7 @@ MeshSkin::~MeshSkin()
 
 MeshSkin* MeshSkin::create(Skeleton3D* skeleton, const std::vector<std::string>& boneNames, const std::vector<Mat4>& invBindPose)
 {
-    auto skin = new MeshSkin();
+    auto skin = new (std::nothrow) MeshSkin();
     skin->_skeleton = skeleton;
     skeleton->retain();
     
@@ -104,7 +101,7 @@ Vec4* MeshSkin::getMatrixPalette()
 {
     if (_matrixPalette == nullptr)
     {
-        _matrixPalette = new Vec4[_skinBones.size() * PALETTE_ROWS];
+        _matrixPalette = new (std::nothrow) Vec4[_skinBones.size() * PALETTE_ROWS];
     }
     int i = 0, paletteIndex = 0;
     static Mat4 t;
@@ -147,6 +144,17 @@ Bone3D* MeshSkin::getRootBone() const
         }
     }
     return root;
+}
+
+const Mat4& MeshSkin::getInvBindPose(const Bone3D* bone)
+{
+    for (ssize_t i = 0; i < _skinBones.size(); i++) {
+        if (_skinBones.at(i) == bone)
+        {
+            return _invBindPoses.at(i);
+        }
+    }
+    return Mat4::IDENTITY;
 }
 
 NS_CC_END

@@ -31,7 +31,7 @@ NS_TIMELINE_BEGIN
 // ActionTimelineData
 ActionTimelineData* ActionTimelineData::create(int actionTag)
 {
-    ActionTimelineData * ret = new ActionTimelineData();
+    ActionTimelineData * ret = new (std::nothrow) ActionTimelineData();
     if (ret && ret->init(actionTag))
     {
         ret->autorelease();
@@ -58,7 +58,7 @@ bool ActionTimelineData::init(int actionTag)
 // ActionTimeline
 ActionTimeline* ActionTimeline::create()
 {
-    ActionTimeline* object = new ActionTimeline();
+    ActionTimeline* object = new (std::nothrow) ActionTimeline();
     if (object && object->init())
     {
         object->autorelease();
@@ -78,6 +78,7 @@ ActionTimeline::ActionTimeline()
     , _startFrame(0)
     , _endFrame(0)
     , _frameEventListener(nullptr)
+    , _lastFrameListener(nullptr)
 {
 }
 
@@ -88,6 +89,18 @@ ActionTimeline::~ActionTimeline()
 bool ActionTimeline::init()
 {
     return true;
+}
+
+void ActionTimeline::play(std::string name, bool loop)
+{
+    if(_indexes.find(name) == _indexes.end())
+    {
+        CCLOG("Cann't find action indexes for %s.", name.c_str());
+		return;
+    }
+    
+    ActionIndexes& indexes = _indexes[name];
+    gotoFrameAndPlay(indexes.startIndex, indexes.endIndex, loop);
 }
 
 void ActionTimeline::gotoFrameAndPlay(int startIndex)
@@ -143,7 +156,7 @@ bool ActionTimeline::isPlaying() const
 
 void ActionTimeline::setCurrentFrame(int frameIndex)
 {
-    if (frameIndex >= _startFrame && frameIndex >= _endFrame)
+    if (frameIndex >= _startFrame && frameIndex <= _endFrame)
     {
         _currentFrame = frameIndex;
         _time = _currentFrame*_frameInternal;
@@ -186,6 +199,9 @@ void ActionTimeline::step(float delta)
 
     if(_time > _endFrame * _frameInternal)
     {
+        if(_lastFrameListener != nullptr)
+            _lastFrameListener();
+
         _playing = _loop;
         if(!_playing)
             _time = _endFrame * _frameInternal;
@@ -200,7 +216,7 @@ void foreachNodeDescendant(Node* parent, tCallBack callback)
 {
     callback(parent);
 
-    auto children = parent->getChildren();
+    auto& children = parent->getChildren();
     for (auto child : children)
     {
         foreachNodeDescendant(child, callback);
@@ -210,6 +226,7 @@ void foreachNodeDescendant(Node* parent, tCallBack callback)
 void ActionTimeline::startWithTarget(Node *target)
 {
     Action::startWithTarget(target);
+    this->setTag(target->getTag());
 
     foreachNodeDescendant(target, 
         [this, target](Node* child)
@@ -261,6 +278,28 @@ void ActionTimeline::removeTimeline(Timeline* timeline)
     }
 }
 
+void ActionTimeline::addIndexes(const ActionIndexes& indexes)
+{
+    if(_indexes.find(indexes.name) != _indexes.end())
+    {
+        CCLOG("ActionIndexes (%s)  already exsists.", indexes.name.c_str());
+        return;
+    }
+    
+    _indexes[indexes.name] = indexes;
+}
+
+void ActionTimeline::removeIndexes(std::string name)
+{
+    if(_indexes.find(name) == _indexes.end())
+    {
+        CCLOG("ActionIndexes %s don't exsists.", name.c_str());
+        return;
+    }
+    
+    _indexes.erase(name);
+}
+
 void ActionTimeline::setFrameEventCallFunc(std::function<void(Frame *)> listener)
 {
     _frameEventListener = listener;
@@ -271,6 +310,15 @@ void ActionTimeline::clearFrameEventCallFunc()
     _frameEventListener = nullptr;
 }
 
+void ActionTimeline::setLastFrameCallFunc(std::function<void()> listener)
+{
+    _lastFrameListener = listener;
+}
+
+void ActionTimeline::clearLastFrameCallFunc()
+{
+    _lastFrameListener = nullptr;
+}
 
 void ActionTimeline::emitFrameEvent(Frame* frame)
 {
@@ -282,6 +330,9 @@ void ActionTimeline::emitFrameEvent(Frame* frame)
 
 void ActionTimeline::gotoFrame(int frameIndex)
 {
+    if(_target == nullptr)
+        return;
+
     ssize_t size = _timelineList.size();
     for(ssize_t i = 0; i < size; i++)
     {      

@@ -22,6 +22,7 @@
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '10.0'">v100</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '11.0'">v110</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '11.0' and exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A')">v110_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '12.0' and exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A')">v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -30,6 +31,7 @@
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '10.0'">v100</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '11.0'">v110</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '11.0' and exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A')">v110_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '12.0' and exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v7.1A')">v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -66,7 +68,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\Classes\runtime;$(ProjectDir)..\Classes\protobuf-lite;$(EngineRoot)external\win32-specific\zlib\include;$(EngineRoot)cocos\scripting\lua-bindings\auto;$(EngineRoot)cocos\scripting\lua-bindings\manual;$(EngineRoot)cocos\audio\include;$(EngineRoot)external;$(EngineRoot)external\lua\lua;$(EngineRoot)external\lua\tolua;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;$(EngineRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Classes;$(ProjectDir)..\Classes\runtime;$(ProjectDir)..\Classes\service;$(ProjectDir)..\Classes\protobuf-lite;$(EngineRoot)external\win32-specific\zlib\include;$(EngineRoot)cocos\scripting\lua-bindings\auto;$(EngineRoot)cocos\scripting\lua-bindings\manual;$(EngineRoot)cocos\audio\include;$(EngineRoot)external;$(EngineRoot)external\lua\lua;$(EngineRoot)external\lua\tolua;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)external\curl\include\win32;$(EngineRoot)extensions;$(EngineRoot);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -109,15 +111,7 @@
       </DllDataFileName>
     </Midl>
     <PreBuildEvent>
-      <Command>if not exist "$(LocalDebuggerWorkingDirectory)" mkdir "$(LocalDebuggerWorkingDirectory)"
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocos2d\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\network\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocosdenshion\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocosbuilder\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\extension\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\ui\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostudio\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\external\lua\luasocket\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y</Command>
+      <Command>if not exist "$(LocalDebuggerWorkingDirectory)" mkdir "$(LocalDebuggerWorkingDirectory)"</Command>
       <Message>copy files</Message>
     </PreBuildEvent>
     <PreLinkEvent>
@@ -125,7 +119,8 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\external\lua\luasocket\*.lua" "$(LocalDebugg
       </Command>
     </PreLinkEvent>
     <PostBuildEvent>
-      <Command>xcopy /Y /Q "$(OutDir)*.dll" "$(ProjectDir)..\..\..\runtime\win32\"</Command>
+      <Command>xcopy /Y /Q "$(OutDir)*.dll" "$(ProjectDir)..\..\..\runtime\win32\"
+xcopy /Y /Q "$(ProjectDir)..\Classes\lang" "$(ProjectDir)..\..\..\runtime\win32\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -170,31 +165,25 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\external\lua\luasocket\*.lua" "$(LocalDebugg
       </DllDataFileName>
     </Midl>
     <PreBuildEvent>
-      <Command>if exist "$(LocalDebuggerWorkingDirectory)" rd /s /q "$(LocalDebuggerWorkingDirectory)"
-mkdir "$(LocalDebuggerWorkingDirectory)"
-mkdir "$(LocalDebuggerWorkingDirectory)\src"
-mkdir "$(LocalDebuggerWorkingDirectory)\res"
-xcopy "$(ProjectDir)..\..\..\src" "$(LocalDebuggerWorkingDirectory)\src" /e /Y
-xcopy "$(ProjectDir)..\..\..\res" "$(LocalDebuggerWorkingDirectory)\res" /e /Y
-copy "$(ProjectDir)..\..\..\config.json" "$(LocalDebuggerWorkingDirectory)\config.json" /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\external\lua\luasocket\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\network\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocos2d\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocosdenshion\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocosbuilder\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\extension\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\ui\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y
-xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostudio\*.lua" "$(LocalDebuggerWorkingDirectory)" /e /Y</Command>
+     <Command>if not exist "$(LocalDebuggerWorkingDirectory)" mkdir "$(LocalDebuggerWorkingDirectory)"</Command>
       <Message>copy files</Message>
     </PreBuildEvent>
     <PreLinkEvent>
       <Command>
       </Command>
     </PreLinkEvent>
+    <PostBuildEvent>
+      <Command>xcopy /Y /Q "$(OutDir)*.dll" "$(ProjectDir)..\..\..\runtime\win32\"
+xcopy /Y /Q "$(ProjectDir)..\Classes\lang" "$(ProjectDir)..\..\..\runtime\win32\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\ConfigParser.h" />
+    <ClInclude Include="..\Classes\network\CCHTTPRequest.h" />
+    <ClInclude Include="..\Classes\network\CCHTTPRequestDelegate.h" />
+    <ClInclude Include="..\Classes\ProjectConfig\ProjectConfig.h" />
+    <ClInclude Include="..\Classes\ProjectConfig\SimulatorConfig.h" />
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\extension_set.h" />
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\generated_message_util.h" />
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\io\coded_stream.h" />
@@ -216,18 +205,44 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostud
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\stubs\type_traits.h" />
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\wire_format_lite.h" />
     <ClInclude Include="..\Classes\protobuf-lite\google\protobuf\wire_format_lite_inl.h" />
+    <ClInclude Include="..\Classes\runtime\ConnectWaitLayer.h" />
+    <ClInclude Include="..\Classes\runtime\ConsoleCommand.h" />
+    <ClInclude Include="..\Classes\runtime\FileServer.h" />
     <ClInclude Include="..\Classes\runtime\lua_debugger.h" />
     <ClInclude Include="..\Classes\runtime\Protos.pb.h" />
     <ClInclude Include="..\Classes\runtime\ResData.h" />
     <ClInclude Include="..\Classes\runtime\Runtime.h" />
+    <ClInclude Include="..\Classes\service\AppEvent.h" />
+    <ClInclude Include="..\Classes\service\AppLang.h" />
+    <ClInclude Include="..\Classes\service\DeviceEx.h" />
+    <ClInclude Include="..\Classes\service\PlayerEditBoxServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerFileDialogServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerMacros.h" />
+    <ClInclude Include="..\Classes\service\PlayerMenuServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerMessageBoxServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerSettings.h" />
+    <ClInclude Include="..\Classes\service\PlayerTaskServiceProtocol.h" />
+    <ClInclude Include="..\Classes\service\PlayerUtils.h" />
     <ClInclude Include="..\Classes\VisibleRect.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SimulatorWindow.h" />
+    <ClInclude Include="service\PlayerEditBoxServiceWin.h" />
+    <ClInclude Include="service\PlayerFileDialogServiceWin.h" />
+    <ClInclude Include="service\PlayerMenuServiceWin.h" />
+    <ClInclude Include="service\PlayerMessageBoxServiceWin.h" />
+    <ClInclude Include="service\PlayerTaskServiceWin.h" />
+    <ClInclude Include="service\PlayerWin.h" />
+    <ClInclude Include="service\stdafx.h" />
+    <ClInclude Include="service\targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\ConfigParser.cpp" />
+    <ClCompile Include="..\Classes\network\CCHTTPRequest.cpp" />
+    <ClCompile Include="..\Classes\ProjectConfig\ProjectConfig.cpp" />
+    <ClCompile Include="..\Classes\ProjectConfig\SimulatorConfig.cpp" />
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\extension_set.cc" />
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\generated_message_util.cc" />
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\io\coded_stream.cc" />
@@ -240,6 +255,9 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostud
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\stubs\once.cc" />
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\stubs\stringprintf.cc" />
     <ClCompile Include="..\Classes\protobuf-lite\google\protobuf\wire_format_lite.cc" />
+    <ClCompile Include="..\Classes\runtime\ConnectWaitLayer.cpp" />
+    <ClCompile Include="..\Classes\runtime\ConsoleCommand.cpp" />
+    <ClCompile Include="..\Classes\runtime\FileServer.cpp" />
     <ClCompile Include="..\Classes\runtime\Landscape_png.cpp" />
     <ClCompile Include="..\Classes\runtime\lua_debugger.c" />
     <ClCompile Include="..\Classes\runtime\PlayDisable_png.cpp" />
@@ -248,10 +266,25 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostud
     <ClCompile Include="..\Classes\runtime\Protos.pb.cc" />
     <ClCompile Include="..\Classes\runtime\Runtime.cpp" />
     <ClCompile Include="..\Classes\runtime\Shine_png.cpp" />
+    <ClCompile Include="..\Classes\service\AppEvent.cpp" />
+    <ClCompile Include="..\Classes\service\AppLang.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerMenuServiceProtocol.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerProtocol.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerServiceProtocol.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerSettings.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerTaskServiceProtocol.cpp" />
+    <ClCompile Include="..\Classes\service\PlayerUtils.cpp" />
     <ClCompile Include="..\Classes\VisibleRect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Runtime_win32.cpp" />
-    <ClCompile Include="SimulatorWindow.cpp" />
+    <ClCompile Include="service\DeviceEx-win32.cpp" />
+    <ClCompile Include="service\PlayerEditBoxServiceWin.cpp" />
+    <ClCompile Include="service\PlayerFileDialogServiceWin.cpp" />
+    <ClCompile Include="service\PlayerMenuServiceWin.cpp" />
+    <ClCompile Include="service\PlayerMessageBoxServiceWin.cpp" />
+    <ClCompile Include="service\PlayerTaskServiceWin.cpp" />
+    <ClCompile Include="service\PlayerWin.cpp" />
+    <ClCompile Include="service\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc" />
@@ -262,27 +295,6 @@ xcopy "$(ProjectDir)..\..\cocos2d-x\cocos\scripting\lua-bindings\script\cocostud
   <ItemGroup>
     <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluacocos2d.vcxproj">
       <Project>{9f2d6ce6-c893-4400-b50c-6db70cc2562f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluacocosbuilder.vcxproj">
-      <Project>{f8198014-f4f3-49f0-88ab-c1969a5829af}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluacocosdenshion.vcxproj">
-      <Project>{46a7d57a-7f25-4f52-823b-ffac4ff3a624}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluacocostudio.vcxproj">
-      <Project>{9640951e-c5d0-47b5-9c42-0bcada261c50}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluaextension.vcxproj">
-      <Project>{7068296e-38a4-4bca-85db-3a09bd014847}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluanetwork.vcxproj">
-      <Project>{65e52f4b-703f-419e-ad67-926241a10042}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluaspine.vcxproj">
-      <Project>{31ef6ab1-0d9a-4bc6-99b8-2c482ea373c4}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\cocos2d-x\cocos\scripting\lua-bindings\proj.win32\libluaui.vcxproj">
-      <Project>{fe78eebb-3dbb-4713-8cbf-63d742c5bd82}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

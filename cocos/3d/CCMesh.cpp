@@ -22,39 +22,28 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include <list>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 #include "3d/CCMesh.h"
 #include "3d/CCMeshSkin.h"
+#include "3d/CCSkeleton3D.h"
 #include "3d/CCMeshVertexIndexData.h"
-
-#include "base/ccMacros.h"
-#include "base/CCEventCustom.h"
-#include "base/CCEventListenerCustom.h"
 #include "base/CCEventDispatcher.h"
-#include "base/CCEventType.h"
 #include "base/CCDirector.h"
-#include "renderer/ccGLStateCache.h"
-#include "renderer/CCTexture2D.h"
 #include "renderer/CCTextureCache.h"
-#include "renderer/CCGLProgramCache.h"
-
+#include "renderer/CCGLProgramState.h"
 
 using namespace std;
 
 NS_CC_BEGIN
 
 Mesh::Mesh()
-: _visible(true)
-, _texture(nullptr)
+: _texture(nullptr)
 , _skin(nullptr)
+, _visible(true)
+, _isTransparent(false)
 , _meshIndexData(nullptr)
-, _visibleChanged(nullptr)
 , _glProgramState(nullptr)
 , _blend(BlendFunc::ALPHA_NON_PREMULTIPLIED)
+, _visibleChanged(nullptr)
 {
     
 }
@@ -156,17 +145,14 @@ Mesh* Mesh::create(const std::vector<float>& vertices, int perVertexSizeInFloat,
     meshdata.subMeshIndices.push_back(indices);
     meshdata.subMeshIds.push_back("");
     auto meshvertexdata = MeshVertexData::create(meshdata);
-    auto indexbuffer = IndexBuffer::create(IndexBuffer::IndexType::INDEX_TYPE_SHORT_16, (int)indices.size());
-    
-    AABB aabb = MeshVertexData::calculateAABB(meshdata.vertex, meshdata.getPerVertexSize(), indices);
-    auto indexData = MeshIndexData::create("", meshvertexdata, indexbuffer, aabb);
+    auto indexData = meshvertexdata->getMeshIndexDataByIndex(0);
     
     return create("", indexData);
 }
 
 Mesh* Mesh::create(const std::string& name, MeshIndexData* indexData, MeshSkin* skin)
 {
-    auto state = new Mesh();
+    auto state = new (std::nothrow) Mesh();
     state->autorelease();
     state->bindMeshCommand();
     state->_name = name;
@@ -244,10 +230,31 @@ void Mesh::calcuateAABB()
         _aabb = _meshIndexData->getAABB();
         if (_skin)
         {
-            Bone3D* root = _skin->getRootBone();
+            //get skin root
+            Bone3D* root = nullptr;
+            Mat4 invBindPose;
+            if (_skin->_skinBones.size())
+            {
+                root = _skin->_skinBones.at(0);
+                while (root) {
+                    auto parent = root->getParentBone();
+                    bool parentInSkinBone = false;
+                    for (const auto& bone : _skin->_skinBones) {
+                        if (bone == parent)
+                        {
+                            parentInSkinBone = true;
+                            break;
+                        }
+                    }
+                    if (!parentInSkinBone)
+                        break;
+                    root = parent;
+                }
+            }
+            
             if (root)
             {
-                _aabb.transform(root->getWorldMat());
+                _aabb.transform(root->getWorldMat() * _skin->getInvBindPose(root));
             }
         }
     }

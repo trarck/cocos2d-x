@@ -44,10 +44,20 @@ extern "C"
             filename.replace(pos, 1, "/");
             pos = filename.find_first_of(".");
         }
+#ifdef SCRIPT_ENCRYPTO
+        filename.append(".abc");
+#else
         filename.append(".lua");
+#endif
         
         unsigned long codeBufferSize = 0;
+        
+#ifdef SCRIPT_ENCRYPTO
+        unsigned char* codeBuffer = CCFileUtils::sharedFileUtils()->getEncryptedFileData(filename.c_str(), &codeBufferSize);
+#else
         unsigned char* codeBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename.c_str(), "rb", &codeBufferSize);
+#endif
+        
         
         if (codeBuffer)
         {

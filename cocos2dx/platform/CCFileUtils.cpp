@@ -899,57 +899,59 @@ unsigned char* CCFileUtils::getEncryptedFileData(const char* pszFileName,unsigne
     
     //get base filename
     std::string filename=pszFileName;
-    size_t pos=filename.find_last_not_of("/\\");
-    
+
+    //decrypt data
+    std::string basename=filename;
+    size_t pos=filename.find_last_of("/\\");
     if (pos!=std::string::npos) {
-        
-        //decrypt data
-        std::string basename=filename.substr(pos);
-        
-        decryptData= new unsigned char[fileSize];
-        
-        int prime=0;
-        for (int i=0; i<=6; ++i) {
-            if (fileSize % primes[i]) {
-                prime=primes[i];
-                break;
-            }
-        }
-        
-        unsigned long long n=0;
-        
-        unsigned int m;
-        
-        int j=0;
-        
-        const unsigned char* pBasename=(const unsigned char*)basename.c_str();
-        
-        int basefileNameLength=basename.length();
-        
-        for (int i=0; i<fileSize; ++i) {
-            
-            n=i*prime;
-            
-            m= n % fileSize;
-            
-            decryptData[m]=encryptData[i] ^ pBasename[j];
-            
-            j=(j+1) % basefileNameLength;
-        }
-        
-        //get data from password zip
-        size_t extPos=basename.find_last_of(".");
-        
-        std::string basenameWithoutExt=basename.substr(0,extPos);
-        
-        std::string password="cocos2d: ERROR: Invalid filename "+basenameWithoutExt;
-        
-        outData=getFileDataFromZipData(decryptData, fileSize, "data", pSize,password.c_str());
-        
-        if (decryptData) {
-            delete [] decryptData;
+        basename=filename.substr(pos);
+    }
+    
+    //decrypt data    
+    decryptData= new unsigned char[fileSize];
+    
+    int prime=0;
+    for (int i=0; i<=6; ++i) {
+        if (fileSize % primes[i]) {
+            prime=primes[i];
+            break;
         }
     }
+    
+    unsigned long long n=0;
+    
+    unsigned int m;
+    
+    int j=0;
+    
+    const unsigned char* pBasename=(const unsigned char*)basename.c_str();
+    
+    int basefileNameLength=basename.length();
+    
+    for (int i=0; i<fileSize; ++i) {
+        
+        n=i*prime;
+        
+        m= n % fileSize;
+        
+        decryptData[m]=encryptData[i] ^ pBasename[j];
+        
+        j=(j+1) % basefileNameLength;
+    }
+    
+    //get data from password zip
+    size_t extPos=basename.find_last_of(".");
+    
+    std::string basenameWithoutExt=basename.substr(0,extPos);
+    
+    std::string password="cocos2d: ERROR: Invalid filename "+basenameWithoutExt;
+    
+    outData=getFileDataFromZipData(decryptData, fileSize, "data", pSize,password.c_str());
+    
+    if (decryptData) {
+        delete [] decryptData;
+    }
+    
     
     if (encryptData) {
         delete [] encryptData;

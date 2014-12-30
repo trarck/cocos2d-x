@@ -83,6 +83,9 @@ AssetsManager::AssetsManager(const char* packageUrl/* =NULL */, const char* vers
 , _tid(NULL)
 , _connectionTimeout(0)
 , _delegate(NULL)
+,_currentVersionKey(KEY_OF_VERSION)
+,_downloadedVersionKey(KEY_OF_DOWNLOADED_VERSION)
+,_tempPackageFileName(TEMP_PACKAGE_FILE_NAME)
 {
     checkStoragePath();
     _schedule = new Helper();
@@ -142,7 +145,7 @@ bool AssetsManager::checkUpdate()
         return false;
     }
     
-    string recordedVersion = CCUserDefault::sharedUserDefault()->getStringForKey(KEY_OF_VERSION);
+    string recordedVersion = CCUserDefault::sharedUserDefault()->getStringForKey(_currentVersionKey.c_str());
     if (recordedVersion == _version)
     {
         sendErrorMessage(kNoNewVersion);
@@ -215,7 +218,7 @@ void AssetsManager::update()
     if (! checkUpdate()) return;
     
     // Is package already downloaded?
-    _downloadedVersion = CCUserDefault::sharedUserDefault()->getStringForKey(KEY_OF_DOWNLOADED_VERSION);
+    _downloadedVersion = CCUserDefault::sharedUserDefault()->getStringForKey(_downloadedVersionKey.c_str());
     
     _tid = new pthread_t();
     pthread_create(&(*_tid), NULL, assetsManagerDownloadAndUncompress, this);
@@ -224,7 +227,7 @@ void AssetsManager::update()
 bool AssetsManager::uncompress()
 {
     // Open the zip file
-    string outFileName = _storagePath + TEMP_PACKAGE_FILE_NAME;
+    string outFileName = _storagePath + _tempPackageFileName;
     unzFile zipfile = unzOpen(outFileName.c_str());
     if (! zipfile)
     {
@@ -406,7 +409,7 @@ int assetsManagerProgressFunc(void *ptr, double totalToDownload, double nowDownl
 bool AssetsManager::downLoad()
 {
     // Create a file to save package.
-    string outFileName = _storagePath + TEMP_PACKAGE_FILE_NAME;
+    string outFileName = _storagePath + _tempPackageFileName;
     FILE *fp = fopen(outFileName.c_str(), "wb");
     if (! fp)
     {
@@ -472,12 +475,12 @@ void AssetsManager::setVersionFileUrl(const char *versionFileUrl)
 
 string AssetsManager::getVersion()
 {
-    return CCUserDefault::sharedUserDefault()->getStringForKey(KEY_OF_VERSION);
+    return CCUserDefault::sharedUserDefault()->getStringForKey(_currentVersionKey.c_str());
 }
 
 void AssetsManager::deleteVersion()
 {
-    CCUserDefault::sharedUserDefault()->setStringForKey(KEY_OF_VERSION, "");
+    CCUserDefault::sharedUserDefault()->setStringForKey(_currentVersionKey.c_str(), "");
 }
 
 void AssetsManager::setDelegate(AssetsManagerDelegateProtocol *delegate)
@@ -506,6 +509,36 @@ void AssetsManager::sendErrorMessage(AssetsManager::ErrorCode code)
     msg->obj = errorMessage;
     
     _schedule->sendMessage(msg);
+}
+
+const char* AssetsManager::getCurrentVersionKey() const
+{
+    return _currentVersionKey.c_str();
+}
+
+void AssetsManager::setCurrentVersionKey(const char* currentVersionKey)
+{
+    _currentVersionKey=currentVersionKey;
+}
+
+const char* AssetsManager::getDownloadedVersionKey() const
+{
+    return _downloadedVersionKey.c_str();
+}
+
+void AssetsManager::setDownloadedVersionKey(const char* downloadedVersionKey)
+{
+    _downloadedVersionKey=downloadedVersionKey;
+}
+
+const char* AssetsManager::getTempPackageFileName() const
+{
+    return _tempPackageFileName.c_str();
+}
+
+void AssetsManager::setTempPackageFileName(const char* tempPackageFileName)
+{
+    _tempPackageFileName=tempPackageFileName;
 }
 
 // Implementation of AssetsManagerHelper
@@ -553,7 +586,7 @@ void AssetsManager::Helper::update(float dt)
             
             break;
         case ASSETSMANAGER_MESSAGE_RECORD_DOWNLOADED_VERSION:
-            CCUserDefault::sharedUserDefault()->setStringForKey(KEY_OF_DOWNLOADED_VERSION,
+            CCUserDefault::sharedUserDefault()->setStringForKey(((AssetsManager*)msg->obj)->_downloadedVersionKey.c_str(),
                                                                 ((AssetsManager*)msg->obj)->_version.c_str());
             CCUserDefault::sharedUserDefault()->flush();
             
@@ -589,17 +622,17 @@ void AssetsManager::Helper::handleUpdateSucceed(Message *msg)
     AssetsManager* manager = (AssetsManager*)msg->obj;
     
     // Record new version code.
-    CCUserDefault::sharedUserDefault()->setStringForKey(KEY_OF_VERSION, manager->_version.c_str());
+    CCUserDefault::sharedUserDefault()->setStringForKey(manager->_currentVersionKey.c_str(), manager->_version.c_str());
     
     // Unrecord downloaded version code.
-    CCUserDefault::sharedUserDefault()->setStringForKey(KEY_OF_DOWNLOADED_VERSION, "");
+    CCUserDefault::sharedUserDefault()->setStringForKey(manager->_downloadedVersionKey.c_str(), "");
     CCUserDefault::sharedUserDefault()->flush();
     
     // Set resource search path.
     manager->setSearchPath();
     
     // Delete unloaded zip file.
-    string zipfileName = manager->_storagePath + TEMP_PACKAGE_FILE_NAME;
+    string zipfileName = manager->_storagePath + manager->_tempPackageFileName;
     if (remove(zipfileName.c_str()) != 0)
     {
         CCLOG("can not remove downloaded zip file %s", zipfileName.c_str());

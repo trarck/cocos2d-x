@@ -144,6 +144,30 @@ public:
     friend void* assetsManagerDownloadAndUncompress(void*);
     friend int assetsManagerProgressFunc(void *, double, double, double, double);
     
+    /* @brief Gets current version key.
+     */
+    const char* getCurrentVersionKey() const;
+    
+    /* @brief Gets current version key.
+     */
+    void setCurrentVersionKey(const char* currentVersionKey);
+    
+    /* @brief Gets downloaded version key.
+     */
+    const char* getDownloadedVersionKey() const;
+    
+    /* @brief Gets downloaded version key.
+     */
+    void setDownloadedVersionKey(const char* downloadedVersionKey);
+    
+    /* @brief Gets temp package file name.
+     */
+    const char* getTempPackageFileName() const;
+    
+    /* @brief Gets temp package file name.
+     */
+    void setTempPackageFileName(const char* tempPackageFileName);
+    
 protected:
     bool downLoad();
     void checkStoragePath();
@@ -195,6 +219,11 @@ private:
     unsigned int _connectionTimeout;
     
     AssetsManagerDelegateProtocol *_delegate; // weak reference
+    
+    std::string _currentVersionKey;
+    std::string _downloadedVersionKey;
+    std::string _tempPackageFileName;
+    
 };
 
 class CC_EX_DLL AssetsManagerDelegateProtocol

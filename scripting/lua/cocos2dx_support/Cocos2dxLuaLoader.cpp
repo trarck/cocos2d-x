@@ -27,12 +27,18 @@ THE SOFTWARE.
 
 using namespace cocos2d;
 
+#ifdef SCRIPT_ENCRYPTO
+#define SCRIPT_EXT_NAME ".abc"
+#else
+#define SCRIPT_EXT_NAME ".lua"
+#endif
+
 extern "C"
 {
     int cocos2dx_lua_loader(lua_State *L)
     {
         std::string filename(luaL_checkstring(L, 1));
-        size_t pos = filename.rfind(".lua");
+        size_t pos = filename.rfind(SCRIPT_EXT_NAME);
         if (pos != std::string::npos)
         {
             filename = filename.substr(0, pos);
@@ -44,11 +50,8 @@ extern "C"
             filename.replace(pos, 1, "/");
             pos = filename.find_first_of(".");
         }
-#ifdef SCRIPT_ENCRYPTO
-        filename.append(".abc");
-#else
-        filename.append(".lua");
-#endif
+
+        filename.append(SCRIPT_EXT_NAME);
         
         unsigned long codeBufferSize = 0;
         

@@ -24,7 +24,7 @@ THE SOFTWARE.
 
 local Layer = cc.Layer
 
-function Layer:enableTouch(callback, isMultiTouches, swallowTouches)
+function Layer:onTouch(callback, isMultiTouches, swallowTouches)
     if type(isMultiTouches) ~= "boolean" then isMultiTouches = false end
     if type(swallowTouches) ~= "boolean" then swallowTouches = false end
 
@@ -49,8 +49,32 @@ function Layer:enableTouch(callback, isMultiTouches, swallowTouches)
     return self
 end
 
-function Layer:disableTouch()
+function Layer:removeTouch()
     self:unregisterScriptTouchHandler()
     self:setTouchEnabled(false)
+    return self
+end
+
+function Layer:onKeypad(callback)
+    self:registerScriptKeypadHandler(callback)
+    self:setKeyboardEnabled(true)
+    return self
+end
+
+function Layer:removeKeypad()
+    self:unregisterScriptKeypadHandler()
+    self:setKeyboardEnabled(false)
+    return self
+end
+
+function Layer:onAccelerate(callback)
+    self:registerScriptAccelerateHandler(callback)
+    self:setAccelerometerEnabled(true)
+    return self
+end
+
+function Layer:removeAccelerate()
+    self:unregisterScriptAccelerateHandler()
+    self:setAccelerometerEnabled(false)
     return self
 end

@@ -79,7 +79,11 @@ bool AppDelegate::applicationDidFinishLaunching()
     
 #if (COCOS2D_DEBUG > 0 && CC_CODE_IDE_DEBUG_SUPPORT > 0)
     // NOTE:Please don't remove this call if you want to debug with Cocos Code IDE
-    startRuntime();
+	#if defined(CC_CODE_IDE_IGNORE_LAUNCH)
+		startScript("");
+	#else
+		startRuntime();
+	#endif
 #else
     engine->executeScriptFile(ConfigParser::getInstance()->getEntryFile().c_str());
 #endif

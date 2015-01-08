@@ -4,4 +4,6 @@
 // define 1 to open Cocos Code IDE support, 0 to disable
 #define CC_CODE_IDE_DEBUG_SUPPORT 1
 
+#define CC_CODE_IDE_IGNORE_LAUNCH 1
+
 #endif /* __CODE_IDE_SUPPORT_H__ */

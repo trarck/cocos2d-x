@@ -30,9 +30,18 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 #ifdef USE_WIN32_CONSOLE
     AllocConsole();
-    freopen("CONIN$", "r", stdin);
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
+	HWND hwndConsole = GetConsoleWindow();
+    if (hwndConsole != NULL)
+    {
+        ShowWindow(hwndConsole, SW_SHOW);
+        BringWindowToTop(hwndConsole);
+		freopen("CONIN$", "r", stdin);
+        freopen("CONOUT$", "wt", stdout);
+        freopen("CONOUT$", "wt", stderr);
+
+        HMENU hmenu = GetSystemMenu(hwndConsole, FALSE);
+        if (hmenu != NULL) DeleteMenu(hmenu, SC_CLOSE, MF_BYCOMMAND);
+    }
 #endif
 
     // create the application instance

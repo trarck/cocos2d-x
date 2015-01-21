@@ -43,6 +43,7 @@ obj/
 gen/
 assets/
 local.properties
+.settings
 
 # Ignore specific winrt files
 cocos2dx/platform/third_party/winrt/freetype/src
@@ -129,3 +130,4 @@ tags
 
 /projects
 /CocosWidget
+/projects/opensdk

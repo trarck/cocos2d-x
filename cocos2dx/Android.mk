@@ -140,7 +140,9 @@ tilemap_parallax_nodes/CCTMXXMLParser.cpp \
 tilemap_parallax_nodes/CCTileMapAtlas.cpp \
 touch_dispatcher/CCTouchDispatcher.cpp \
 touch_dispatcher/CCTouchHandler.cpp \
-touch_dispatcher/CCTouch.cpp
+touch_dispatcher/CCTouch.cpp \
+cache/CCCacheObject.cpp \
+cache/CCCacheDictionary.cpp		
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/include \

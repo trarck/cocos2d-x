@@ -114,7 +114,7 @@ public:
 
            methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jstrText,
                jstrFont, (int)fontSize, textTintR, textTintG, textTintB, eAlignMask, nWidth, nHeight,
-			   shadow, shadowDeltaX, -shadowDeltaY, shadowBlur, shadowIntensity,shadowColorR,shadowColorG,shadowColorB
+			   shadow, shadowDeltaX, -shadowDeltaY, shadowBlur, shadowIntensity,shadowColorR,shadowColorG,shadowColorB,
 			   stroke, strokeColorR, strokeColorG, strokeColorB, strokeSize);
 
            methodInfo.env->DeleteLocalRef(jstrText);
@@ -217,7 +217,7 @@ bool CCImage::initWithStringShadowStroke(
 
 	        CC_BREAK_IF(! dc.getBitmapFromJavaShadowStroke(pText, nWidth, nHeight, eAlignMask, pFontName,
 	        											   nSize, textTintR, textTintG, textTintB, shadow,
-	        											   shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity,shadowR,shadowG,shadowB
+	        											   shadowOffsetX, shadowOffsetY, shadowBlur, shadowOpacity,shadowR,shadowG,shadowB,
 	        											   stroke, strokeR, strokeG, strokeB, strokeSize ));
 
 

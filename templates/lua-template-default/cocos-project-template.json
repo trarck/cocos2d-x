@@ -246,9 +246,8 @@
             "files": [
                 "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
             ]
-<<<<<<< HEAD
          },
-	 "project_replace_cocos_search_path": {
+	 	"project_replace_cocos_search_path": {
              "src_cocos_root":"../../cocos2d-x",
 			 "dst_cocos_deep":"../",
              "unix_files":[
@@ -269,9 +268,13 @@
              "files":[
                 "frameworks/CMakeLists.txt"
              ]
-         }
-=======
-        }
->>>>>>> a456a3b9171ba54213659307354e293c8b1702e3
+         },
+        "modify_files":[
+            {
+                "file_path": "frameworks/runtime-src/Classes/ide-support/CodeIDESupport.h",
+                "pattern": "#define CC_CODE_IDE_DEBUG_SUPPORT 1",
+                "replace_string": "#define CC_CODE_IDE_DEBUG_SUPPORT 0"
+            }
+         ]
     }
 }

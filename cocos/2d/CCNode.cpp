@@ -136,12 +136,12 @@ Node::Node(void)
 , _cameraMask(1)
 {
     // set default scheduler and actionManager
-    Director *director = Director::getInstance();
-    _actionManager = director->getActionManager();
+    _director = Director::getInstance();
+    _actionManager = _director->getActionManager();
     _actionManager->retain();
-    _scheduler = director->getScheduler();
+    _scheduler = _director->getScheduler();
     _scheduler->retain();
-    _eventDispatcher = director->getEventDispatcher();
+    _eventDispatcher = _director->getEventDispatcher();
     _eventDispatcher->retain();
     
 #if CC_ENABLE_SCRIPT_BINDING
@@ -724,9 +724,9 @@ void Node::ignoreAnchorPointForPosition(bool newValue)
 {
     if (newValue != _ignoreAnchorPointForPosition) 
     {
-		_ignoreAnchorPointForPosition = newValue;
+        _ignoreAnchorPointForPosition = newValue;
         _transformUpdated = _transformDirty = _inverseDirty = true;
-	}
+    }
 }
 
 /// tag getter
@@ -1227,7 +1227,7 @@ void Node::sortAllChildren()
 
 void Node::draw()
 {
-    auto renderer = Director::getInstance()->getRenderer();
+    auto renderer = _director->getRenderer();
     draw(renderer, _modelViewTransform, true);
 }
 
@@ -1237,8 +1237,8 @@ void Node::draw(Renderer* renderer, const Mat4 &transform, uint32_t flags)
 
 void Node::visit()
 {
-    auto renderer = Director::getInstance()->getRenderer();
-    auto& parentTransform = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    auto renderer = _director->getRenderer();
+    auto& parentTransform = _director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     visit(renderer, parentTransform, true);
 }
 
@@ -1297,9 +1297,8 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
     // IMPORTANT:
     // To ease the migration to v3.0, we still support the Mat4 stack,
     // but it is deprecated and your code should not rely on it
-    Director* director = Director::getInstance();
-    director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-    director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
+    _director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    _director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
     
     bool visibleByCamera = isVisitableByVisitingCamera();
 
@@ -1330,7 +1329,7 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
         this->draw(renderer, _modelViewTransform, flags);
     }
 
-    director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
+    _director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     
     // FIX ME: Why need to set _orderOfArrival to 0??
     // Please refer to https://github.com/cocos2d/cocos2d-x/pull/6920
@@ -1705,8 +1704,8 @@ const Mat4& Node::getNodeToParentTransform() const
 
         bool needsSkewMatrix = ( _skewX || _skewY );
         // Rotation values
-		// Change rotation code to handle X and Y
-		// If we skew with the exact same value for both x and y then we're simply just rotating
+        // Change rotation code to handle X and Y
+        // If we skew with the exact same value for both x and y then we're simply just rotating
         float cx = 1, sx = 0, cy = 1, sy = 0;
         if (_rotationZ_X != _rotationZ_Y || (! needsSkewMatrix && !_anchorPointInPoints.equals(Vec2::ZERO)))
         {
@@ -1829,7 +1828,7 @@ const Mat4& Node::getParentToNodeTransform() const
 {
     if ( _inverseDirty )
     {
-        _inverse = _transform.getInversed();
+        _inverse = getNodeToParentTransform().getInversed();
         _inverseDirty = false;
     }
 
@@ -1903,7 +1902,7 @@ Vec2 Node::convertToWorldSpaceAR(const Vec2& nodePoint) const
 Vec2 Node::convertToWindowSpace(const Vec2& nodePoint) const
 {
     Vec2 worldPoint(this->convertToWorldSpace(nodePoint));
-    return Director::getInstance()->convertToUI(worldPoint);
+    return _director->convertToUI(worldPoint);
 }
 
 // convenience methods which take a Touch instead of Vec2
@@ -2069,12 +2068,12 @@ void Node::updateTransformFromPhysics(const Mat4& parentTransform, uint32_t pare
 
 GLubyte Node::getOpacity(void) const
 {
-	return _realOpacity;
+    return _realOpacity;
 }
 
 GLubyte Node::getDisplayedOpacity() const
 {
-	return _displayedOpacity;
+    return _displayedOpacity;
 }
 
 void Node::setOpacity(GLubyte opacity)
@@ -2086,7 +2085,7 @@ void Node::setOpacity(GLubyte opacity)
 
 void Node::updateDisplayedOpacity(GLubyte parentOpacity)
 {
-	_displayedOpacity = _realOpacity * parentOpacity/255.0;
+    _displayedOpacity = _realOpacity * parentOpacity/255.0;
     updateColor();
     
     if (_cascadeOpacityEnabled)
@@ -2146,26 +2145,26 @@ void Node::disableCascadeOpacity()
 
 const Color3B& Node::getColor(void) const
 {
-	return _realColor;
+    return _realColor;
 }
 
 const Color3B& Node::getDisplayedColor() const
 {
-	return _displayedColor;
+    return _displayedColor;
 }
 
 void Node::setColor(const Color3B& color)
 {
-	_displayedColor = _realColor = color;
-	
-	updateCascadeColor();
+    _displayedColor = _realColor = color;
+    
+    updateCascadeColor();
 }
 
 void Node::updateDisplayedColor(const Color3B& parentColor)
 {
-	_displayedColor.r = _realColor.r * parentColor.r/255.0;
-	_displayedColor.g = _realColor.g * parentColor.g/255.0;
-	_displayedColor.b = _realColor.b * parentColor.b/255.0;
+    _displayedColor.r = _realColor.r * parentColor.r/255.0;
+    _displayedColor.g = _realColor.g * parentColor.g/255.0;
+    _displayedColor.b = _realColor.b * parentColor.b/255.0;
     updateColor();
     
     if (_cascadeColorEnabled)
@@ -2203,7 +2202,7 @@ void Node::setCascadeColorEnabled(bool cascadeColorEnabled)
 
 void Node::updateCascadeColor()
 {
-	Color3B parentColor = Color3B::WHITE;
+    Color3B parentColor = Color3B::WHITE;
     if (_parent && _parent->isCascadeColorEnabled())
     {
         parentColor = _parent->getDisplayedColor();

@@ -72,6 +72,7 @@ PhysicsBody::PhysicsBody()
 , _recordedPosition(Vec2::ZERO)
 , _recordedRotation(0.0f)
 , _recordedAngle(0.0)
+, _positionInitDirty(true)
 {
 }
 
@@ -289,7 +290,6 @@ void PhysicsBody::setDynamic(bool dynamic)
             {
                 cpBodySetMass(_cpBody, _mass);
                 cpBodySetMoment(_cpBody, _moment);
-                _cpBody->CP_PRIVATE(node).idleTime = 0.0f;
             }
         }
         else
@@ -303,7 +303,8 @@ void PhysicsBody::setDynamic(bool dynamic)
             {
                 cpBodySetMass(_cpBody, PHYSICS_INFINITY);
                 cpBodySetMoment(_cpBody, PHYSICS_INFINITY);
-                _cpBody->CP_PRIVATE(node).idleTime = (cpFloat)INFINITY;
+                cpBodySetVel(_cpBody, cpvzero);
+                cpBodySetAngVel(_cpBody, 0.0);
             }
         }
     }
@@ -334,6 +335,7 @@ void PhysicsBody::setGravityEnable(bool enable)
 
 void PhysicsBody::setPosition(const Vec2& position)
 {
+    _positionInitDirty = false;
     _recordedPosition = position;
     cpBodySetPos(_cpBody, PhysicsHelper::point2cpv(position + _positionOffset));
 }
@@ -355,9 +357,18 @@ void PhysicsBody::setScale(float scaleX, float scaleY)
 
 const Vec2& PhysicsBody::getPosition()
 {
-    _latestPosition.x = _cpBody->p.x - _positionOffset.x;
-    _latestPosition.y = _cpBody->p.y - _positionOffset.y;
-    
+    if (_positionInitDirty) {
+        if (_node) {
+            if (_node->getParent()) {
+                _latestPosition = _node->getParent()->convertToWorldSpace(_node->getPosition());
+            } else {
+                _latestPosition =  _node->getPosition();
+            }
+        }
+    } else {
+        _latestPosition.x = _cpBody->p.x - _positionOffset.x;
+        _latestPosition.y = _cpBody->p.y - _positionOffset.y;
+    }
     return _latestPosition;
 }
 

@@ -133,7 +133,7 @@ public class Cocos2dxBitmap {
 			int shadowColor = ((int)(shadowIntensity*255) << 24) |
 							  ((int)(shadowColorR*255) << 16)    |
 							  ((int)(shadowColorG*255) << 8)    |
-							  (int)(shadowColorB*255)
+							  (int)(shadowColorB*255);
 			
 			paint.setShadowLayer(shadowBlur, shadowDX, shadowDY, shadowColor);
 	

@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define __CCDIRECTOR_H__
 
 #include <stack>
+#include <functional>
 
 #include "platform/CCPlatformMacros.h"
 #include "base/CCRef.h"
@@ -87,6 +88,61 @@ enum class MATRIX_STACK_TYPE
     MATRIX_STACK_PROJECTION,
     MATRIX_STACK_TEXTURE
 };
+
+//class DirectorEndHandler : public Ref {
+//public:
+//    
+//	DirectorEndHandler()
+//		:m_pTarget(NULL),
+//		 m_handle(NULL)
+//	{
+//	}
+//
+//    ~DirectorEndHandler()
+//	{
+//		CC_SAFE_RELEASE(m_pTarget);
+//	}
+//
+//	Ref* getTarget()
+//	{
+//		return m_pTarget;
+//	}
+//
+//	void setTarget(Ref* pTarget)
+//	{
+//		CC_SAFE_RETAIN(pTarget);
+//		CC_SAFE_RELEASE(m_pTarget);
+//		m_pTarget=pTarget;
+//	}
+//
+//	SEL_CallFunc getHandle()
+//	{
+//		return m_handle;
+//	}
+//
+//	void setHandle(SEL_CallFunc handle)
+//	{
+//		m_handle=handle;
+//	}
+//
+//	bool initWithTarget(Ref* pTarget,SEL_CallFunc handle)
+//	{
+//		setTarget(pTarget);
+//		m_handle=handle;
+//		return true;
+//	}
+//
+//	void execute()
+//	{
+//		if(m_handle){
+//			(m_pTarget->*m_handle)();
+//		}
+//	}
+//
+//private:
+//	Ref* m_pTarget;
+//	SEL_CallFunc m_handle;
+//};
 
 class CC_DLL Director : public Ref
 {
@@ -399,6 +455,11 @@ public:
     const Mat4& getMatrix(MATRIX_STACK_TYPE type);
     void resetMatrixStack();
 
+	//void addDirectorEndListener(Ref* target,SEL_CallFunc handle);
+	//void removeDirectorEndListener(Ref* target);
+
+	void addDirectorEndCallback( const std::function<void()> &function);
+
 protected:
     void reset();
     
@@ -511,6 +572,10 @@ protected:
 
     /* Console for the director */
     Console *_console;
+
+	//Vector<DirectorEndHandler*> _directorEndHandlers;
+
+	std::vector<std::function<void()>> _endFunctions;
 
     // GLView will recreate stats labels to fit visible rect
     friend class GLView;

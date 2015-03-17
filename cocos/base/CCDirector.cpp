@@ -1024,6 +1024,16 @@ void Director::purgeDirector()
         _openGLView = nullptr;
     }
 
+	//Vector<DirectorEndHandler*> copy=_directorEndHandlers;
+	//
+	//for(Vector<DirectorEndHandler*>::iterator iter=copy.begin();iter!=copy.end();++iter){
+	//	(*iter)->execute();
+	//}
+
+	for(std::vector<std::function<void()>>::iterator iter=_endFunctions.begin();iter!=_endFunctions.end();++iter){
+		(*iter)();
+	}
+
     // delete Director
     release();
 }
@@ -1304,6 +1314,33 @@ void Director::setEventDispatcher(EventDispatcher* dispatcher)
     }
 }
 
+//void Director::addDirectorEndListener(Ref* target,SEL_CallFunc handle)
+//{
+//	DirectorEndHandler* handler=new DirectorEndHandler();
+//	handler->initWithTarget(target,handle);
+//
+//	_directorEndHandlers.pushBack(handler);
+//
+//	handler->release();
+//}
+//
+//void Director::removeDirectorEndListener(Ref* target)
+//{
+//	for(Vector<DirectorEndHandler*>::iterator iter=_directorEndHandlers.begin();iter!=_directorEndHandlers.end();){
+//		if((*iter)->getTarget()==target){
+//			iter=_directorEndHandlers.erase(iter);
+//		}else{
+//			++iter;
+//		}
+//	}
+//}
+
+
+void Director::addDirectorEndCallback( const std::function<void()> &function)
+{
+	_endFunctions.push_back(function);
+}
+
 /***************************************************
 * implementation of DisplayLinkDirector
 **************************************************/
@@ -1363,6 +1400,7 @@ void DisplayLinkDirector::setAnimationInterval(double interval)
         startAnimation();
     }    
 }
+
 
 NS_CC_END
 

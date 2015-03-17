@@ -247,7 +247,7 @@
                 "frameworks/runtime-src/proj.ios_mac/ios/Info.plist"
             ]
         },
-	"project_replace_cocos_search_path": {
+	    "project_replace_cocos_search_path": {
             "src_cocos_root":"../../cocos2d-x",
 		 "dst_cocos_deep":"../",
             "unix_files":[

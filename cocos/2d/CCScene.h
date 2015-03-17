@@ -80,11 +80,14 @@ public:
     /** render the scene */
     void render(Renderer* renderer);
     
+    /** override function */
+    virtual void removeAllChildren() override;
+    
 CC_CONSTRUCTOR_ACCESS:
     Scene();
     virtual ~Scene();
     
-    bool init();
+    bool init() override;
     bool initWithSize(const Size& size);
     
     void setCameraOrderDirty() { _cameraOrderDirty = true; }

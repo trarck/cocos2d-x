@@ -47,7 +47,7 @@ class Texture2D;
 struct transformValues_;
 
 /**
- * @addtogroup sprite_nodes
+ * @addtogroup _2d
  * @{
  */
 
@@ -94,7 +94,7 @@ public:
      * After creation, the rect of sprite will be the size of the image,
      * and the offset will be (0,0).
      *
-     * @param   filename A path to image file, e.g., "scene1/monster.png"
+     * @param   filename A path to image file, e.g., "scene1/monster.png".
      * @return  An autoreleased sprite object.
      */
     static Sprite* create(const std::string& filename);
@@ -102,9 +102,9 @@ public:
     /**
      * Creates a sprite with an image filename and a rect.
      *
-     * @param   filename A path to image file, e.g., "scene1/monster.png"
-     * @param   rect     A subrect of the image file
-     * @return  An autoreleased sprite object
+     * @param   filename A path to image file, e.g., "scene1/monster.png".
+     * @param   rect     A subrect of the image file.
+     * @return  An autoreleased sprite object.
      */
     static Sprite* create(const std::string& filename, const Rect& rect);
 
@@ -114,7 +114,7 @@ public:
      * After creation, the rect will be the size of the texture, and the offset will be (0,0).
      *
      * @param   texture    A pointer to a Texture2D object.
-     * @return  An autoreleased sprite object
+     * @return  An autoreleased sprite object.
      */
     static Sprite* createWithTexture(Texture2D *texture);
 
@@ -170,7 +170,7 @@ public:
      */
     virtual SpriteBatchNode* getBatchNode() const;
     /**
-     * Sets the batch node to sprite
+     * Sets the batch node to sprite.
      * @warning This method is not recommended for game developers. Sample code for using batch node
      * @code
      * SpriteBatchNode *batch = SpriteBatchNode::create("Images/grossini_dance_atlas.png", 15);
@@ -244,7 +244,9 @@ public:
      * Returns the current displayed frame.
      */
     virtual SpriteFrame* getSpriteFrame() const;
-    /** @deprecated Use `getSpriteFrame()` instead. */
+    /** @deprecated Use `getSpriteFrame()` instead.
+     * @js NA
+     */
     CC_DEPRECATED_ATTRIBUTE virtual SpriteFrame* getDisplayFrame() const { return getSpriteFrame(); }
     /** @deprecated Use `getSpriteFrame()` instead. */
     CC_DEPRECATED_ATTRIBUTE virtual SpriteFrame* displayFrame() const { return getSpriteFrame(); };
@@ -268,7 +270,7 @@ public:
     /**
      * Whether or not the Sprite needs to be updated in the Atlas.
      *
-     * @return true if the sprite needs to be updated in the Atlas, false otherwise.
+     * @return True if the sprite needs to be updated in the Atlas, false otherwise.
      */
     virtual bool isDirty() const { return _dirty; }
 
@@ -345,7 +347,9 @@ public:
     * @lua NA
     */
     CC_DEPRECATED_ATTRIBUTE bool isFlipX() { return isFlippedX(); };
-    /** @deprecated Use setFlippedX() instead */
+    /** @deprecated Use setFlippedX() instead
+     * @js NA
+     */
     CC_DEPRECATED_ATTRIBUTE void setFlipX(bool flippedX) { setFlippedX(flippedX); };
 
     /**
@@ -368,21 +372,25 @@ public:
 
     /// @} End of Sprite properties getter/setters
 
-    /** @deprecated Use isFlippedY() instead */
+    /** @deprecated Use isFlippedY() instead.
+     * @js NA
+     */
     CC_DEPRECATED_ATTRIBUTE bool isFlipY() { return isFlippedY(); };
-    /** @deprecated Use setFlippedY() instead */
+    /** @deprecated Use setFlippedY() instead.
+     * @js NA
+     */
     CC_DEPRECATED_ATTRIBUTE void setFlipY(bool flippedY) { setFlippedY(flippedY); };
 
     //
     // Overrides
     //
     /// @{
-    /// @name Functions inherited from TextureProtocol
+    /// @name Functions inherited from TextureProtocol.
     /**
     *@code
     *When this function bound into js or lua,the parameter will be changed.
-    *In js: var setBlendFunc(var src, var dst)
-    *In lua: local setBlendFunc(local src, local dst)
+    *In js: var setBlendFunc(var src, var dst).
+    *In lua: local setBlendFunc(local src, local dst).
     *@endcode
     */
     inline void setBlendFunc(const BlendFunc &blendFunc) override { _blendFunc = blendFunc; }
@@ -393,6 +401,9 @@ public:
     inline const BlendFunc& getBlendFunc() const override { return _blendFunc; }
     /// @}
 
+    /**
+     * @js NA
+     */
     virtual std::string getDescription() const override;
 
     /// @{
@@ -429,7 +440,9 @@ public:
     /// @}
 
 CC_CONSTRUCTOR_ACCESS:
-
+	/**
+     * @js ctor
+     */
     Sprite();
     virtual ~Sprite();
 
@@ -443,7 +456,7 @@ CC_CONSTRUCTOR_ACCESS:
      *
      * @param   texture    A pointer to an existing Texture2D object.
      *                      You can use a Texture2D object for many sprites.
-     * @return  true if the sprite is initialized properly, false otherwise.
+     * @return  True if the sprite is initialized properly, false otherwise.
      */
     virtual bool initWithTexture(Texture2D *texture);
 
@@ -455,7 +468,7 @@ CC_CONSTRUCTOR_ACCESS:
      * @param   texture    A pointer to an exisiting Texture2D object.
      *                      You can use a Texture2D object for many sprites.
      * @param   rect        Only the contents inside rect of this texture will be applied for this sprite.
-     * @return  true if the sprite is initialized properly, false otherwise.
+     * @return  True if the sprite is initialized properly, false otherwise.
      */
     virtual bool initWithTexture(Texture2D *texture, const Rect& rect);
 
@@ -468,15 +481,15 @@ CC_CONSTRUCTOR_ACCESS:
      * @param   texture    A Texture2D object whose texture will be applied to this sprite.
      * @param   rect        A rectangle assigned the contents of texture.
      * @param   rotated     Whether or not the texture rectangle is rotated.
-     * @return  true if the sprite is initialized properly, false otherwise.
+     * @return  True if the sprite is initialized properly, false otherwise.
      */
     virtual bool initWithTexture(Texture2D *texture, const Rect& rect, bool rotated);
 
     /**
      * Initializes a sprite with an SpriteFrame. The texture and rect in SpriteFrame will be applied on this sprite.
      *
-     * @param   pSpriteFrame  A SpriteFrame object. It should includes a valid texture and a rect.
-     * @return  true if the sprite is initialized properly, false otherwise.
+     * @param   spriteFrame  A SpriteFrame object. It should includes a valid texture and a rect.
+     * @return  True if the sprite is initialized properly, false otherwise.
      */
     virtual bool initWithSpriteFrame(SpriteFrame *spriteFrame);
 
@@ -487,7 +500,7 @@ CC_CONSTRUCTOR_ACCESS:
      * If the SpriteFrame doesn't exist it will raise an exception.
      *
      * @param   spriteFrameName  A key string that can fected a volid SpriteFrame from SpriteFrameCache.
-     * @return  true if the sprite is initialized properly, false otherwise.
+     * @return  True if the sprite is initialized properly, false otherwise.
      */
     virtual bool initWithSpriteFrameName(const std::string& spriteFrameName);
 
@@ -499,8 +512,7 @@ CC_CONSTRUCTOR_ACCESS:
      * After initialization, the rect used will be the size of the image. The offset will be (0,0).
      *
      * @param   filename The path to an image file in local file system.
-     * @return  true if the sprite is initialized properly, false otherwise.
-     * @js      init
+     * @return  True if the sprite is initialized properly, false otherwise.
      * @lua     init
      */
     virtual bool initWithFile(const std::string& filename);
@@ -514,8 +526,7 @@ CC_CONSTRUCTOR_ACCESS:
      *
      * @param   filename The path to an image file in local file system.
      * @param   rect        The rectangle assigned the content area from texture.
-     * @return  true if the sprite is initialized properly, false otherwise.
-     * @js      init
+     * @return  True if the sprite is initialized properly, false otherwise.
      * @lua     init
      */
     virtual bool initWithFile(const std::string& filename, const Rect& rect);

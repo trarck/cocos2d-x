@@ -150,14 +150,15 @@ void Sprite3D::afterAsyncLoad(void* param)
                     }
                     
                     Sprite3DCache::getInstance()->addSprite3DData(asyncParam->modlePath, data);
-                    meshdatas = nullptr;
+                    
+                    CC_SAFE_DELETE(meshdatas);
                     materialdatas = nullptr;
                     nodeDatas = nullptr;
                 }
             }
-            delete meshdatas;
-            delete materialdatas;
-            delete nodeDatas;
+            CC_SAFE_DELETE(meshdatas);
+            CC_SAFE_DELETE(materialdatas);
+            CC_SAFE_DELETE(nodeDatas);
             
             if (asyncParam->texPath != "")
             {
@@ -243,6 +244,7 @@ Sprite3D::Sprite3D()
 , _aabbDirty(true)
 , _lightMask(-1)
 , _shaderUsingLight(false)
+, _forceDepthWrite(false)
 {
 }
 
@@ -290,12 +292,13 @@ bool Sprite3D::initWithFile(const std::string &path)
             }
             
             Sprite3DCache::getInstance()->addSprite3DData(path, data);
+            CC_SAFE_DELETE(meshdatas);
             return true;
         }
     }
-    delete meshdatas;
-    delete materialdatas;
-    delete nodeDatas;
+    CC_SAFE_DELETE(meshdatas);
+    CC_SAFE_DELETE(materialdatas);
+    CC_SAFE_DELETE(nodeDatas);
     
     return false;
 }
@@ -370,7 +373,18 @@ Sprite3D* Sprite3D::createSprite3DNode(NodeData* nodedata,ModelData* modeldata,c
                 }
             }
         }
-        sprite->setAdditionalTransform(&nodedata->transform);
+
+        // set locale transform
+        Vec3 pos;
+        Quaternion qua;
+        Vec3 scale;
+        nodedata->transform.decompose(&scale, &qua, &pos);
+        sprite->setPosition3D(pos);
+        sprite->setRotationQuat(qua);
+        sprite->setScaleX(scale.x);
+        sprite->setScaleY(scale.y);
+        sprite->setScaleZ(scale.z);
+        
         sprite->addMesh(mesh);
         sprite->autorelease();
         sprite->genGLProgramState(); 
@@ -465,6 +479,7 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
         {
             if(it->bones.size() > 0 || singleSprite)
             {
+                this->setName(nodedata->id);
                 auto mesh = Mesh::create(nodedata->id, getMeshIndexData(it->subMeshId));
                 if(mesh)
                 {
@@ -505,6 +520,17 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
                             }
                         }
                     }
+                    
+                    Vec3 pos;
+                    Quaternion qua;
+                    Vec3 scale;
+                    nodedata->transform.decompose(&scale, &qua, &pos);
+                    setPosition3D(pos);
+                    setRotationQuat(qua);
+                    setScaleX(scale.x);
+                    setScaleY(scale.y);
+                    setScaleZ(scale.z);
+                    
                 }
             }
             else
@@ -527,7 +553,18 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
         if(node)
         {
             node->setName(nodedata->id);
-            node->setAdditionalTransform(&nodedata->transform);
+            
+            // set locale transform
+            Vec3 pos;
+            Quaternion qua;
+            Vec3 scale;
+            nodedata->transform.decompose(&scale, &qua, &pos);
+            node->setPosition3D(pos);
+            node->setRotationQuat(qua);
+            node->setScaleX(scale.x);
+            node->setScaleY(scale.y);
+            node->setScaleZ(scale.z);
+            
             if(root)
             {
                 root->addChild(node);
@@ -687,15 +724,19 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
     color.a = getDisplayedOpacity() / 255.0f;
     
     //check light and determine the shader used
-    const auto& lights = Director::getInstance()->getRunningScene()->getLights();
-    bool usingLight = false;
-    for (const auto light : lights) {
-        usingLight = ((unsigned int)light->getLightFlag() & _lightMask) > 0;
-        if (usingLight)
-            break;
+    const auto& scene = Director::getInstance()->getRunningScene();
+    if (scene)
+    {
+        const auto& lights = scene->getLights();
+        bool usingLight = false;
+        for (const auto light : lights) {
+            usingLight = ((unsigned int)light->getLightFlag() & _lightMask) > 0;
+            if (usingLight)
+                break;
+        }
+        if (usingLight != _shaderUsingLight)
+            genGLProgramState(usingLight);
     }
-    if (usingLight != _shaderUsingLight)
-        genGLProgramState(usingLight);
     
     int i = 0;
     for (auto& mesh : _meshes) {
@@ -799,6 +840,7 @@ const AABB& Sprite3D::getAABB() const
         
         _aabb.transform(transform);
         _nodeToWorldTransform = nodeToWorldTransform;
+        _aabbDirty = false;
     }
     
     return _aabb;

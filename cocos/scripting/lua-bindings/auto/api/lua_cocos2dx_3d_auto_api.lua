@@ -2,6 +2,16 @@
 -- @module cc
 
 --------------------------------------------------------
+-- the cc Animation3D
+-- @field [parent=#cc] Animation3D#Animation3D Animation3D preloaded module
+
+
+--------------------------------------------------------
+-- the cc Animate3D
+-- @field [parent=#cc] Animate3D#Animate3D Animate3D preloaded module
+
+
+--------------------------------------------------------
 -- the cc Skeleton3D
 -- @field [parent=#cc] Skeleton3D#Skeleton3D Skeleton3D preloaded module
 
@@ -22,16 +32,6 @@
 
 
 --------------------------------------------------------
--- the cc Animation3D
--- @field [parent=#cc] Animation3D#Animation3D Animation3D preloaded module
-
-
---------------------------------------------------------
--- the cc Animate3D
--- @field [parent=#cc] Animate3D#Animate3D Animate3D preloaded module
-
-
---------------------------------------------------------
 -- the cc AttachNode
 -- @field [parent=#cc] AttachNode#AttachNode AttachNode preloaded module
 
@@ -49,6 +49,11 @@
 --------------------------------------------------------
 -- the cc Skybox
 -- @field [parent=#cc] Skybox#Skybox Skybox preloaded module
+
+
+--------------------------------------------------------
+-- the cc Terrain
+-- @field [parent=#cc] Terrain#Terrain Terrain preloaded module
 
 
 return nil

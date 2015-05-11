@@ -47,6 +47,7 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "renderer/ccGLStateCache.h"
 #include "renderer/CCRenderer.h"
+#include "renderer/CCRenderState.h"
 #include "2d/CCCamera.h"
 #include "base/CCUserDefault.h"
 #include "base/ccFPSImages.h"
@@ -67,6 +68,10 @@ THE SOFTWARE.
 
 #if CC_USE_PHYSICS
 #include "physics/CCPhysicsWorld.h"
+#endif
+
+#if CC_USE_3D_PHYSICS
+#include "physics3d/CCPhysics3DWorld.h"
 #endif
 
 /**
@@ -170,6 +175,7 @@ bool Director::init(void)
     initMatrixStack();
 
     _renderer = new (std::nothrow) Renderer;
+    RenderState::initialize();
 
     return true;
 }
@@ -290,6 +296,13 @@ void Director::drawScene()
         if (physicsWorld && physicsWorld->isAutoStep())
         {
             physicsWorld->update(_deltaTime, false);
+        }
+#endif
+#if CC_USE_3D_PHYSICS
+        auto physics3DWorld = _runningScene->getPhysics3DWorld();
+        if (physics3DWorld)
+        {
+            physics3DWorld->stepSimulate(_deltaTime);
         }
 #endif
         //clear draw stats
@@ -604,12 +617,7 @@ void Director::setProjection(Projection projection)
         case Projection::_2D:
         {
             loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-            if(getOpenGLView() != nullptr)
-            {
-                multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, getOpenGLView()->getOrientationMatrix());
-            }
-#endif
+
             Mat4 orthoMatrix;
             Mat4::createOrthographicOffCenter(0, size.width, 0, size.height, -1024, 1024, &orthoMatrix);
             multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, orthoMatrix);
@@ -624,15 +632,7 @@ void Director::setProjection(Projection projection)
             Mat4 matrixPerspective, matrixLookup;
 
             loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-            
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-            //if needed, we need to add a rotation for Landscape orientations on Windows Phone 8 since it is always in Portrait Mode
-            GLView* view = getOpenGLView();
-            if(getOpenGLView() != nullptr)
-            {
-                multiplyMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, getOpenGLView()->getOrientationMatrix());
-            }
-#endif
+
             // issue #1334
             Mat4::createPerspective(60, (GLfloat)size.width/size.height, 10, zeye+size.height/2, &matrixPerspective);
 
@@ -716,12 +716,6 @@ static void GLToClipTransform(Mat4 *transformOut)
     CCASSERT(nullptr != director, "Director is null when seting matrix stack");
 
     auto projection = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WP8
-    //if needed, we need to undo the rotation for Landscape orientation in order to get the correct positions
-    projection = Director::getInstance()->getOpenGLView()->getReverseOrientationMatrix() * projection;
-#endif
-
     auto modelview = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     *transformOut = projection * modelview;
 }
@@ -937,16 +931,7 @@ void Director::restart()
 }
 
 void Director::reset()
-{
-    // cleanup scheduler
-    getScheduler()->unscheduleAll();
-    
-    // Remove all events
-    if (_eventDispatcher)
-    {
-        _eventDispatcher->removeAllEventListeners();
-    }
-    
+{    
     if (_runningScene)
     {
         _runningScene->onExit();
@@ -956,6 +941,15 @@ void Director::reset()
     
     _runningScene = nullptr;
     _nextScene = nullptr;
+
+    // cleanup scheduler
+    getScheduler()->unscheduleAll();
+    
+    // Remove all events
+    if (_eventDispatcher)
+    {
+        _eventDispatcher->removeAllEventListeners();
+    }
     
     // remove all objects, but don't release it.
     // runWithScene might be executed after 'end'.
@@ -1000,6 +994,8 @@ void Director::reset()
     UserDefault::destroyInstance();
     
     GL::invalidateStateCache();
+
+    RenderState::finalize();
     
     destroyTextureCache();
 }

@@ -31,6 +31,8 @@
 #include "renderer/CCCustomCommand.h"
 #include "renderer/CCGroupCommand.h"
 
+USING_NS_CC;
+
 ActionsTests::ActionsTests()
 {
     ADD_TEST_CASE(ActionManual);
@@ -84,6 +86,7 @@ ActionsTests::ActionsTests()
     ADD_TEST_CASE(Issue1327);
     ADD_TEST_CASE(Issue1398);
     ADD_TEST_CASE(Issue2599)
+    ADD_TEST_CASE(ActionFloatTest);
 }
 
 std::string ActionsDemo::title() const
@@ -1397,9 +1400,9 @@ void ActionStacked::onEnter()
         
     this->centerSprites(0);
     
-    /*auto listener = EventListenerTouchAllAtOnce::create();
+    auto listener = EventListenerTouchAllAtOnce::create();
     listener->onTouchesEnded = CC_CALLBACK_2(ActionStacked::onTouchesEnded, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);*/
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
     auto s = Director::getInstance()->getWinSize();
     this->addNewSpriteWithCoords(Vec2(s.width/2, s.height/2));
@@ -1425,14 +1428,13 @@ void ActionStacked::runActionsInSprite(Sprite *sprite)
     // override me
 }
 
-/*
 void ActionStacked::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 {
     for ( auto &touch: touches ) {
         auto location = touch->getLocation();
         addNewSpriteWithCoords( location );
     }
-}*/
+}
 
 std::string ActionStacked::title() const
 {
@@ -2217,3 +2219,43 @@ std::string ActionRemoveSelf::subtitle() const
 {
 	return "Sequence: Move + Rotate + Scale + RemoveSelf";
 }
+
+//------------------------------------------------------------------
+//
+//    ActionFloat
+//
+//------------------------------------------------------------------
+void ActionFloatTest::onEnter()
+{
+    ActionsDemo::onEnter();
+
+    centerSprites(3);
+
+    auto s = Director::getInstance()->getWinSize();
+
+    // create float action with duration and from to value, using lambda function we can easly animate any property of the Node.
+    auto actionFloat = ActionFloat::create(2.f, 0, 3, [this](float value) {
+        _tamara->setScale(value);
+    });
+
+    float grossiniY = _grossini->getPositionY();
+
+    auto actionFloat1 = ActionFloat::create(3.f, grossiniY, grossiniY + 50, [this](float value) {
+        _grossini->setPositionY(value);
+    });
+
+    auto actionFloat2 = ActionFloat::create(3.f, 3, 1, [this] (float value) {
+        _kathia->setScale(value);
+    });
+
+    _tamara->runAction(actionFloat);
+    _grossini->runAction(actionFloat1);
+    _kathia->runAction(actionFloat2);
+}
+
+std::string ActionFloatTest::subtitle() const
+{
+    return "ActionFloat";
+}
+
+

@@ -27,6 +27,8 @@
 #include "Texture2dTest.h"
 #include "../testResource.h"
 
+USING_NS_CC;
+
 enum {
     kTagLabel = 1,
     kTagSprite1 = 2,
@@ -79,7 +81,7 @@ Texture2DTests::Texture2DTests()
     ADD_TEST_CASE(TextureJPEG);
     ADD_TEST_CASE(TextureTIFF);
     ADD_TEST_CASE(TextureTGA);
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8) && (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
     ADD_TEST_CASE(TextureWEBP);
 #endif
     ADD_TEST_CASE(TexturePixelFormat);

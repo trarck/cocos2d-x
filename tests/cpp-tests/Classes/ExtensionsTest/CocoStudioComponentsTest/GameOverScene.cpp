@@ -57,7 +57,7 @@ GameOverScene::~GameOverScene()
 
 bool GameOverLayer::init()
 {
-	if ( LayerColor::initWithColor( Color4B(255,255,255,255) ) )
+	if ( LayerColor::initWithColor( Color4B(0,128,255,255) ) )
 	{
 		auto winSize = Director::getInstance()->getWinSize();
 		this->_label = Label::createWithTTF("","fonts/arial.ttf", 32);
@@ -83,8 +83,6 @@ void GameOverLayer::gameOverDone()
 {
     auto director = Director::getInstance();
     auto newScene = CocoStudioComponentsTest::create();
-    auto gameoverScene = (GameOverScene*)director->getRunningScene();
-    newScene->setTestSuite(gameoverScene->getTestSuite());
     director->replaceScene(newScene);
 }
 

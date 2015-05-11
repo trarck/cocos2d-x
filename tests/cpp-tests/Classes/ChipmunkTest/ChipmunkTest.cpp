@@ -4,8 +4,12 @@
 // http://www.cocos2d-x.org
 //
 
+#include "chipmunk.h"
+
 #include "ChipmunkTest.h"
 
+USING_NS_CC;
+USING_NS_CC_EXT;
 
 enum {
     kTagParentNode = 1,

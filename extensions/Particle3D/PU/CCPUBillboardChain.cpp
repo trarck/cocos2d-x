@@ -418,7 +418,7 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
     //Vector3 eyePos = mParentNode->_getDerivedOrientation().Inverse() *
     //	(camPos - mParentNode->_getDerivedPosition()) / mParentNode->_getDerivedScale();
 
-    Vec3 eyePos = Vec3(camMat.m[12], camMat.m[13], camMat.m[14]);
+    Vec3 eyePos(camMat.m[12], camMat.m[13], camMat.m[14]);
 
     Vec3 chainTangent;
     for (ChainSegmentList::iterator segi = _chainSegmentList.begin();
@@ -684,6 +684,7 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
             GLuint texId = (_texture ? _texture->getName() : 0);
             _meshCommand->init(0, texId, _glProgramState, particleSystem->getBlendFunc(), _vertexBuffer->getVBO(), _indexBuffer->getVBO(), GL_TRIANGLES, GL_UNSIGNED_SHORT, _indices.size(), transform, Node::FLAGS_RENDER_AS_3D);
             _meshCommand->setTransparent(true);
+            _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));            
             renderer->addCommand(_meshCommand);
         }
     }

@@ -135,6 +135,14 @@ public:
      */
     const AABB& getAABB() const;
     
+    /* 
+     * Get AABB Recursively
+     * Because some times we may have an empty Sprite3D Node as parent, but
+     * the Sprite3D don't contain any meshes, so getAABB()
+     * will return a wrong value at that time.
+     */
+    AABB getAABBRecursively();
+    
     /**
      * Executes an action, and returns the action that is executed. For Sprite3D special logic are needed to take care of Fading.
      *
@@ -169,6 +177,18 @@ public:
     /**draw*/
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
+    /** Adds a new material to the sprite.
+     The Material will be applied to all the meshes that belong to the sprite.
+     Internally it will call `setMaterial(material,-1)`
+     */
+    void setMaterial(Material* material);
+
+    /** Adds a new material to a particular mesh of the sprite.
+     meshIndex is the mesh that will be applied to.
+     if meshIndex == -1, then it will be applied to all the meshes that belong to the sprite.
+     */
+    void setMaterial(Material* material, int meshIndex);
+
 CC_CONSTRUCTOR_ACCESS:
     
     Sprite3D();
@@ -202,7 +222,7 @@ CC_CONSTRUCTOR_ACCESS:
     /**get MeshIndexData by Id*/
     MeshIndexData* getMeshIndexData(const std::string& indexId) const;
     
-    void  addMesh(Mesh* mesh);
+    void addMesh(Mesh* mesh);
     
     void onAABBDirty() { _aabbDirty = true; }
     

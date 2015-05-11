@@ -1,6 +1,8 @@
 #include "LayerTest.h"
 #include "../testResource.h"
 
+USING_NS_CC;
+
 enum 
 {
     kTagLayer = 1,
@@ -40,6 +42,11 @@ static void setEnableRecursiveCascading(Node* node, bool enable)
     for(const auto &child : children) {
         setEnableRecursiveCascading(child, enable);
     }
+}
+
+std::string LayerTest::title() const
+{
+    return "Layer Test";
 }
 
 // LayerTestCascadingOpacityA

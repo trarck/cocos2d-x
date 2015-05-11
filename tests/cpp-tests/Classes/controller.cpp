@@ -36,6 +36,7 @@ public:
         addTest("Console", []() { return new ConsoleTests(); });
         addTest("Curl", []() { return new CurlTests(); });
         addTest("Current Language", []() { return new CurrentLanguageTests(); });
+        addTest("CocosStudio3D Test", []() { return new CocosStudio3DTests(); });
         addTest("EventDispatcher", []() { return new EventDispatcherTests(); });
         addTest("Effects - Advanced", []() { return new EffectAdvanceTests(); });
         addTest("Effects - Basic", [](){return new EffectTests(); });
@@ -43,6 +44,7 @@ public:
         addTest("FileUtils", []() { return new FileUtilsTests(); });
         addTest("Fonts", []() { return new FontTests(); });
         addTest("Interval", [](){return new IntervalTests(); });
+        addTest("Material System", [](){return new MaterialSystemTest(); });
         addTest("Node: BillBoard Test", [](){  return new BillBoardTests(); });
         addTest("Node: Camera 3D Test", [](){  return new Camera3DTests(); });
         addTest("Node: Clipping", []() { return new ClippingNodeTests(); });
@@ -56,11 +58,15 @@ public:
         addTest("Node: Node", [](){return new CocosNodeTests(); });
         addTest("Node: Parallax", [](){return new ParallaxTests(); });
         addTest("Node: Particles", [](){return new ParticleTests(); });
+        addTest("Node: Particle3D (PU)", [](){return new Particle3DTests(); });
         addTest("Node: Physics", []() { return new PhysicsTests(); });
+        addTest( "Node: Physics3D", []() { return new Physics3DTests(); } );
         addTest("Node: RenderTexture", [](){return new RenderTextureTests(); });
         addTest("Node: Scene", [](){return new SceneTests(); });
+        addTest("Node: Spine", [](){return new SpineTests(); });
         addTest("Node: Sprite", [](){return new SpriteTests(); });
         addTest("Node: Sprite3D", [](){  return new Sprite3DTests(); });
+        addTest("Node: SpritePolygon", [](){return new (std::nothrow) SpritePolygonTest(); });
         addTest("Node: Terrain", [](){  return new TerrainTests(); });
         addTest("Node: TileMap", [](){return new TileMapTests(); });
         addTest("Node: FastTileMap", [](){return new FastTileMapTests(); });
@@ -90,6 +96,7 @@ public:
 TestController::TestController()
 : _stopAutoTest(true)
 , _isRunInBackground(false)
+, _testSuite(nullptr)
 {
     _rootTestList = new (std::nothrow) RootTests;  
     _rootTestList->runThisTest();
@@ -136,7 +143,7 @@ void TestController::traverseTestList(TestList* testList)
     if (testList == _rootTestList)
     {
         _sleepUniqueLock = std::unique_lock<std::mutex>(_sleepMutex);
-        _sleepCondition.wait_for(_sleepUniqueLock, std::chrono::milliseconds(2500));
+        _sleepCondition.wait_for(_sleepUniqueLock, std::chrono::milliseconds(500));
         //disable touch
     }
     else
@@ -355,8 +362,16 @@ bool TestController::checkTest(TestCase* testCase)
 
 void TestController::handleCrash()
 {
-    logEx("TestController::handleCrash");
-    stopAutoTest();
+    logEx("%sCatch an crash event", LOG_TAG);
+
+    if (!_stopAutoTest)
+    {
+        stopAutoTest();
+    }
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_LINUX
+    exit(1);
+#endif
 }
 
 void TestController::onEnterBackground()
@@ -381,7 +396,7 @@ void TestController::logEx(const char * format, ...)
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
     __android_log_print(ANDROID_LOG_DEBUG, "cocos2d-x debug info", "%s", buff);
 
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_WP8 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
     WCHAR wszBuf[1024] = { 0 };
     MultiByteToWideChar(CP_UTF8, 0, buff, -1, wszBuf, sizeof(wszBuf));
     OutputDebugStringW(wszBuf);
@@ -396,11 +411,15 @@ void TestController::logEx(const char * format, ...)
 
 static TestController* s_testController = nullptr;
 
+static void initCrashCatch();
+
 TestController* TestController::getInstance()
 {
     if (s_testController == nullptr)
     {
         s_testController = new (std::nothrow) TestController;
+
+        initCrashCatch();
     }
 
     return s_testController;
@@ -420,3 +439,71 @@ bool TestController::blockTouchBegan(Touch* touch, Event* event)
 {
     return !_stopAutoTest;
 }
+
+//==================================================================================================
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#include <windows.h>
+
+static long __stdcall windowExceptionFilter(_EXCEPTION_POINTERS* excp)
+{
+    if (s_testController)
+    {
+        s_testController->handleCrash();
+    }
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+static void initCrashCatch()
+{
+    SetUnhandledExceptionFilter(windowExceptionFilter);
+}
+
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_MAC || CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+static int s_fatal_signals[] = {
+    SIGILL,
+    SIGABRT,
+    SIGBUS,
+    SIGFPE,
+    SIGSEGV,
+    SIGSTKFLT,
+    SIGPIPE,
+};
+#else
+static int s_fatal_signals[] = {
+    SIGABRT,
+    SIGBUS,
+    SIGFPE,
+    SIGILL,
+    SIGSEGV,
+    SIGTRAP,
+    SIGTERM,
+    SIGKILL,
+};
+#endif
+
+static void signalHandler(int sig)
+{
+    if (s_testController)
+    {
+        s_testController->handleCrash();
+    }
+}
+
+static void initCrashCatch()
+{
+    for (auto sig : s_fatal_signals) {
+        signal(sig, signalHandler);
+    }
+}
+
+#else
+
+static void initCrashCatch()
+{
+
+}
+
+#endif

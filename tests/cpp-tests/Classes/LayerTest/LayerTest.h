@@ -7,6 +7,8 @@ DEFINE_TEST_SUITE(LayerTests);
 
 class LayerTest : public TestCase
 {
+public:
+    virtual std::string title() const override;
 protected:
     std::string    _title;
 };
@@ -68,11 +70,11 @@ public:
     virtual void onEnter() override;
     virtual std::string subtitle() const override;
 
-    void updateSize(Vec2 &touchLocation);
+    void updateSize(cocos2d::Vec2 &touchLocation);
 
-    void onTouchesBegan(const std::vector<Touch*>& touches, Event  *event);
-    void onTouchesMoved(const std::vector<Touch*>& touches, Event  *event);
-    void onTouchesEnded(const std::vector<Touch*>& touches, Event  *event);
+    void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 };
 
 class LayerTest2 : public LayerTest
@@ -99,7 +101,7 @@ class LayerGradientTest : public LayerTest
 public:
     CREATE_FUNC(LayerGradientTest);
     LayerGradientTest();
-    void onTouchesMoved(const std::vector<Touch*>& touches, Event *event);
+    void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
     void toggleItem(cocos2d::Ref *sender);
@@ -128,7 +130,7 @@ class LayerIgnoreAnchorPointPos : public LayerTest
 public:
     CREATE_FUNC(LayerIgnoreAnchorPointPos);
     virtual void onEnter() override;
-    void onToggle(Ref* pObject);
+    void onToggle(cocos2d::Ref* pObject);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
 };
@@ -138,7 +140,7 @@ class LayerIgnoreAnchorPointRot : public LayerTest
 public:
     CREATE_FUNC(LayerIgnoreAnchorPointRot);
     virtual void onEnter() override;
-    void onToggle(Ref* pObject);
+    void onToggle(cocos2d::Ref* pObject);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
 };
@@ -148,7 +150,7 @@ class LayerIgnoreAnchorPointScale : public LayerTest
 public:
     CREATE_FUNC(LayerIgnoreAnchorPointScale);
     virtual void onEnter() override;
-    void onToggle(Ref* pObject);
+    void onToggle(cocos2d::Ref* pObject);
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
 };
@@ -173,7 +175,7 @@ public:
     void step(float dt);
     
 private:
-    LayerColor* _layer[3];
+    cocos2d::LayerColor* _layer[3];
 };
 
 class LayerBug3162B : public LayerTest
@@ -187,7 +189,7 @@ public:
     void step(float dt);
     
 private:
-    LayerColor* _layer[3];
+    cocos2d::LayerColor* _layer[3];
 };
 
 class LayerColorOccludeBug : public LayerTest
@@ -200,7 +202,8 @@ public:
     virtual std::string subtitle() const override;
     
 private:
-    LayerColor* _layer;
+    cocos2d::LayerColor* _layer;
 };
+
 
 #endif

@@ -109,32 +109,27 @@ void PUParticle3D::process( float timeElapsed )
 }
 
 PUParticle3D::PUParticle3D():
-    //position(Vec3::ZERO),
     particleEntityPtr(nullptr),
+    parentEmitter(nullptr),
     visualData(nullptr),
     particleType(PT_VISUAL),
-    direction(Vec3::ZERO),
-    timeToLive(DEFAULT_TTL),
-    totalTimeToLive(DEFAULT_TTL),
-    timeFraction(0.0f),
-    mass(DEFAULT_MASS),
-    eventFlags(0),
-    freezed(false),
-    originalPosition(Vec3::ZERO),
-    latestPosition(Vec3::ZERO),
-    originalDirection(Vec3::ZERO),
     originalDirectionLength(0.0f),
-    originalScaledDirectionLength(0.0f),
     originalVelocity(0.0f),
-    parentEmitter(nullptr),
+    originalScaledDirectionLength(0.0f),
+    rotationAxis(Vec3::UNIT_Z),
     //color(Vec4::ONE),
     originalColor(Vec4::ONE),
     //zRotation(0.0f),
     zRotationSpeed(0.0f),
     rotationSpeed(0.0f),
-    rotationAxis(Vec3::UNIT_Z),
-    ownDimensions(false),
     radius(0.87f),
+    ownDimensions(false),
+    eventFlags(0),
+    freezed(false),
+    timeToLive(DEFAULT_TTL),
+    totalTimeToLive(DEFAULT_TTL),
+    timeFraction(0.0f),
+    mass(DEFAULT_MASS),
     textureAnimationTimeStep(0.1f),
     textureAnimationTimeStepCount(0.0f),
     textureCoordsCurrent(0),
@@ -181,13 +176,13 @@ PUParticleSystem3D::PUParticleSystem3D()
 , _prepared(false)
 , _poolPrepared(false)
 , _particleSystemScaleVelocity(1.0f)
+, _timeElapsedSinceStart(0.0f)
 , _defaultWidth(DEFAULT_WIDTH)
 , _defaultHeight(DEFAULT_HEIGHT)
 , _defaultDepth(DEFAULT_DEPTH)
 , _maxVelocity(DEFAULT_MAX_VELOCITY)
 , _maxVelocitySet(false)
 , _isMarkedForEmission(false)
-, _timeElapsedSinceStart(0.0f)
 , _parentParticleSystem(nullptr)
 {
     _particleQuota = DEFAULT_PARTICLE_QUOTA;
@@ -243,19 +238,35 @@ PUParticleSystem3D* PUParticleSystem3D::create()
 
 PUParticleSystem3D* PUParticleSystem3D::create( const std::string &filePath, const std::string &materialPath )
 {
-    std::string matfullPath = FileUtils::getInstance()->fullPathForFilename(materialPath);
-    convertToUnixStylePath(matfullPath);
-    PUMaterialCache::Instance()->loadMaterials(matfullPath);
-    PUParticleSystem3D* ps = PUParticleSystem3D::create();
-    std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
-    convertToUnixStylePath(fullPath);
-    if (!ps->initSystem(fullPath)){
-        CC_SAFE_DELETE(ps);
+    PUParticleSystem3D *ret = new (std::nothrow) PUParticleSystem3D();
+    if (ret && ret->initWithFilePathAndMaterialPath(filePath, materialPath))
+    {
+        ret->autorelease();
+        return ret;
     }
-    return ps;
+    else
+    {
+        CC_SAFE_DELETE(ret);
+        return nullptr;
+    }
 }
 
 PUParticleSystem3D* PUParticleSystem3D::create( const std::string &filePath )
+{
+    PUParticleSystem3D *ret = new (std::nothrow) PUParticleSystem3D();
+    if (ret && ret->initWithFilePath(filePath))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    else
+    {
+        CC_SAFE_DELETE(ret);
+        return nullptr;
+    }
+}
+
+bool PUParticleSystem3D::initWithFilePath( const std::string &filePath )
 {
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
     convertToUnixStylePath(fullPath);
@@ -274,12 +285,24 @@ PUParticleSystem3D* PUParticleSystem3D::create( const std::string &filePath )
         PUMaterialCache::Instance()->loadMaterialsFromSearchPaths(materialFolder);
         loadedFolder.push_back(materialFolder);
     }
-    
-    PUParticleSystem3D* ps = PUParticleSystem3D::create();
-    if (!ps->initSystem(fullPath)){
-        CC_SAFE_DELETE(ps);
+
+    if (!initSystem(fullPath)){
+        return false;
     }
-    return ps;
+    return true;
+}
+
+bool PUParticleSystem3D::initWithFilePathAndMaterialPath( const std::string &filePath, const std::string &materialPath )
+{
+    std::string matfullPath = FileUtils::getInstance()->fullPathForFilename(materialPath);
+    convertToUnixStylePath(matfullPath);
+    PUMaterialCache::Instance()->loadMaterials(matfullPath);
+    std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
+    convertToUnixStylePath(fullPath);
+    if (!initSystem(fullPath)){
+        return false;
+    }
+    return true;
 }
 
 void PUParticleSystem3D::startParticleSystem()
@@ -308,7 +331,6 @@ void PUParticleSystem3D::startParticleSystem()
 
         scheduleUpdate();
         _state = State::RUNNING;
-        _latestPosition = getDerivedPosition(); // V1.3.1
     }
 
     for (auto iter : _children)
@@ -415,9 +437,12 @@ void PUParticleSystem3D::update(float delta)
 
 void PUParticleSystem3D::forceUpdate( float delta )
 {
-    if (!_emitters.empty()){
+    if (!_emitters.empty())
         calulateRotationOffset();
-        prepared();
+
+    prepared();
+
+    if (!_emitters.empty()){
         emitParticles(delta);
         preUpdator(delta);
         updator(delta);
@@ -511,12 +536,14 @@ void PUParticleSystem3D::prepared()
 
         _prepared = true;
         _timeElapsedSinceStart = 0.0f;
+        _latestPosition = getDerivedPosition(); // V1.3.1
         if (_parentParticleSystem){
             _particleSystemScaleVelocity = _parentParticleSystem->getParticleSystemScaleVelocity();
         }
     }
 
-    notifyRescaled(getDerivedScale());
+    if (!_emitters.empty())
+        notifyRescaled(getDerivedScale());
 }
 
 void PUParticleSystem3D::unPrepared()
@@ -896,7 +923,7 @@ void PUParticleSystem3D::emitParticles( ParticlePool &pool, PUEmitter* emitter, 
 
         initParticleForEmission(particle);
 
-        particle->position += Vec3(particle->direction.x * scale.x * _particleSystemScaleVelocity * timePoint
+        particle->position.add(particle->direction.x * scale.x * _particleSystemScaleVelocity * timePoint
                                  , particle->direction.y * scale.y * _particleSystemScaleVelocity * timePoint
                                  , particle->direction.z * scale.z * _particleSystemScaleVelocity * timePoint);
         // Increment time fragment
@@ -1047,7 +1074,8 @@ void PUParticleSystem3D::copyAttributesTo( PUParticleSystem3D* system )
 
     system->setName(_name);
     system->_state = _state;
-    system->setRender(static_cast<PURender *>(_render)->clone());
+    if (_render)
+        system->setRender(static_cast<PURender *>(_render)->clone());
     system->_particleQuota = _particleQuota;
     system->_blend = _blend;
     system->_keepLocal = _keepLocal;
@@ -1098,6 +1126,11 @@ PUParticleSystem3D* PUParticleSystem3D::clone()
 {
     auto ps = PUParticleSystem3D::create();
     copyAttributesTo(ps);
+    for (auto &iter : _children){
+        PUParticleSystem3D *child = dynamic_cast<PUParticleSystem3D *>(iter);
+        if (child)
+            ps->addChild(child->clone());
+    }
     return ps;
 }
 
@@ -1313,7 +1346,7 @@ void PUParticleSystem3D::processMotion( PUParticle3D* particle, float timeElapse
 
     Vec3 scale = getDerivedScale();
     // Update the position with the direction.
-    particle->position += Vec3(particle->direction.x * scale.x * _particleSystemScaleVelocity * timeElapsed
+    particle->position.add(particle->direction.x * scale.x * _particleSystemScaleVelocity * timeElapsed
                              , particle->direction.y * scale.y * _particleSystemScaleVelocity * timeElapsed
                              , particle->direction.z * scale.z * _particleSystemScaleVelocity * timeElapsed);
 }
@@ -1368,27 +1401,24 @@ int PUParticleSystem3D::getAliveParticleCount() const
 
 void PUParticleSystem3D::forceStopParticleSystem()
 {
-    if (!_emitters.empty()){
-        if (_render)
-            _render->notifyStop();
+    if (_render)
+        _render->notifyStop();
 
-        for (auto &it : _observers){
-            it->notifyStop();
-        }
-
-        for (auto& it : _emitters) {
-            auto emitter = static_cast<PUEmitter*>(it);
-            emitter->notifyStop();
-        }
-
-        for (auto& it : _affectors) {
-            auto affector = static_cast<PUAffector*>(it);
-            affector->notifyStop();
-        }
-
-        unscheduleUpdate();
-        unPrepared();
+    for (auto &it : _observers){
+        it->notifyStop();
     }
+
+    for (auto& it : _emitters) {
+        auto emitter = static_cast<PUEmitter*>(it);
+        emitter->notifyStop();
+    }
+
+    for (auto& it : _affectors) {
+        auto affector = static_cast<PUAffector*>(it);
+        affector->notifyStop();
+    }
+    unscheduleUpdate();
+    unPrepared();
 }
 
 NS_CC_END

@@ -27,22 +27,22 @@ var g_parsersTests = [
     {
         title: "cocostudio 1.3",
         test: function(){
-            new CocostudioParserJsonScene("res/cocosui/CCS/ccs1_3/CCSV1_3_1.ExportJson").runThisTest();
+            new CocostudioParserJsonScene("ccs-res/cocosui/UIEditorTest/cocostudio1_3/CocostudioV1_3_1.ExportJson").runThisTest();
         }
     },{
         title: "cocostudio 1.4",
         test: function(){
-            new CocostudioParserJsonScene("res/cocosui/CCS/ccs1_4/CCS1_4_1.ExportJson").runThisTest();
+            new CocostudioParserJsonScene("ccs-res/cocosui/UIEditorTest/cocostudio1_4/Cocostudio1_4_1.ExportJson").runThisTest();
         }
     },{
         title: "cocostudio 1.5",
         test: function(){
-            new CocostudioParserJsonScene("res/cocosui/CCS/ccs1_5/CCS1_5_1.ExportJson").runThisTest();
+            new CocostudioParserJsonScene("ccs-res/cocosui/UIEditorTest/cocostudio1_5/Cocostudio1_5_1.ExportJson").runThisTest();
         }
     },{
         title: "cocostudio 2.1",
         test: function(){
-            new CocostudioParserJsonScene("res/cocosui/CCS/2.1/MainScene.json").runThisTest();
+            new CocostudioParserJsonScene("ccs-res/cocosui/UIEditorTest/2.1/MainScene.json").runThisTest();
         }
     }
 ];
@@ -125,8 +125,13 @@ var CocostudioParserJsonScene = cc.Scene.extend({
             pMenu.y = 0;
             cc.MenuItemFont.setFontName("fonts/arial.ttf");
             cc.MenuItemFont.setFontSize(24);
-
-            for (var i = 0; i < g_parsersTests.length; ++i) {
+            var testNum = 0;
+            if(cocoStudioOldApiFlag == 0){
+                testNum = g_parsersTests.length;
+            }else{
+                testNum = g_parsersTests.length - 1;
+            }
+            for (var i = 0; i < testNum; ++i) {
                 var selItem = g_parsersTests[i];
                 var pItem = new cc.MenuItemFont(selItem.title,
                     selItem.test, this);

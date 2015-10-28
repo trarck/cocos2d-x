@@ -88,7 +88,7 @@
 -- Initializes a sprite with an sprite frame name.<br>
 -- A SpriteFrame will be fetched from the SpriteFrameCache by name.<br>
 -- If the SpriteFrame doesn't exist it will raise an exception.<br>
--- param   spriteFrameName  A key string that can fected a volid SpriteFrame from SpriteFrameCache.<br>
+-- param   spriteFrameName  A key string that can fected a valid SpriteFrame from SpriteFrameCache.<br>
 -- return  True if the sprite is initialized properly, false otherwise.
 -- @function [parent=#Sprite] initWithSpriteFrameName 
 -- @param self
@@ -254,16 +254,6 @@
 -- @param #rect_table rect
 -- @return Sprite#Sprite self (return value: cc.Sprite)
         
---------------------------------
--- @overload self, string         
--- @overload self         
--- @overload self, string, rect_table         
--- @function [parent=#Sprite] create
--- @param self
--- @param #string filename
--- @param #rect_table rect
--- @return Sprite#Sprite ret (return value: cc.Sprite)
-
 --------------------------------
 -- @overload self, cc.Texture2D, rect_table, bool         
 -- @overload self, cc.Texture2D         

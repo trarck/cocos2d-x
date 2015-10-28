@@ -40,6 +40,8 @@ NS_CC_BEGIN
 
 class CC_DLL Data
 {
+    friend class Properties;
+    
 public:
     /**
      * This parameter is defined for convenient reference if a null Data object is needed.
@@ -67,17 +69,17 @@ public:
     ~Data();
     
     /**
-     * Overroads of operator=.
+     * Overloads of operator=.
      */
     Data& operator= (const Data& other);
     
     /**
-     * Overroads of operator=.
+     * Overloads of operator=.
      */
     Data& operator= (Data&& other);
     
     /**
-     * Gets internal bytes of Data. It will retrun the pointer directly used in Data, so don't delete it.
+     * Gets internal bytes of Data. It will return the pointer directly used in Data, so don't delete it.
      *
      * @return Pointer of bytes used internal in Data.
      */

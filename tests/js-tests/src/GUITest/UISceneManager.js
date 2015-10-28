@@ -465,6 +465,18 @@
                 func: function () {
                     return new UIScrollViewRotated();
                 }
+            },
+            {
+                title: "UIScrollViewDisableTest",
+                func: function () {
+                    return new UIScrollViewDisableTest();
+                }
+            },
+            {
+                title:"UIScrollView Multiple Items Test",
+                func: function () {
+                    return new UIScrollViewTest_Vertical_Multiple();
+                }
             }
         ],
         "UIPageView": [
@@ -497,6 +509,12 @@
                 func: function () {
                     return new UIPageViewDynamicAddAndRemoveTest();
                 }
+            },
+            {
+                title: "UIPageViewDisableTouchTest",
+                func: function () {
+                    return new UIPageViewDisableTouchTest();
+                }
             }
         ],
         "UIListView": [
@@ -510,6 +528,12 @@
                 title: "UIListViewTest_Horizontal",
                 func: function () {
                     return new UIListViewTest_Horizontal();
+                }
+            },
+            {
+                title:"UIListViewTest_TouchIntercept ",
+                func: function() {
+                    return new UIListViewTest_TouchIntercept();
                 }
             }
         ],
@@ -531,18 +555,53 @@
         ]
     };
 
+    if (cc.sys.isNative) {
+        testingItems["UIS9NinePatchTest"] = [
+        {
+                title: "UIS9NinePatchTest",
+                func: function () {
+                    return new UIS9NinePatchTest();
+                }
+            }
+        ];
+    }
+
+    if (cc.sys.os == cc.sys.OS_ANDROID || cc.sys.os == cc.sys.OS_IOS || !cc.sys.isNative)
+    {
+        testingItems["UIVideoPlayer"] = [
+            {
+                title: "UIVideoPlayerTest",
+                func: function () {
+                    return new UIVideoPlayerTest();
+                }
+            }
+        ];
+
+        testingItems["UIWebViewTest"] = [
+            {
+                title: "UIWebViewTest",
+                func: function () {
+                    return new UIWebViewTest();
+                }
+            }
+        ];
+    }
+
+    var guiTestScene = null;
     global.GUITestScene = cc.Class.extend({
 
         runThisTest: function(){
-            cc.director.runScene(new listScene);
+            if(guiTestScene === null || !cc.sys.isObjectValid(guiTestScene))
+                guiTestScene = new listScene;
+            cc.director.runScene(guiTestScene);
         }
 
     });
 
     var listScene = TestScene.extend({
 
-        onEnter: function(){
-            TestScene.prototype.onEnter.call(this);
+        ctor: function(){
+            TestScene.prototype.ctor.call(this);
 
             var menu = new cc.Menu();
             menu.x = 0;
@@ -567,6 +626,14 @@
             this._menu = menu;
             this.addChild(menu);
 
+            this._length = 0;
+            for(var p in testingItems){
+                this._length++;
+            }
+        },
+
+        onEnter: function(){
+            TestScene.prototype.onEnter.call(this);
             if ('touches' in cc.sys.capabilities)
                 cc.eventManager.addListener({
                     event: cc.EventListener.TOUCH_ALL_AT_ONCE,
@@ -590,11 +657,6 @@
                         return true;
                     }
                 }, this);
-            }
-
-            this._length = 0;
-            for(var p in testingItems){
-                this._length++;
             }
         },
 
@@ -636,10 +698,12 @@
 
         currentUIScene: function () {
             var test = currentTestingArray[this._currentUISceneId];
-            var sence = test.func();
-            sence.init();
-            sence.setSceneTitle(test.title);
-            return sence;
+            var layer = test.func();
+            layer.init();
+            layer.setSceneTitle(test.title);
+            var scene = new UIScene();
+            scene.addChild(layer);
+            return scene;
         }
     };
 

@@ -124,24 +124,24 @@ class JSCallbackWrapper: public cocos2d::Ref {
 public:
     JSCallbackWrapper();
     virtual ~JSCallbackWrapper();
-    void setJSCallbackFunc(jsval obj);
-    void setJSCallbackThis(jsval thisObj);
-    void setJSExtraData(jsval data);
+    void setJSCallbackFunc(JS::HandleValue callback);
+    void setJSCallbackThis(JS::HandleValue thisObj);
+    void setJSExtraData(JS::HandleValue data);
     
-    const jsval& getJSCallbackFunc() const;
-    const jsval& getJSCallbackThis() const;
-    const jsval& getJSExtraData() const;
+    const jsval getJSCallbackFunc() const;
+    const jsval getJSCallbackThis() const;
+    const jsval getJSExtraData() const;
 protected:
-    JS::Heap<JS::Value> _jsCallback;
-    JS::Heap<JS::Value> _jsThisObj;
-    JS::Heap<JS::Value> _extraData;
+    mozilla::Maybe<JS::PersistentRootedValue> _jsCallback;
+    mozilla::Maybe<JS::PersistentRootedValue> _jsThisObj;
+    mozilla::Maybe<JS::PersistentRootedValue> _extraData;
 };
 
 
 class JSScheduleWrapper: public JSCallbackWrapper {
     
 public:
-    JSScheduleWrapper() : _pTarget(NULL), _pPureJSTarget(NULL), _priority(0), _isUpdateSchedule(false) {}
+    JSScheduleWrapper();
     virtual ~JSScheduleWrapper();
 
     static void setTargetForSchedule(JS::HandleValue sched, JSScheduleWrapper *target);
@@ -178,7 +178,7 @@ public:
     
 protected:
     Ref* _pTarget;
-    JS::Heap<JSObject*> _pPureJSTarget;
+    mozilla::Maybe<JS::PersistentRootedObject> _pPureJSTarget;
     int _priority;
     bool _isUpdateSchedule;
 };
@@ -262,8 +262,12 @@ bool js_cocos2dx_Node_onEnter(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Node_onExit(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Node_onEnterTransitionDidFinish(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Node_onExitTransitionDidStart(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_Node_cleanup(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Component_onEnter(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_Component_onExit(JSContext *cx, uint32_t argc, jsval *vp);
+
+bool js_cocos2dx_retain(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_release(JSContext *cx, uint32_t argc, jsval *vp);
 
 void get_or_create_js_obj(JSContext* cx, JS::HandleObject obj, const std::string &name, JS::MutableHandleObject jsObj);
 

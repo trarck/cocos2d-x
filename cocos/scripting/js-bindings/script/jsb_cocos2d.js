@@ -26,7 +26,7 @@
 
 // CCConfig.js
 //
-cc.ENGINE_VERSION = "Cocos2d-JS v3.9 Beta0";
+cc.ENGINE_VERSION = "Cocos2d-JS v3.9";
 
 cc.FIX_ARTIFACTS_BY_STRECHING_TEXEL = 0;
 cc.DIRECTOR_STATS_POSITION = {x: 0, y: 0};
@@ -1591,7 +1591,9 @@ cc.Touch.prototype.getLocationY = function(){
 cc.Director.EVENT_PROJECTION_CHANGED = "director_projection_changed";
 cc.Director.EVENT_AFTER_DRAW = "director_after_draw";
 cc.Director.EVENT_AFTER_VISIT = "director_after_visit";
+cc.Director.EVENT_BEFORE_UPDATE = "director_before_update";
 cc.Director.EVENT_AFTER_UPDATE = "director_after_update";
+cc.Director.EVENT_BEFORE_SCENE_LAUNCH = "director_before_scene_launch";
 
 cc.Director.prototype.runScene = function(scene){
     if (!this.getRunningScene()) {

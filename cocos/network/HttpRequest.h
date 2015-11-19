@@ -32,7 +32,7 @@
 #include "base/ccMacros.h"
 
 /**
- * @addtogroup core
+ * @addtogroup network
  * @{
  */
 
@@ -55,7 +55,7 @@ typedef void (cocos2d::Ref::*SEL_HttpResponse)(HttpClient* client, HttpResponse*
  * @lua NA
  */
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
 #ifdef DELETE
 #undef DELETE
 #endif
@@ -78,7 +78,7 @@ public:
     
     /** 
      *  Constructor.
-     *   Because HttpRequest object will be used between UI thead and network thread,
+     *   Because HttpRequest object will be used between UI thread and network thread,
          requestObj->autorelease() is forbidden to avoid crashes in AutoreleasePool
          new/retain/release still works, which means you need to release it manually
          Please refer to HttpRequestTest.cpp to find its usage.
@@ -214,7 +214,7 @@ public:
     /**
      * Set user-customed data of HttpRequest object.
      * You can attach a customed data in each request, and get it back in response callback.
-     * But you need to new/delete the data pointer manully.
+     * But you need to new/delete the data pointer manually.
      *
      * @param pUserData the string pointer
      */
@@ -274,9 +274,9 @@ public:
     }
     
     /** 
-     * Get the target of callback selector funtion, mainly used by HttpClient.
+     * Get the target of callback selector function, mainly used by HttpClient.
      *
-     * @return Ref* the target of callback selector funtion
+     * @return Ref* the target of callback selector function
      */
     inline Ref* getTarget()
     {

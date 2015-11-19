@@ -52,6 +52,9 @@ UIScale9SpriteTests::UIScale9SpriteTests()
     ADD_TEST_CASE(UIS9ZOrder);
     ADD_TEST_CASE(UIS9Flip);
     ADD_TEST_CASE(UIS9ChangeAnchorPoint);
+    ADD_TEST_CASE(UIS9NinePatchTest);
+    ADD_TEST_CASE(UIS9BatchTest);
+    ADD_TEST_CASE(UIS9ToggleRenderingTypeTest);
 }
 
 // UIScale9SpriteTest
@@ -296,7 +299,11 @@ bool UIS9FrameNameSpriteSheet::init()
 
         
         auto blocks = ui::Scale9Sprite::createWithSpriteFrameName("blocks9.png");
-        
+        blocks->setInsetLeft(0);
+        blocks->setInsetRight(0);
+        blocks->setInsetTop(0);
+        blocks->setInsetBottom(0);
+        blocks->setPreferredSize(Size(400,80));
         blocks->setPosition(Vec2(x, y));
         
         this->addChild(blocks);
@@ -340,9 +347,9 @@ bool UIS9FrameNameSpriteSheetCropped::init()
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_s9s_blocks9_plist);
         
         auto blocks = ui::Scale9Sprite::createWithSpriteFrameName("blocks9c.png");
-        
+        blocks->setRenderingType(Scale9Sprite::RenderingType::SIMPLE);
         blocks->setPosition(Vec2(x, y));
-        
+        blocks->setCapInsets(Rect(5,5,5,5));
         this->addChild(blocks);
         
         return true;
@@ -361,9 +368,9 @@ bool UIS9FrameNameSpriteSheetCroppedRotated::init()
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile(s_s9s_blocks9_plist);
         
         auto blocks = ui::Scale9Sprite::createWithSpriteFrameName("blocks9cr.png");
-        
+        blocks->setRenderingType(Scale9Sprite::RenderingType::SIMPLE);
         blocks->setPosition(Vec2(x, y));
-        
+        blocks->setInsetBottom(10);
         this->addChild(blocks);
         
         return true;
@@ -847,8 +854,143 @@ bool UIS9ChangeAnchorPoint::init()
                                        });
         this->addChild(button2);
         
+
+        return true;
+    }
+    return false;
+}
+
+bool UIS9NinePatchTest::init()
+{
+    if (UIScene::init()) {
+        SpriteFrameCache::getInstance()->addSpriteFramesWithFile("cocosui/android9patch.plist");
+
+        auto winSize = Director::getInstance()->getWinSize();
+        float x = winSize.width / 2;
+        float y = 0 + (winSize.height / 2 + 50);
+
+        auto preferedSize = Size(99,99);
+
+        //9-patch sprite with filename
+        auto playerSprite = ui::Scale9Sprite::create("cocosui/player.9.png");
+        playerSprite->setPosition(x, y);
+        playerSprite->setContentSize(preferedSize);
+        auto capInsets = playerSprite->getCapInsets();
+        CCLOG("player sprite capInset = %f, %f %f, %f", capInsets.origin.x,
+              capInsets.origin.y, capInsets.size.width, capInsets.size.height);
+        this->addChild(playerSprite);
+
+        auto animationBtnSprite = ui::Scale9Sprite::createWithSpriteFrameName("animationbuttonpressed.png");
+        animationBtnSprite->setPosition(x-100, y-100);
+        capInsets = animationBtnSprite->getCapInsets();
+        CCLOG("animationBtnSprite capInset = %f, %f %f, %f", capInsets.origin.x,
+              capInsets.origin.y, capInsets.size.width, capInsets.size.height);
+        this->addChild(animationBtnSprite);
+        
+        
+        auto monsterSprite = ui::Scale9Sprite::createWithSpriteFrameName("monster.9.png");
+        monsterSprite->setPosition(x+100, y-100);
+        capInsets = monsterSprite->getCapInsets();
+        monsterSprite->setContentSize(preferedSize);
+        CCLOG("monsterSprite capInset = %f, %f %f, %f", capInsets.origin.x,
+              capInsets.origin.y, capInsets.size.width, capInsets.size.height);
+        this->addChild(monsterSprite);
+
+        auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName("buttonnormal.9.png");
+        auto buttonScale9Sprite = Scale9Sprite::createWithSpriteFrame(spriteFrame);
+        buttonScale9Sprite->setContentSize(Size(150,80));
+        buttonScale9Sprite->setPosition(Vec2(100,200));
+        this->addChild(buttonScale9Sprite);
+
+        return true;
+    }
+    return false;
+}
+
+bool UIS9BatchTest::init()
+{
+    if (UIScene::init()) {
+        SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Images/blocks9ss.plist");
+        
+        auto winSize = Director::getInstance()->getVisibleSize();
+        
+        auto label = Label::createWithSystemFont("Click Button to Add Sprite and Slice Sprite\nThe draw call should always be 19 after adding sprites", "Arial", 15);
+        label->setPosition(Vec2(winSize.width/2, winSize.height - 60));
+        this->addChild(label);
+        
+        auto preferedSize = Size(150,99);
+        std::vector<std::string>  spriteFrameNameArray = {"blocks9.png", "blocks9r.png"};
+        auto addSpriteButton = ui::Button::create("cocosui/animationbuttonnormal.png", "cocosui/animationbuttonpressed.png");
+        addSpriteButton->setPosition(Vec2(winSize.width/2 - 50,winSize.height - 100));
+        addSpriteButton->setTitleText("Add Normal Sprite");
+        srand((unsigned)time(nullptr));
+        addSpriteButton->addClickEventListener([=](Ref*){
+            auto spriteFrameName = spriteFrameNameArray[rand()%2];
+            auto sprite = Sprite::createWithSpriteFrameName(spriteFrameName);
+            sprite->setPosition(Vec2(rand() % (int)winSize.width + 50, winSize.height/2));
+            this->addChild(sprite);
+        });
+        this->addChild(addSpriteButton);
+        
+        auto addSliceSpriteButton = ui::Button::create("cocosui/animationbuttonnormal.png", "cocosui/animationbuttonpressed.png");
+        addSliceSpriteButton->setPosition(Vec2(winSize.width/2 + 50,winSize.height - 100));
+        addSliceSpriteButton->setTitleText("Add Slice Sprite");
+        addSliceSpriteButton->addClickEventListener([=](Ref*){
+            int random = rand()%2;
+            auto spriteFrameName = spriteFrameNameArray[random];
+            auto sprite = ui::Scale9Sprite::createWithSpriteFrameName(spriteFrameName);
+            sprite->setPosition(Vec2(rand() % (int)winSize.width + 50, winSize.height/3));
+            if (random == 0) {
+                sprite->setRenderingType(Scale9Sprite::RenderingType::SIMPLE);
+            }else{
+                sprite->setRenderingType(Scale9Sprite::RenderingType::SLICE);
+            }
+            sprite->setPreferredSize(preferedSize);
+            this->addChild(sprite);
+        });
+        this->addChild(addSliceSpriteButton);
+        
         
         return true;
     }
     return false;
 }
+
+bool UIS9ToggleRenderingTypeTest::init()
+{
+    if (UIScene::init()) {
+        
+        auto winSize = Director::getInstance()->getWinSize();
+        float x = winSize.width / 2;
+        float y = 0 + (winSize.height / 2 - 20);
+        
+        auto label = Label::createWithSystemFont("Click Button to toggle rendering type", "Arial", 15);
+        label->setPosition(Vec2(winSize.width/2, winSize.height - 60));
+        this->addChild(label);
+        
+        auto blocks = ui::Scale9Sprite::create("Images/blocks9.png");
+      
+        blocks->setPosition(Vec2(x, y));
+        blocks->setPreferredSize(Size(96*2, 96));
+        this->addChild(blocks);
+        
+        auto addSliceSpriteButton = ui::Button::create("cocosui/animationbuttonnormal.png", "cocosui/animationbuttonpressed.png");
+        addSliceSpriteButton->setPosition(Vec2(winSize.width/2,winSize.height - 100));
+        addSliceSpriteButton->setTitleText("Slice Rendering");
+        addSliceSpriteButton->addClickEventListener([=](Ref*){
+            if (blocks->getRenderingType() == Scale9Sprite::RenderingType::SLICE) {
+                blocks->setRenderingType(Scale9Sprite::RenderingType::SIMPLE);
+                addSliceSpriteButton->setTitleText("Simple Rendering");
+            }else{
+                blocks->setRenderingType(Scale9Sprite::RenderingType::SLICE);
+                addSliceSpriteButton->setTitleText("Slice Rendering");
+                blocks->setCapInsets(Rect(96/3,96/3,96/3,96/3));
+            }
+        });
+        this->addChild(addSliceSpriteButton);
+        
+        return true;
+    }
+    return false;
+}
+

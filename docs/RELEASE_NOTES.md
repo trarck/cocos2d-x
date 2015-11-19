@@ -1,35 +1,35 @@
-# cocos2d-x v3.6 Release Notes #
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
+- [Cocos2d-x 3.9 Release Notes](#cocos2d-x-39-release-notes)
 - [Misc Information](#misc-information)
 - [Requirements](#requirements)
   - [Runtime Requirements](#runtime-requirements)
   - [Compiler Requirements](#compiler-requirements)
   - [How to run tests](#how-to-run-tests)
+    - [Cocos Console](#cocos-console)
     - [Mac OSX & iOS](#mac-osx-&-ios)
     - [Android](#android)
     - [Windows](#windows)
     - [Linux](#linux)
   - [How to start a new game](#how-to-start-a-new-game)
-- [v3.6](#v36)
-  - [Highlights of v3.6](#highlights-of-v36)
-  - [Features in detail](#features-in-detail-1)
-    - [3D TextureCube](#3d-texturecube)
-    - [3D Skybox](#3d-skybox)
-    - [3D Terrain](#3d-terrain)
-    - [Animate3D Quality Control](#animate3d-quality-control)
-    - [Un-bottleneck your fill-rate with SpritePolygon](#un-bottleneck-your-fill-rate-with-spritepolygon)
-    - [LuaJit ARM64](#luajit-arm64)
-    - [Button memory usage optimization](#button-memory-usage-optimization)
+- [v3.9](#v39)
+  - [Highlights features, improvements and API updates of v3.9](#highlights-features-improvements-and-api-updates-of-v39)
+  - [The main features in detail of Cocos2d-x v3.9:](#the-main-features-in-detail-of-cocos2d-x-v39)
+    - [3D Module](#3d-module)
+    - [2D Module](#2d-module)
+    - [Others](#others)
+  - [Other changes](#other-changes)
+  - [NEW APIS](#new-apis)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Cocos2d-x 3.9 Release Notes #
 
 # Misc Information
 
 * [Full Changelog](https://github.com/cocos2d/cocos2d-x/blob/v3/CHANGELOG)
-* v3.0 Release Notes can be found here: [v3.0 Release Notes](https://github.com/cocos2d/cocos2d-x/blob/cocos2d-x-3.0/docs/RELEASE_NOTES.md)
 
 # Requirements
 
@@ -40,22 +40,49 @@
 * OS X 10.7 or newer
 * Windows 7 or newer
 * Windows Phone 8.1
+* Windows 10 UWP
 * Linux Ubuntu 14.04 or newer
+* Mordern browsers and IE 9+ (On mobile platforms, only iOS and Android 5 activated WebGL support)
 
 ## Compiler Requirements
 
 * Xcode 5.1 or newer for iOS or Mac
 * gcc 4.9 or newer for Linux
 * ndk-r10c for Android
-* Visual Studio 2012  or newer for Windows (win32)
-* Visual Studio 2012  or newer for Windows Phone 8
+* Visual Studio 2013 or newer for Windows (win32)
+* Visual Studio 2013 update4 or newer for Windows 8.1 universal Apps
+* Visual Studio 2015 RC or newer and Windows 10.0 (build 10074 or higher) for Windows 10.0 UWP Apps
 
 ## How to run tests
+
+### Cocos Console
+
+You can use [Cocos Console](www.cocos2d-x.org/wiki/Cocos2d-console) command line tool to run the test cases on almost all supported platforms.
+
+In console application:
+```
+// Enter cpp test folder
+cd tests/cpp-tests
+// Or enter js test folder
+cd tests/js-tests
+// Or enter lua test folder
+cd tests/lua-tests
+
+// Compile or run test case
+cocos compile -p ios|mac|android|win32|win8_1|metro|web -m debug|release
+cocos run -p ios|mac|android|win32|win8_1|metro|web -m debug|release
+```
+
+For example, if you want to run cpp test in release mode on Android, you can use the following command:
+
+```
+cocos run -p android -m release
+```
 
 ### Mac OSX & iOS
 
 * Enter `cocos2d-x/build` folder, open `cocos2d_test.xcodeproj`
-* Select `iOS` or `OS X` target in scheme toolbar
+* Select `cpp-tests`, `lua-tests`, `js-tests` for `iOS` or `OS X` target in scheme toolbar
 * Click `run` button
 
 ### Android
@@ -87,10 +114,11 @@ Then
 
 ### Windows
 
-* Enter `cocos2d-x/build`, and open `cocos2d-win32.vs2012.sln`
-* Select `cpp-empty-test` as running target
+* For win32 project, enter `cocos2d-x/build`, and open `cocos2d-win32.sln`
+* For win 8.1 project, enter `cocos2d-x/build`, and open `cocos2d-win8.1-universal.sln`
+* For win 10 project, enter `cocos2d-x/build`, and open `cocos2d-win10.sln`
+* Select running target
 * Click run button
-
 
 ### Linux
 
@@ -112,205 +140,293 @@ Run
 
 ## How to start a new game
 
-Please refer to this document: [ReadMe](../README.md)
+Use Cocos Console to create a new game:
 
-# v3.6
-
-## Highlights of v3.6
-
-* 3D: added skybox support
-* 3D: added terrain support
-* added `SpritePolygon` to fix overdraw issue
-* used luajit v2.1-20150331 on 64-bit iOS devices
-* removed WP8 support
-* memory usage optimization of `ui::Button`
-* 3rd: updated Spine runtime to v2.1.25
-* 3rd: updated libcurl to v7.4 on all supported platforms except WP8.1 universal
-* 3rd: updated chipmunk to v6.2.2
-* 3rd: updated openssl to v1.0.11
-* 3rd: updated freetype to v2.5.5
-* 3rd: updated png to v1.6.16
-
-Because Angle doesn't support WP8 any more, and WP8's market share is around 20% worldwide with variations across countries, so we removed WP8 support suggested by MS OPEN TECK guys since v3.6.
-
-
-## Features in detail
-
-### 3D TextureCube
-
-TextureCube is useful for skybox and environment mapping. It uses 6 faces of a cube as map shape, and 6 pictures are projected onto the sides of a cube and stored as six square textures.
-
-**TexturesCube usage**
-
-```c++
-auto texturecube = TextureCube::create("left.jpg", "right.jpg", "top.jpg", "bottom.jpg","front.jpg", "back.jpg");
-//set texture parameters
-Texture2D::TexParams tRepeatParams;
-tRepeatParams.magFilter = GL_NEAREST;
-tRepeatParams.minFilter = GL_NEAREST;
-tRepeatParams.wrapS = GL_MIRRORED_REPEAT;
-tRepeatParams.wrapT = GL_MIRRORED_REPEAT;
-texturecube->setTexParameters(tRepeatParams);
-
-//create a GLProgramState using custom shader
-auto shader = GLProgram::createWithFilenames("cube_map.vert", "cube_map.frag");
-auto state = GLProgramState::create(shader);
-// pass the texture sampler to our custom shader, state is a pointer of GLProgramState, u_cubeTex is a uniform in shader
-state->setUniformTexture("u_cubeTex", texturecube);
+```
+cocos new -l cpp|js|lua MyNewGame
 ```
 
-Then the shader cube_map.frag can be something like this,
+# v3.9
 
-```c++
-varying vec3        v_reflect; //reflect direction
-uniform samplerCube u_cubeTex;
+## Highlights features, improvements and API updates of v3.9
 
-void main(void)
-{
-    gl_FragColor = textureCube(u_cubeTex, v_reflect); //sample the color of reflection direction
-}
-```
+We are happy to announce the release of Cocos2d-x v3.9. Following are the highlighted features, improvements and API updates in this version. 
 
-For more information please refer to cpp-tests/Sprite3DTest/Sprite3DCubeMapTest.
+1. 3D Module: 
+    - Added 3D MotionStreak to support streak effect. 
+    - Refined Sprite3D to support material system. 
+2. 2D Module:
+    - Added frame callback function and animation callback function. 
+    - Added script component system. 
+    - Reconstruction of 2D physics with Component. 
+    - Improved EditBox implemention on iOS and Win32 platform.
+    - Removed dependence of libcurl on AssetsManager, AssetsManagerEx and Downloader (iOS & Android).
+    - Improved particle performance. 
+3. Others: 
+    - Supported Action inheritance, update function overwriting in JSB. 
+    - Improved ScrollView performance in Web engine. 
+    - Improved Scale9Sprite performance in Web engine. 
+    - Decoupled Sprite's setTexture and updateColor in Web engine.
+    - Added support for debugging and release on real devices with Xcode7 and iOS9.
 
-### 3D Skybox
+## The main features in detail of Cocos2d-x v3.9:
 
-Skybox is a common component in 3D game. It is based on TextureCube.
+### 3D Module
 
-Usage of skybox
-
-```c++
-// create a texture cube
-auto textureCube = TextureCube::create("left.jpg", "right.jpg","top.jpg", "bottom.jpg","front.jpg", "back.jpg");
-//create a skybox
-auto skyBox = Skybox::create();
-skyBox->retain();
-//set cube texture to the skybox
-skyBox->setTexture(textureCube);
-addChild(_skyBox);
-```
-
-For more information please refer to cpp-tests/Sprite3DTest/Sprite3DCubeMapTest.
-
-![tecturecube-and-skybox](https://raw.githubusercontent.com/minggo/Pictures/master/texturecube-skybox.gif)
-
-### 3D Terrain
-
-Terrain is an important component in 3D game. A texture is used to stand for the height map. And up to 4 textures can be used to blend the details of the terrain, grass, road, and so on.
-
-Usage of terrain
-
-```c++
-//blended layers
-Terrain::DetailMap dirt("TerrainTest/dirt.jpg"), grass("TerrainTest/Grass2.jpg"), road("TerrainTest/road.jpg"), green("TerrainTest/GreenSkin.jpg");
-
-//height map, alpha map (blend weight), and blended layers
-Terrain::TerrainData data("TerrainTest/heightmap16.jpg", "TerrainTest/alphamap.png", dirt, grass, road, green);
-
-//create terrain here
-_terrain = Terrain::create(data,Terrain::CrackFixedType::SKIRT);
-//set lod distance
-_terrain->setLODDistance(3.2,6.4,9.6);
-//it must be less than 5
-_terrain->setMaxDetailMapAmount(4);
-addChild(_terrain);
-```
-
-For more information please refer to cpp-tests/Sprite3DTest/TerrainTest.
-
-![terrian](https://raw.githubusercontent.com/minggo/Pictures/master/terrian.png)
-
-### Animate3D Quality Control
-
-In order to make Animate3D run fast, you can use low quality animation. There are three types of animation quality：
-
-* Animate3DQuality::QUALITY_NONE
-* Animate3DQuality::QUALITY_LOW
-* Animate3DQuality::QUALITY_HIGH
-
-`Animate3DQuality::QUALITY_NONE` means the animation will not be updated. You can use this type on the animation that you are sure it is not visible. `Animate3DQuality::QUALITY_LOW` will use the nearest keyframe to display current frame; `Animate3DQuality::QUALITY_HIGH` will will interpolate between keyframes.
-
-
-```c++
-std::string fileName = "Sprite3DTest/orc.c3b";
-auto sprite = Sprite3D::create(fileName);
-addChild(sprite);
+1. 3D MotionStreak
     
-auto animation = Animation3D::create(fileName);
-if (animation)
-{
-   auto animate = Animate3D::create(animation);
-   //use low quality animation
-   animate->setQuality(Animate3DQuality::QUALITY_LOW);
-   sprite->runAction(RepeatForever::create(animate));
-}
-```
+    In this version, 3D MotionStreak is added to support streak effect. Check the testcase: [Sprite3DTest](https://github.com/cocos2d/cocos2d-x/blob/v3/tests/cpp-tests/Classes/Sprite3DTest/Sprite3DTest.cpp#L2472) to see how to use it.
 
-The animation quality is also configurable in config.plist, the key is cocos2d.x.3d.animate_high_quality. All created Animate3D base on this key if exist. You can modify it using the above method.
+2. Sprite3D
 
-### Un-bottleneck your fill-rate with SpritePolygon
+    Added Sprite3D material class. It will be easy and convenient to create internal material. 
 
-SpritePolygon is a 2d Node, like Sprites, it displays a 2d Image.
-But the difference is where Sprites is made of 2 triangles to form a quad, SpritePolygon is made of N number of triangles. `It is an experimental feature.`
+### 2D Module
 
-![sprite-polygon](https://raw.githubusercontent.com/minggo/Pictures/master/sprite-polygon.jpg)
+1. Frame callback function and animation callback function
 
-This allows the GPU to draw the same graphics with much lower pixels.
+    Three interfaces are added in ActionTimelineData class, which are addFrameEndCallFunc, removeFrameEndCall and clearFrameEndCalls. It will be easy to add or remove specific frame event. 
 
-Because 2d games tends to not use much vertices compared to 3d games, but almost of all sprites are `none rectangular`, GPU wastes precious bandwidth drawing area that is totally transparent. Fill-rate is often the bottleneck in a graphic intense 2d game. SpritePolygon is the perfect cure for "Over-Draw".
+2. Script Component 
 
-Following picture is the result of performance comparing, corresponding performance test cases are in `tests/cpp-tests/Classes/SpritePolygonTest`:
+    Script component is used to extend c++ Nodes. You can add a script component to a Node, then the script component will receive onEnter,onExit and update events. For example:
 
-![spritepolygon-performance](http://discuss.cocos2d-x.org/uploads/default/_optimized/336/215/1423528cff_690x149.png)
+    ```c++ 
+    // create a sprite and add a lua component auto player =
+    Sprite::create("player.png");
+    
+    auto luaComponent = ComponentLua::create("player.lua");
+    player->addComponent(luaComponent);
+    ```
+    
+    ```lua
+    // player.lua
+    local player = { 
+        onEnter = function(self)
+        -- do some things in onEnter 
+        end
+        
+        onExit = function(slef) 
+        -- do some things in onExit 
+        end
+        
+        update = function(self)
+        -- do some things every frame 
+        end
+    }
+    
+    -- it is needed to return player to let c++ nodes know it 
+    return player 
+    ```
+    
+    Javascript can work as the same way, just use ComponentJS instead of ComponentLua. 
+    
+    There are some differences between lua component and Javascript component:
+    
+    Should return the object in lua component, in Javascript, you only have to extend cc.ComponentJS, and ensure the result of the last statement is the class of Component.
+    
+    Lua component can only be used in lua projects, Javascript component can only be used in Javascript projects.
+    
+    More detail usage please refer to: `tests/lua-tests/src/ComponentTest` and `tests/js-tests/src/ComponentTest`
 
-For more detail description of SpritePolygon please refer to [this thread](http://discuss.cocos2d-x.org/t/new-feature-meshsprite-polygonsprite/21153)
 
-### luajit arm64 
+3. 2D Physics
 
-The version of the luajit is [v2.1-20150331](https://github.com/openresty/luajit2/releases). We have consulted the author of luajit, he said it was stability enough to be used. We will update to v2.1 when it is released.
+    Before v3.9, there are many physics related codes in Node, such as Node::setPhysicsBody(). Since v3.9, we move these codes into physics component.
 
-Using luajit arm64 version is that because it can improve the performance. In previous versions of cocos2d-x, it uses lua on iOS 64-bit devices. 
+    After using physics component, the way to use physics is changed. Before v3.9, you can use physics like this:
+    
+    ```
+    auto node = Node::create(); 
+    node->setPhysicsBody(PhysicsBody::createEdgeBox(...));
+    ```
+    
+    Since v3.9 you should use like this:
+    
+    ```
+    auto node = Node::create();
+    node->addComponent(PhysicsBody::createEdgeBox(...));
 
-Bytecode of luajit and luajit arm64 are not compatible, which means you can not use one version of bytecode on iOS 32-bit devices and iOS 64-bit devices.
+    ```
 
-As there is not mandatory requirement of having arm64 bit bin on Android, so we don't use luajit arm64 on Android as its bytecode is not compatible with luajit arm32.
+4. EditBox implemention on iOS and Win32 platform
 
-### Button memory usage optimization
-Now the title label of Button is created on demand. A Button without title won't
-create an extra empty label.
+    - Specify the maximum number of characters in the dialog box. 
+    - Support password input. 
+    - Games will continue when the dialogue box pops up. 
+    - Sync the content in dialogue box. 
 
-And we have also removed some redundant string variables in Button's header file.
+5. Remove dependence of curl on AssetsManager, AssetsManagerEx and Downloader (iOS & Android)
 
-We use Cpp-Empty-Test to verify this optimization.
+    From v3.9, iOS and Android version will not depend on libcurl, which make
+    the game package smaller and solve some bugs caused by libcurl. Stability has
+    been improved with the updated iOS and Android system. 
 
-Here is the test code:
+6. Improved particle performance. 
 
-```
-auto visibleSize = Director::getInstance()->getVisibleSize();
-auto origin = Director::getInstance()->getVisibleOrigin();
+### Others
 
-int num = 100;
-for (int i=0; i < num; ++i)
-{
-auto button = ui::Button::create("ClosedNormal.png",
-"ClosedSelected.png");
-button->setPosition(origin + visibleSize/2);
-this->addChild(button);
-}
-```
+1. Supported Action inheritance, update function overwriting in JSB
 
-And here is the result:
+    In previous version of JSB, developers cannot inherit Action class in JS script, such as Action / ActionInterval / ActionInstant, for their update function will not be called. In v3.9, developers can create subclass of Action and make extensions. More detail usage please refer to the textcase in ActionTest / ActionCustomTest.
 
-#### On iOS platform
+2. ScrollView performance on Web engine
 
-|Num of buttons|100 | 200 | 500| 1000|
-|-----|-----|-----|-----|-----|
-|Before optimization | 61M | 61.9M | 67.1M | 72.2M|
-|After optimization |60.7M| 61.1M | 66M | 67.9M|
+    ScrollView and ListView are the popular UI controls in Web engine. Their
+    performance is not perfect in previous versions, especially when there are multiple sub-controls. In v3.9, we have improved its rendering performance. They only act on the contents displayed on the current screen. Test
+    date shows that, comparing with v3.8, rendering efficiency of v3.9 have been improved for twice to four times in different devices and browsers. 
 
-#### On Mac platform
+3. Scale9Sprite performance on Web engine
 
-|Num of buttons|100 | 200 | 500| 1000|
-|-----|-----|-----|-----|-----|
-|Before optimization |26.8M | 27.1M| 33.2M| 35.4M|
-|After optimization |25.1M|25.9M|28M|32.4M|
+    In this version, we have changed the way to construct 9-slice sprite. The engine uses 9 rendering commands instead of the 9 nodes in previous versions. This helps to reduce memory usage and improve rendering performance. 
+
+4. Decoupled Sprite's setTexture and updateColor in Web engine.
+
+    - Organized the rendering logic in Sprite. UpdateColor is accomplished by texture instead of the Sprite. 
+    - Fixed a bug about image with alpha channel that when the image is set to black, there is color difference between previous and current version. 
+    - Improved texture update logic to reduce texture updates when changing colors.
+    - Improved the logic about the rendering function in SpriteCanvasRenderCmd.
+    - Removed some duplicate codes about updateColor.
+
+5. Support for debugging and release on real devices with Xcode7 and iOS9
+
+    In v3.8.1, we have made it possible to debug on Xcode7. However, there was a bug with iOS9 real device debuging, and in v3.9, we have fixed the bug.
+
+
+## Other changes
+
+[NEW]           Label: Added line spacing/leading feature to Label.
+
+[NEW]           ListView: Added APIs to scroll to specific item in list.
+
+[NEW]           ListView: Added APIs to get an item in specific position like center, leftmost, rightmost, topmost and bottommost.
+
+[NEW]           ListView: Added a feature for magnetic scrolling.
+
+[NEW]           Animate: Added ActionTimeline::setAnimationEndCallBack and ActionTimeline::addFrameEndCallFunc.
+
+[NEW]           Animate: Added CSLoader::createNodeWithVisibleSize, CSLoader::createNodeWithVisibleSize and moved "ui::Helper::DoLayout" into them.
+
+[NEW]           Stuio: Added support for Cocos Studio Light3D.
+
+[NEW]           Platform: Added the missing CURL support to the Windows 10 UWP version.
+
+[NEW]           Platform: Added UIEditBox support on linux platform.
+
+[REFINE]        3D: Added non-null checks in PUScriptCompiler::visit before dereferencing.
+
+[REFINE]        3D: Refined SkyboxBrush by making the shader parameter take effect at once.
+
+[REFINE]        Label: Changed label font size type to float to support high precision when font size is small.
+
+[REFINE]        ListView: Fixed an issue that list view's Magnetic::CENTER is not working well when non-bounceable.
+
+[REFINE]        ListView: Added feature of jumping to a specific item in list view.
+
+[REFINE]        Sprite: Added a "unsupport image format!" log when creating a sprite in CCImage.cpp.
+
+[REFINE]        ScrollView: Merge logics of Scroll View for scroll by inertia and auto scroll into one.
+
+[REFINE]        Animate: Moved initialization of image to an appropriate location, because it always called twice in 
+SpriteFrameCache::addSpriteFramesWithFile().
+
+[REFINE]        Simulator: Changed the size of startFlag to 13.
+
+[REFINE]        Simulator: Show Node and Skeleton in the middle of the simulator.
+
+[REFINE]        Simulator: Removed screen direction check in simulator to avoid render error.
+
+[REFINE]        Pysics: Refined components to improve physics performance.
+
+[REFINE]        UI: Refined ComponentContainer to improve performance.
+
+[REFINE]        UI: EventListenerMouse will dispatch EventMouse events.
+
+[REFINE]        OpenGL: Added check for glfwCreateWindow.
+
+[REFINE]        Platform: Fixed a crash on xiaomi2 if Cocos2d-x is built as a dynamic library.
+
+[REFINE]        Platform: Updated libcococs2d name to v3.9 on WinRT platforms.
+
+[REFINE]        Platform: Added some support for mouse on WinRT. Include: Show/Hide mouse cursor; Mouse event 
+implemented similar Desktop version; Left button send mouse event and touch; Support other mouse button and scroll 
+wheel.
+
+[REFINE]        Platform: Correct the convertion between unicode and utf8 on WinRT.
+
+[REFINE]        Platform: Improved EditBox implement on Win32 platform.
+
+[REFINE]        JS: Add jsb.fileUtils.writeDataToFile().
+
+[REFINE]        JS: Set js templates Mac target platform from null to 10.7.
+
+[REFINE]        JS: Removed the static define of variable in headfile of ScriptingCore.
+
+[REFINE]        Lua: Added AssetsManagerEx constants UPDATE_FAILED and ERROR_DECOMPRESS in Lua.
+
+[REFINE]        Lua / JS: Refined lua/js binding tool.
+
+[REFINE]        I/O: Refined AssetsManagerEx unzipping by using async.
+
+[REFINE]        Web: Improved logic of jsb_boot.js to sync with the web engine behavior.
+
+[REFINE]        Web: Sync with CCBoot for web.
+
+[REFINE]        Build: Fixed various compiler warnings on Xcode 7.
+
+[REFINE]        Build: Fixed Wformat-security warning on Xcode.
+
+[REFINE]        Build: Fixed a compile error in __LayerRGBA.
+
+[REFINE]        Tool: Added tools for generating documents automatically.
+
+[REFINE]        Doc: Clean up the code of setRect() function.
+
+[REFINE]        Doc: Fixed a minor typo and renamed INTIAL_CAPS_ALL_CHARACTERS to INITIAL_CAPS_ALL_CHARACTERS 
+in UIEditBox.
+
+You can also take a look at the [full changelog](https://github.com/cocos2d/cocos2d-x/blob/v3/CHANGELOG).
+
+
+## NEW APIS
+
+1. JSB Module
+
+    Added jsb.fileUtils.writeDataToFile
+
+2. Sprite3D
+
+    Added Sprite3Dmaterial class to make it easy to create innate material. 
+
+3. ActionTimelineData 
+
+    Three interfaces are added in ActionTimelineData class, which are addFrameEndCallFunc, removeFrameEndCall and clearFrameEndCalls.
+
+4. ActionTimeline::removeFrameEndCallFunc 
+
+5. Improvements for ListView
+
+    - Add APIs to scroll to specific item in list.
+    - Add APIs to get an item in specific position like center, leftmost, rightmost, topmost and bottommost.
+    - Add a feature for magnetic scrolling.
+
+    For more information: https://github.com/cocos2d/cocos2d-x/pull/13723
+
+6. Node
+
+    Added the missing API getChildByTag
+
+7. Label
+
+    Added setLineSpacing, getLineSpacing
+
+8. CSLoader
+
+    Added createNodeWithVisibleSize, createNodeWithVisibleSize
+9. ComponentContainer
+
+    Removed isEmpty
+
+10. Sprite
+
+    Removed debugDraw(bool on)

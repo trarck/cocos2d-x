@@ -42,6 +42,13 @@
 -- @return bool#bool ret (return value: bool)
         
 --------------------------------
+-- brief Query the text string color.<br>
+-- return The color of the text.
+-- @function [parent=#TextField] getTextColor 
+-- @param self
+-- @return color4b_table#color4b_table ret (return value: color4b_table)
+        
+--------------------------------
 -- brief Get the placeholder of TextField.<br>
 -- return A placeholder string.
 -- @function [parent=#TextField] getPlaceHolder 
@@ -144,7 +151,7 @@
 -- @return int#int ret (return value: int)
         
 --------------------------------
--- brief Get the the renderer size in auto mode.<br>
+-- brief Get the renderer size in auto mode.<br>
 -- return A delimitation zone.
 -- @function [parent=#TextField] getAutoRenderSize 
 -- @param self
@@ -194,6 +201,13 @@
 -- @param self
 -- @param #bool deleteBackward
 -- @return TextField#TextField self (return value: ccui.TextField)
+        
+--------------------------------
+-- brief Inquire the horizontal alignment<br>
+-- return The horizontal alignment
+-- @function [parent=#TextField] getTextHorizontalAlignment 
+-- @param self
+-- @return int#int ret (return value: int)
         
 --------------------------------
 -- brief Change font size of TextField.<br>
@@ -256,6 +270,13 @@
 -- @param self
 -- @param #bool detach
 -- @return TextField#TextField self (return value: ccui.TextField)
+        
+--------------------------------
+-- brief Inquire the horizontal alignment<br>
+-- return The horizontal alignment
+-- @function [parent=#TextField] getTextVerticalAlignment 
+-- @param self
+-- @return int#int ret (return value: int)
         
 --------------------------------
 -- brief Toggle enable touch area.<br>
@@ -329,6 +350,14 @@
 -- @function [parent=#TextField] hitTest 
 -- @param self
 -- @param #vec2_table pt
+-- @param #cc.Camera camera
+-- @param #vec3_table p
+-- @return bool#bool ret (return value: bool)
+        
+--------------------------------
+-- 
+-- @function [parent=#TextField] init 
+-- @param self
 -- @return bool#bool ret (return value: bool)
         
 --------------------------------

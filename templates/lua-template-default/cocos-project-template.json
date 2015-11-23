@@ -105,7 +105,6 @@
                     "*.dll"
                 ]
             }
-
         ]
     },
     "do_add_native_support": {
@@ -251,8 +250,7 @@
              "files":[
                 "frameworks/CMakeLists.txt"
              ]
-         }
-        ]
+         }        
     },
     "change_orientation": {
         "modify_files": [
